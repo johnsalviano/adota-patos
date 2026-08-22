@@ -1,0 +1,25 @@
+# Segredos — JAMAIS commitar
+.env
+.env.*
+*.key
+credentials*.json
+
+# Dependências
+node_modules/
+
+# Builds
+dist/
+build/
+out/
+
+# Sistema / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Logs e temporários
+*.log
+tmp/
+temp/
