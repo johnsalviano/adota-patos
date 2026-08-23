@@ -119,7 +119,7 @@ O Supabase permite definir **quem pode ler e quem pode escrever** cada tabela. N
 | Visitante do site (sem login) | ✅ Lê apenas Disponíveis | ❌ Não acessa direto | ✅ Só vê |
 | Conta logada FORA da lista | ❌ Nada | ❌ Nada | ❌ Nada |
 | Membro da ONG (logado + na lista) | ✅ Controla tudo | ✅ Lê e avalia | ✅ Envia/edita |
-| n8n (servidor, chave privada) | ❌ | ✅ Grava novas candidaturas | ❌ |
+| Função serverless (chave privada) | ❌ | ✅ Grava novas candidaturas | ❌ |
 
 ### Como a ONG dá acesso a uma nova pessoa
 

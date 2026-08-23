@@ -47,7 +47,7 @@ Construir e entregar uma plataforma web completa (site + painel) que digitalize 
 2. Receber solicitações de adoção por formulário web, salvando tudo automaticamente no banco de dados;
 3. Dar à ONG um painel protegido por login para cadastrar, editar, excluir e marcar animais como "Adotado";
 4. Centralizar as solicitações de adoção para a ONG visualizar e avaliar;
-5. Usar apenas ferramentas com plano gratuito (Supabase, n8n Cloud), tornando o projeto **sustentável sem custo fixo**;
+5. Usar apenas ferramentas com plano gratuito (Supabase e seus recursos incluídos), tornando o projeto **sustentável sem custo fixo**;
 6. Documentar tudo em linguagem acessível, para que qualquer pessoa da ONG (ou outro aluno) consiga entender e dar manutenção.
 
 ---
@@ -77,18 +77,18 @@ O projeto atende a ONG **Adota Patos**, sediada em **Patos, sertão da Paraíba*
 |---|---|---|
 | **HTML/CSS/JavaScript** | Site público e painel da ONG | Roda em qualquer navegador, sem instalação |
 | **Supabase** | Banco de dados + armazenamento das fotos | Gratuito, tem interface amigável, expõe API pronta |
-| **n8n Cloud** | Automação que liga o site ao banco | Recebe o formulário e grava no Supabase sem código no meio |
+| **Edge Function (Supabase)** | Recepcionista automático do formulário | Roda nos servidores do Supabase 24/7, incluída no plano gratuito — avaliamos o n8n Cloud, mas ele vira pago após o período de teste |
 | **GitHub** | Guardar o código e histórico | Trabalho em dupla com versionamento |
 | **Mermaid** | Diagramas desta documentação | Os diagramas são texto — fáceis de atualizar |
 
 ### 6.2 Como dividimos o trabalho
 
 - **Matheus (front-end):** telas do site, telas do painel, experiência do usuário;
-- **John (back-end):** modelagem do banco, segurança de acesso, webhook do n8n, integrações e esta documentação.
+- **John (back-end):** modelagem do banco, segurança de acesso, endpoint serverless do formulário, integrações e esta documentação.
 
 ### 6.3 Método de trabalho
 
-Trabalhamos em etapas curtas: primeiro o banco funcionando, depois o webhook, depois o site conectado. Cada etapa termina **testada e registrada** neste documento (seção 11). Toda tarefa vira uma Issue no GitHub e entra via Pull Request — assim fica rastro de quem fez o quê e por quê.
+Trabalhamos em etapas curtas: primeiro o banco funcionando, depois o receptor do formulário, depois o site conectado. Cada etapa termina **testada e registrada** neste documento (seção 11). Toda tarefa vira uma Issue no GitHub e entra via Pull Request — assim fica rastro de quem fez o quê e por quê.
 
 ---
 
@@ -99,8 +99,8 @@ Aqui está o coração do projeto explicado sem mistério. São **três peças**
 ```mermaid
 flowchart LR
     V["👤 Visitante<br>(quer adotar)"] --> S["🌐 Site público<br>(catálogo + formulário)"]
-    S -- "1. formulário preenchido" --> N["⚙️ n8n<br>(recepcionista automático)"]
-    N -- "2. anota no caderno" --> DB[("🗄️ Supabase<br>(banco de dados + fotos)")]
+    S -- "1. formulário preenchido" --> F["⚡ Função serverless<br>(recepcionista automática)"]
+    F -- "2. anota no caderno" --> DB[("🗄️ Supabase<br>(banco de dados + fotos)")]
     O["🏢 ONG<br>(equipe com login)"] --> P["🖥️ Painel admin"]
     P -- "cadastra/edita/marca adotado" --> DB
     DB -- "3. site sempre atualizado" --> S
@@ -112,10 +112,12 @@ flowchart LR
 É onde moram TODAS as informações: os animais cadastrados, as fotos, as solicitações de adoção. O site lê daqui; o painel escreve aqui. Quando a ONG marca o Thor como "Adotado" no painel, é esse registro que muda — e o site para de mostrar o Thor na hora, porque ele sempre consulta o mesmo caderno.
 
 **2. Site público — a vitrine.**
-Qualquer pessoa acessa, vê os animais disponíveis, clica em "Quero adotar" e preenche o formulário. Ele não salva nada diretamente no banco: entrega o formulário para o recepcionista abaixo.
+Qualquer pessoa acessa, vê os animais disponíveis, clica em "Quero adotar" e preenche o formulário. Ele não salva nada diretamente no banco: entrega o formulário para a recepcionista abaixo.
 
-**3. n8n — o recepcionista automático.**
-Quando o formulário chega, o n8n recebe os dados e anota no "caderno" (Supabase), no capítulo certo (tabela `adocoes`). Por que não deixar o site gravar direto? **Segurança:** o site é público — se ele tivesse a chave para gravar no banco, qualquer pessoa mal-intencionada poderia usar essa chave. Com o n8n no meio, o banco só aceita escrita de solicitações vindas dele.
+**3. Função serverless (`receber-adocao`) — a recepcionista automática.**
+Quando o formulário chega, ela confere os campos com atenção (e avisa, com educação, o que está faltando), depois anota no "caderno" (Supabase), no capítulo certo (tabela `adocoes`). Por que não deixar o site gravar direto? **Segurança:** o site é público — se ele tivesse a chave para gravar no banco, qualquer pessoa mal-intencionada poderia usar essa chave. Com a recepcionista no meio, o banco só aceita escrita de solicitações vindas dela.
+
+> 💡 **Por que não usamos o n8n?** Avaliamos essa ferramenta no planejamento, mas o serviço em nuvem vira pago após o período de teste (~R$150/mês) e hospedar em casa exigiria um computador ligado 24 horas. A função serverless do próprio Supabase faz o mesmo papel, já está incluída no plano gratuito e nunca dorme. Decisão registrada na seção 11.
 
 ### O caminho de cada ação
 
@@ -123,7 +125,7 @@ Quando o formulário chega, o n8n recebe os dados e anota no "caderno" (Supabase
 |---|---|
 | ONG cadastra o Thor | Painel → Supabase → Thor já aparece no site |
 | ONG marca Thor como Adotado | Painel → Supabase muda o status → some do catálogo |
-| Visitante se candidata | Site → n8n → tabela `adocoes` → ONG vê no painel |
+| Visitante se candidata | Site → função `receber-adocao` → tabela `adocoes` → ONG vê no painel |
 | Visitante vê animal | Site lê tabela `animais` (só os Disponíveis) |
 
 ---
@@ -162,7 +164,7 @@ Um animal pode receber **várias** solicitações; cada solicitação aponta par
 | 1. Planejamento e pesquisa | Definição do escopo, referências e ferramentas | ✅ Concluída |
 | 2. Protótipo do site | Matheus monta o layout do site público | ✅ Concluída |
 | 3. Banco de dados | Criação do projeto Supabase, tabelas e storage | ✅ Concluída |
-| 4. Automação | Workflow no n8n (webhook → Supabase) | ⏳ Pendente |
+| 4. Receptor do formulário | Endpoint serverless (`receber-adocao` → Supabase) | ✅ Concluída |
 | 5. Integração do site | Formulário enviando ao webhook; catálogo lendo o banco | ⏳ Pendente |
 | 6. Painel da ONG | Login, CRUD de animais, lista de solicitações | ⏳ Pendente |
 | 7. Testes completos | Fluxo inteiro ponta a ponta | ⏳ Pendente |
@@ -188,6 +190,8 @@ Um animal pode receber **várias** solicitações; cada solicitação aponta par
 | 2026-08-22 | **Banco no ar** (#1 concluída): `schema.sql` executado — tabelas `animais`/`adocoes`, bucket `fotos-animais`, políticas RLS ativas | John |
 | 2026-08-22 | Testes de segurança aprovados via API pública: visitante lê catálogo (200), escrita anônima bloqueada em ambas as tabelas (401) | John |
 | 2026-08-22 | **Migração 002** (`backend/supabase/002_acessos_ong.sql`): criada lista `perfis_membros` — só e-mails autorizados pela ONG têm poderes administrativos, mesmo entre contas logadas. Defesa contra criação de contas falsas. Passo a passo de como dar/remover acesso documentado no MODELO_CONCEITUAL.md §5 | John |
+| 2026-08-22 | **Decisão de arquitetura**: substituímos o n8n por uma Edge Function do próprio Supabase (`receber-adocao`). Motivo: n8n Cloud não tem plano gratuito permanente (~R$150/mês após o trial) e a ONG exige custo zero. A função roda 24/7 nos servidores do Supabase sem máquina dedicada. Critério registrado: custo zero > ferramenta específica | John |
+| 2026-08-22 | **Formulário no ar** (#2 concluída): endpoint público testado de ponta a ponta — valida campos com mensagens amigáveis, grava em `adocoes` com status `Pendente`, responde ao site em JSON humanizado. Testes: payload válido (200 + linha gravada), campos faltando (400 com lista do que falta), payload malformado (400). Linha de teste removida após verificação | John |
 
 *(próximos registros entram aqui)*
 
@@ -201,4 +205,5 @@ Um animal pode receber **várias** solicitações; cada solicitação aponta par
 - DE PAULA, João Antônio. **Extensão universitária: história, conceito e propostas.** Interface — Comunicação, Saúde, Educação, 2013.
 - **Supabase Documentation.** Disponível em: https://supabase.com/docs. Acesso em ago. 2026.
 - **n8n Documentation.** Disponível em: https://docs.n8n.io. Acesso em ago. 2026.
+- **Supabase — Edge Functions.** Disponível em: https://supabase.com/docs/guides/functions. Acesso em ago. 2026.
 - ROCHA, Maria Auxiliadora da. *A terceira missão universitária*. 2001 (citado em Moreira, 2023).
