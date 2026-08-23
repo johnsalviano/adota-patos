@@ -47,6 +47,14 @@ erDiagram
     }
 ```
 
+### O mesmo desenho na notação clássica (Peter Chen)
+
+![Modelo Conceitual do Adota Patos](./diagramas/modelo-conceitual.png)
+
+*Figura 1 — Modelo conceitual: **retângulos** = entidades · **losango** = relacionamento · **elipses** = atributos (chave primária sublinhada) · cardinalidade **1:N*.*
+
+> Fonte editável em [`diagramas/modelo-conceitual.dot`](./diagramas/modelo-conceitual.dot) — para regenerar a imagem: `dot -Tpng modelo-conceitual.dot -o modelo-conceitual.png`
+
 ### Lendo o relacionamento
 
 | Leitura | Cardinalidade |

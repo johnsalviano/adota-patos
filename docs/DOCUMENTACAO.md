@@ -192,6 +192,7 @@ Um animal pode receber **várias** solicitações; cada solicitação aponta par
 | 2026-08-22 | **Migração 002** (`backend/supabase/002_acessos_ong.sql`): criada lista `perfis_membros` — só e-mails autorizados pela ONG têm poderes administrativos, mesmo entre contas logadas. Defesa contra criação de contas falsas. Passo a passo de como dar/remover acesso documentado no MODELO_CONCEITUAL.md §5 | John |
 | 2026-08-22 | **Decisão de arquitetura**: substituímos o n8n por uma Edge Function do próprio Supabase (`receber-adocao`). Motivo: n8n Cloud não tem plano gratuito permanente (~R$150/mês após o trial) e a ONG exige custo zero. A função roda 24/7 nos servidores do Supabase sem máquina dedicada. Critério registrado: custo zero > ferramenta específica | John |
 | 2026-08-22 | **Formulário no ar** (#2 concluída): endpoint público testado de ponta a ponta — valida campos com mensagens amigáveis, grava em `adocoes` com status `Pendente`, responde ao site em JSON humanizado. Testes: payload válido (200 + linha gravada), campos faltando (400 com lista do que falta), payload malformado (400). Linha de teste removida após verificação | John |
+| 2026-08-22 | Gerada a **imagem do modelo conceitual** na notação clássica de Peter Chen (`docs/diagramas/modelo-conceitual.png`, fonte editável `.dot` no mesmo diretório) para o relatório/apresentação da faculdade | John |
 
 *(próximos registros entram aqui)*
 
