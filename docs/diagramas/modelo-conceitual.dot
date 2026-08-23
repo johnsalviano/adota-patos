@@ -12,7 +12,7 @@ digraph MER {
     ranksep=1.0;
     bgcolor=white;
     node [fontname="Segoe UI, Arial, sans-serif", fontsize=12];
-    edge [fontname="Segoe UI, Arial, sans-serif", fontsize=11, color="#444444"];
+    edge [fontname="Segoe UI, Arial, sans-serif", fontsize=11, color="#444444", arrowhead=none, arrowtail=none];
 
     // ---------- ENTIDADES ----------
     animal [
