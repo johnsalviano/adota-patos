@@ -1,6 +1,8 @@
 # Segredos — JAMAIS commitar
+# (o .env.example e a excecao: template SEM valores reais, versionado de proposito)
 .env
 .env.*
+!.env.example
 *.key
 credentials*.json
 
