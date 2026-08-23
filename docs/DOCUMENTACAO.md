@@ -213,6 +213,8 @@ Um animal pode receber **várias** solicitações; cada solicitação aponta par
 | 2026-08-23 | **Bateria técnica final 16/16**: carregamento ~670ms, responsividade provada por geometria em 3 larguras (3/2/1 colunas), imagens carregadas, maxlength reais, contador, modal abre/fecha por X e clique fora, consentimento persistente, console e rede limpos | John |
 | 2026-08-23 | **Auditoria final de segurança e banco**: RLS ativa nas 5 tabelas, anônimo lê lista vazia em dados sensíveis e recebe 401 em escrita, storage público restrito às fotos do catálogo, índices adequados, FK com ON DELETE SET NULL, CHECKs de domínio (status/porte/sexo), e-mail único em membros. Comparação com o caso Moltbook/Wiz (fev/2026) confirma nossa arquitetura | John |
 
+| 2026-08-23 | **História real da ONG no site** (#31): seção "Sobre nós" reescrita com dados verdadeiros (fundação em 11/06/2018, resgate/tratamento/castração/adoção, apoio a tutores de baixa renda, sustentação por doações e voluntariado) e canais oficiais no "Contato" (@adotapatosoficial no Instagram/Facebook, WhatsApp, e-mail da ONG) - fim dos links placeholder | John |
+
 *(próximos registros entram aqui)*
 
 ---
