@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  gerador-sincronizado:
+    name: Site público sincronizado com o gerador
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Roda o gerador de front-end
+        run: python scripts/gerar_frontend.py
+
+      - name: Compara a saída com o arquivo commitado
+        run: |
+          if ! git diff --exit-code -- frontend/index.html; then
+            echo ""
+            echo "::error::frontend/index.html está desatualizado."
+            echo "::error::Rode 'python scripts/gerar_frontend.py' e commite o resultado."
+            exit 1
+          fi
+
+  sintaxe-python:
+    name: Sintaxe dos scripts Python
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compila todos os scripts
+        run: python -m compileall scripts/

@@ -1,8 +1,15 @@
 ﻿# -*- coding: utf-8 -*-
 # Gera frontend/index.html a partir do protótipo, integrando Supabase + Edge Function
+#
+# O protótipo vive versionado em prototipo/adota-patos.html (é a arte original
+# entregue pelo Matheus). O caminho é relativo à raiz do repositório, para o
+# script funcionar em qualquer máquina — inclusive no CI.
+import os
 import re
 
-html = open(r'C:\Users\johns\OneDrive\Desktop\adota-patos.html', encoding='utf-8').read()
+RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+CAMINHO_PROTOTIPO = os.path.join(RAIZ, 'prototipo', 'adota-patos.html')
+html = open(CAMINHO_PROTOTIPO, encoding='utf-8', newline='').read()
 
 # 1. Substitui TODO o conteudo do grid por UM unico container dinamico
 #    (antes usavamos regex.sub() em cada card, o que criava tres copias
@@ -329,5 +336,6 @@ html = html.replace(
 )
 print('contador de caracteres do motivo adicionado')
 
-open(r'C:\Users\johns\OneDrive\Documentos\Default Project\adota-patos\frontend\index.html', 'w', encoding='utf-8').write(html)
+CAMINHO_SAIDA = os.path.join(RAIZ, 'frontend', 'index.html')
+open(CAMINHO_SAIDA, 'w', encoding='utf-8', newline='\n').write(html)
 print('frontend/index.html gerado:', len(html), 'bytes')

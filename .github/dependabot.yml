@@ -1,0 +1,21 @@
+version: 2
+updates:
+  # Ações do GitHub (checkout, setup-python...)
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    labels:
+      - chore
+    commit-message:
+      prefix: chore
+
+  # Scripts Python do repositório
+  - package-ecosystem: pip
+    directory: /scripts
+    schedule:
+      interval: weekly
+    labels:
+      - chore
+    commit-message:
+      prefix: chore
