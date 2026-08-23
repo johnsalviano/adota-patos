@@ -59,16 +59,26 @@ const LIMITE_POR_MINUTO = 5
 const LIMITE_GLOBAL_POR_MINUTO = 60
 
 function ipDaRequisicao(req: Request): string {
-  // A cadeia x-forwarded-for pode começar com IPs FALSOS enviados pelo
-  // próprio atacante. O único confiável é o ÚLTIMO, acrescentado pelo
-  // gateway do Supabase — por isso usamos o final da lista.
+  // IP real do cliente segundo o Cloudflare (nao forjavel pelo cliente).
+  const cf = req.headers.get('cf-connecting-ip')
+  if (cf) return cf
+
+  // A cadeia x-forwarded-for mistura IPs falsos do atacante na frente e
+  // saltos internos do gateway atras. O unico confiavel e o ultimo IP
+  // PUBLICO da lista — por isso varremos da direita para a esquerda,
+  // pulando faixas privadas/loopback que variam entre instancias.
   const cadeia = req.headers.get('x-forwarded-for')
-  const ultimo = cadeia?.split(',').map((ip) => ip.trim()).pop()
-  return (
-    ultimo ??
-    req.headers.get('cf-connecting-ip') ??
-    'desconhecido'
-  )
+  if (cadeia) {
+    const candidatos = cadeia.split(',').map((ip) => ip.trim())
+    for (let i = candidatos.length - 1; i >= 0; i--) {
+      const ip = candidatos[i]
+      const privado =
+        /^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|127\.|::1|f[cd][0-9a-f]{2}:|fe80:)/i
+          .test(ip)
+      if (!privado) return ip
+    }
+  }
+  return 'desconhecido'
 }
 
 // ------------------------------------------------------------
