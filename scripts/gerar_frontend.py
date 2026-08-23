@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 # Gera frontend/index.html a partir do protótipo, integrando Supabase + Edge Function
 import re
 
