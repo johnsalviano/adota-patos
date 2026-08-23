@@ -13,9 +13,9 @@
 | **Área temática** | Tecnologia (com impacto social em bem-estar animal e comunidade) |
 | **Modalidade de extensão** | Prestação de Serviço / Voluntariado tecnológico |
 | **Equipe** | John Lennon Salviano Soares (back-end: banco, integrações, automações) • Matheus de Lima Eliziário (front-end: site público e painel da ONG) |
-| **Instituição** | [nome da faculdade / curso] |
+| **Instituição** | UNINASSAU — Centro Universitário • Curso: Análise e Desenvolvimento de Sistemas (ADS) |
 | **Disciplina** | Atividades Práticas Interdisciplinares de Extensão I |
-| **Período de execução** | Agosto/2026 – [data final] |
+| **Período de execução** | Início de agosto/2026 – em andamento |
 
 ---
 
@@ -32,6 +32,8 @@ Este projeto resolve isso com tecnologia simples e gratuita:
 - Uma esteira automática nos bastidores: quando alguém preenche o formulário, os dados **chegam sozinhos** no banco de dados da ONG, sem ninguém precisar copiar e colar nada.
 
 O impacto social está no elo mais fraco que a tecnologia fortalece: **quanto mais rápido um animal aparece para o adotante certo, mais curta é a espera dele por um lar.** E quanto menos tempo a ONG gasta com trabalho administrativo repetitivo, mais tempo ela dedica aos animais.
+
+O benefício alcança toda a cidade, não só os animais e adotantes: **cada adoção responsável é um animal a menos nas ruas**, o que significa menos risco de atropelamentos em vias movimentadas, menos possibilidade de ataques a pedestres — especialmente crianças e idosos — e menos circulação de doenças transmitidas por animais sem cuidados. A plataforma, portanto, contribui indiretamente para a **segurança e a saúde pública de Patos**, enquanto promove a convivência mais humana entre pessoas e animais.
 
 > Em uma frase: **usamos o que aprendemos no curso para transformar o fluxo de adoção de uma ONG real, de graça, de forma que eles consigam manter sozinhos depois.**
 
@@ -179,9 +181,9 @@ Um animal pode receber **várias** solicitações; cada solicitação aponta par
 
 | Data | O que foi feito | Responsável |
 |---|---|---|
-| 2026-08-22 | Pesquisa de referências (repositórios similares) e definição das ferramentas (Supabase, n8n Cloud) | John e Matheus |
-| 2026-08-22 | Matheus finalizou o protótipo HTML do site público (layout completo: catálogo, modal, formulário, responsivo) | Matheus |
-| 2026-08-22 | Divisão formal: John = back-end/banco/integrações; Matheus = front-end/painel | John e Matheus |
+| 2026-08-01 a 08-18 | **Fase de estudo e pesquisa (antes de qualquer código)**: levantamento de plataformas similares de adoção, comparação entre ferramentas (Supabase, Firebase, n8n), estudo de Row Level Security, LGPD aplicada a pequenos sites e boas práticas de segurança em projetos web. Essa base teórica orientou todas as decisões seguintes | John e Matheus |
+| 2026-08-19 | Matheus entregou o protótipo HTML do site público (layout completo: catálogo, modal, formulário, responsivo) | Matheus |
+| 2026-08-19 | Divisão formal do trabalho: John = back-end/banco/integrações; Matheus = front-end/painel da ONG | John e Matheus |
 | 2026-08-22 | Criada esta documentação viva + modelo conceitual dos dados | John |
 | 2026-08-22 | Projeto criado no Supabase (conta conectada) | John |
 | 2026-08-22 | Script SQL do banco criado (`backend/supabase/schema.sql`) — pendente de execução | John |
