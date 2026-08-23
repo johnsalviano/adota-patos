@@ -191,7 +191,7 @@ bloco_banner = '''
         // depois que a pessoa aceita. Quem recusa navega sem analytics.
         // =========================
 
-        const GA_MEASUREMENT_ID = ""; // ← preencher quando a ONG criar a conta do Google Analytics
+        const GA_MEASUREMENT_ID = "G-S08M6034SR"; // propriedade GA4 oficial da ONG
 
         function obterConsentimentoCookies() {
             return localStorage.getItem("consentimento-cookies");

@@ -215,6 +215,8 @@ Um animal pode receber **várias** solicitações; cada solicitação aponta par
 
 | 2026-08-23 | **História real da ONG no site** (#31): seção "Sobre nós" reescrita com dados verdadeiros (fundação em 11/06/2018, resgate/tratamento/castração/adoção, apoio a tutores de baixa renda, sustentação por doações e voluntariado) e canais oficiais no "Contato" (@adotapatosoficial no Instagram/Facebook, WhatsApp, e-mail da ONG) - fim dos links placeholder | John |
 
+| 2026-08-23 | **Google Analytics 4 integrado** (#33): criada a propriedade oficial da ONG no analytics.google.com com fluxo de dados Web; ID de medição `G-S08M6034SR` preenchido no gerador - o site agora carrega a tag de estatísticas, mantendo o gatilho LGPD (nada é coletado sem aceite no banner de cookies) | John |
+
 *(próximos registros entram aqui)*
 
 ---
