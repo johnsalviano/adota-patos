@@ -161,7 +161,7 @@ Um animal pode receber **várias** solicitações; cada solicitação aponta par
 |---|---|---|
 | 1. Planejamento e pesquisa | Definição do escopo, referências e ferramentas | ✅ Concluída |
 | 2. Protótipo do site | Matheus monta o layout do site público | ✅ Concluída |
-| 3. Banco de dados | Criação do projeto Supabase, tabelas e storage | 🔄 Em andamento |
+| 3. Banco de dados | Criação do projeto Supabase, tabelas e storage | ✅ Concluída |
 | 4. Automação | Workflow no n8n (webhook → Supabase) | ⏳ Pendente |
 | 5. Integração do site | Formulário enviando ao webhook; catálogo lendo o banco | ⏳ Pendente |
 | 6. Painel da ONG | Login, CRUD de animais, lista de solicitações | ⏳ Pendente |
@@ -185,6 +185,8 @@ Um animal pode receber **várias** solicitações; cada solicitação aponta par
 | 2026-08-22 | Script SQL do banco criado (`backend/supabase/schema.sql`) — pendente de execução | John |
 | 2026-08-22 | Criado repositório público [johnsalviano/adota-patos](https://github.com/johnsalviano/adota-patos) e o contrato `AGENTS.md` (3 camadas de padrão: Issues/PRs, motion principles, observabilidade+qualidade+testes) | John |
 | 2026-08-22 | Criadas as Issues #1–#9 cobrindo o cronograma: banco Supabase, webhook n8n, integração do site, painel da ONG, ferramentas de qualidade, testes E2E, Sentry e deploy | John |
+| 2026-08-22 | **Banco no ar** (#1 concluída): `schema.sql` executado — tabelas `animais`/`adocoes`, bucket `fotos-animais`, políticas RLS ativas | John |
+| 2026-08-22 | Testes de segurança aprovados via API pública: visitante lê catálogo (200), escrita anônima bloqueada em ambas as tabelas (401) | John |
 
 *(próximos registros entram aqui)*
 
