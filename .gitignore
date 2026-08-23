@@ -6,6 +6,8 @@ credentials*.json
 
 # Dependências
 node_modules/
+__pycache__/
+*.pyc
 
 # Builds
 dist/

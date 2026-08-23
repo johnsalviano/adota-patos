@@ -1,0 +1,33 @@
+name: 🐞 Correção
+description: Algo não está funcionando como deveria
+labels: [correcao]
+body:
+  - type: textarea
+    id: comportamento
+    attributes:
+      label: O que aconteceu?
+      description: Descreva o comportamento errado, como quem conversa.
+    validations:
+      required: true
+  - type: textarea
+    id: esperado
+    attributes:
+      label: O que deveria acontecer?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduzir
+    attributes:
+      label: Como reproduzir
+      description: Passos exatos, do início até o erro aparecer.
+      placeholder: |
+        1. Abra a página ...
+        2. Clique em ...
+        3. Veja o erro ...
+    validations:
+      required: true
+  - type: textarea
+    id: contexto
+    attributes:
+      label: Prints ou detalhes extras
+      description: Screenshots, mensagens de console, navegador usado...
