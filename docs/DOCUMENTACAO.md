@@ -194,11 +194,106 @@ Um animal pode receber **várias** solicitações; cada solicitação aponta par
 | 2026-08-22 | **Formulário no ar** (#2 concluída): endpoint público testado de ponta a ponta — valida campos com mensagens amigáveis, grava em `adocoes` com status `Pendente`, responde ao site em JSON humanizado. Testes: payload válido (200 + linha gravada), campos faltando (400 com lista do que falta), payload malformado (400). Linha de teste removida após verificação | John |
 | 2026-08-22 | Gerada a **imagem do modelo conceitual** na notação clássica de Peter Chen (`docs/diagramas/modelo-conceitual.png`, fonte editável `.dot` no mesmo diretório) para o relatório/apresentação da faculdade | John |
 
+| 2026-08-23 | **Protótipo integrado ao back-end real**: criado `gerar_frontend.py`, script que lê o HTML do Matheus e injeta as chamadas reais (catálogo via API, modal dinâmico, formulário → Edge Function). Motivo: permite evoluir o site sem apagar o trabalho do colega - o protótipo continua sendo a fonte visual | John |
+| 2026-08-23 | **Correção importante de integração**: o catálogo dava erro 400 porque o código buscava coluna inexistente (`criado_em`); a coluna real do banco é `created_at`. Lição registrada: sempre conferir o schema antes de consumir a API | John |
+| 2026-08-23 | **Vulnerabilidade XSS corrigida**: o protótipo renderizava dados do banco com `innerHTML` sem tratamento - um animal cadastrado com `<script>` no nome executaria código no navegador de todo visitante. Solução: função de escape aplicada a TODO dado antes de renderizar + URLs de foto aceitas somente `https://`. Prova: inserimos animal malicioso de teste, confirmamos que aparece como texto inerte e limpamos o banco | John |
+| 2026-08-23 | **Pacote LGPD implementado** (Issues #13 e #18): migração 003 adicionou `consentimento_lgpd` e `termo_versao` em `adocoes`; o formulário ganhou caixa de autorização obrigatória (não envia sem marcar) com resumo legível do uso dos dados; a Edge Function recusa envio sem consentimento (400) e grava a versão do termo aceita | John |
+| 2026-08-23 | **Banner de cookies** (#15): aviso na primeira visita com Aceitar/Recusar; escolha fica salva no navegador; Google Analytics só carrega após aceite - conformidade LGPD desde o primeiro clique | John |
+| 2026-08-23 | **Proteção contra robôs e abuso** (#16): migração 004 criou tabela de controle + função atômica `registrar_envio`; limite de 5 envios/minuto por IP e teto global de 60/min; campo-armadilha (honeypot) invisível para humanos - bot que preenche recebe resposta falsa de sucesso e não polui o banco | John |
+| 2026-08-23 | **Por que o limite tem também um teto global**: descobrimos nos testes que o cabeçalho de IP pode ser forjado (chega como lista de IPs internos), diluindo o limite por IP. O teto global garante proteção mesmo contra esse truque, sem afetar uso legítimo | John |
+| 2026-08-23 | **Log de segurança** (#19, migração 005): tabela `log_seguranca` registra eventos suspeitos (honeypot acionado, rate limit estourado) apenas com evento, IP e detalhe técnico - nenhum dado pessoal; limpeza automática aos 90 dias via agendador do banco | John |
+| 2026-08-23 | **Retenção automática de dados** (#14): job diário à meia-noite remove solicitações de adoção com mais de 6 meses - a LGPD exige guardar dados pessoais só pelo tempo necessário à finalidade | John |
+| 2026-08-23 | **CORS restrito**: a Edge Function só responde às origens conhecidas (localhost hoje, domínio futuro depois); site desconhecido não consegue disparar nosso endpoint escondido | John |
+| 2026-08-23 | **Teste de invasão (pentest) com 12 vetores**: SQL injection (bloqueado pela WAF Cloudflare do Supabase, 403), leitura de dados pessoais por anônimo (bloqueado pela RLS), envio sem consentimento (400), honeypot (resposta falsa), rajada de envios (429), JSON malformado, origem desconhecida etc. Encontradas e corrigidas 2 falhas reais: XSS persistente (registro acima) e rate limit contornável por IP forjado (resolvido com teto global) | John |
+| 2026-08-23 | **Endurecimento da função** (auditoria F1-F4): IP pega o último da cadeia XFF (mais confiável), limite de tamanho do payload (413 acima de 10 KB), regex de e-mail reforçada, limites server-side espelhando os do navegador - defesa em camadas | John |
+| 2026-08-23 | **Limites de digitação com padrão brasileiro**: nome 80 (padrão Polícia Federal/passaporte gov.br), telefone 15 (formato ANATEL "(83) 99999-9999"), cidade 40, motivo 300 com contador visível (referência PRODABEL-BH). Aplicados no navegador E no servidor | John |
+| 2026-08-23 | **SEO básico** (das 9 dicas pós-lançamento, as que já dependiam só de nós): `robots.txt`, título com palavra-chave local ("Adote cães e gatos para adoção em Patos-PB"), meta description, Open Graph para compartilhamento bonito e favicon 🐾 (eliminou o único erro 404 do console). Search Console, Meu Negócio, sitemap final e domínio próprio ficam para quando o site estiver publicado - dependem de URL pública | John |
+| 2026-08-23 | **Bateria técnica final 16/16**: carregamento ~670ms, responsividade provada por geometria em 3 larguras (3/2/1 colunas), imagens carregadas, maxlength reais, contador, modal abre/fecha por X e clique fora, consentimento persistente, console e rede limpos | John |
+| 2026-08-23 | **Auditoria final de segurança e banco**: RLS ativa nas 5 tabelas, anônimo lê lista vazia em dados sensíveis e recebe 401 em escrita, storage público restrito às fotos do catálogo, índices adequados, FK com ON DELETE SET NULL, CHECKs de domínio (status/porte/sexo), e-mail único em membros. Comparação com o caso Moltbook/Wiz (fev/2026) confirma nossa arquitetura | John |
+
 *(próximos registros entram aqui)*
 
 ---
 
-## 12. Referências Bibliográficas
+## 12. Segurança e LGPD — por que cada decisão foi tomada
+
+> Esta seção existe porque na apresentação não basta mostrar **o que** fizemos:
+> precisamos defender **por quê**. Cada decisão abaixo nasceu de um risco real,
+> muitos deles ilustrados por casos que apareceram nos noticiários em 2025-2026.
+
+### 12.1 A lição do iFood (dez/2025): validar quem acessa o quê
+
+Em dezembro/2025 o iFood sofreu acesso indevido aos dados cadastrais de
+~1,2 milhão de usuários através de uma falha do tipo **IDOR** (acesso direto a
+objetos sem verificar permissão) e demorou 6 meses para comunicar a ANPD.
+**O que aprendemos e aplicamos:** nenhuma consulta ao banco confia no cliente.
+Quem pode ler solicitações de adoção é definido por política no banco (RLS),
+não pela tela. E registramos base de consentimento (`termo_versao`) para saber
+exatamente o que cada titular autorizou e quando.
+
+### 12.2 A lição do Moltbook (fev/2026): chave pública + RLS
+
+Uma rede social expôs 1,5 milhão de tokens e milhares de e-mails porque usava
+Supabase **sem políticas de Row Level Security**: a chave pública que fica no
+navegador virou passe livre para o banco inteiro, inclusive escrita.
+**Nossa arquitetura é exatamente esse cenário — com a diferença que salva:**
+a chave publicável está no nosso HTML (por design do Supabase), mas TODAS as
+5 tabelas têm RLS ativa. Provamos com testes: anônimo lê catálogo de animais
+disponíveis (conteúdo público do site), mas recebe lista vazia em `adocoes`,
+`perfis_membros`, `log_seguranca` e `rate_limit_envios`, e leva 401 ao tentar
+escrever em qualquer tabela.
+
+### 12.3 Defesa em camadas (se uma falhar, a próxima segura)
+
+| Camada | Protege contra | Como provamos |
+|---|---|---|
+| WAF Cloudflare (do Supabase) | SQL injection, path traversal | Payload malicioso → 403 antes de chegar à função |
+| Edge Function | Dados inválidos, excesso de tamanho, sem consentimento | 400 amigável / 413 / bloqueio sem checkbox |
+| Rate limit (RPC atômica) | Rajadas de bot | 429 após 5/min por IP; teto global 60/min |
+| Honeypot | Robôs preenchedores | Bot ganha resposta falsa 200; banco não grava |
+| RLS | Leitura/escrita direta no banco | GET anon → `[]`; POST anon → 401 |
+| Escape de HTML (XSS) | Código injetado via cadastro | `<script>` num nome renderiza como texto |
+| CORS restrito | Uso do endpoint por outros sites | Origem desconhecida não recebe autorização |
+
+### 12.4 LGPD na prática (não só no papel)
+
+- **Consentimento explícito**: checkbox separado e obrigatório, com resumo
+  legível; sem ele nem o servidor aceita (não é só escondido na tela).
+- **Prova do consentimento**: gravamos a versão do termo aceita
+  (`termo_versao = v1-2026-08`).
+- **Minimização**: coletamos só o necessário para contato sobre a adoção;
+  logs de segurança guardam apenas evento/IP/detalhe técnico.
+- **Retenção**: job diário apaga solicitações com mais de 6 meses
+  (art. 15/16 - dados mantidos apenas pelo período necessário).
+- **Cookies/analytics**: banner com Aceitar/Recusar; GA só carrega com aceite;
+  recusa também é memorizada.
+- **Pendências honestas** (pós-MVP): página completa de Política de
+  Privacidade; avaliação formal de incidente (o caso iFood mostra o custo de
+  não ter processo claro de comunicação à ANPD).
+
+### 12.5 Banco de dados — escolhas de modelagem
+
+- **UUID como chave primária**: IDs não sequenciais não expõem volume de
+  registros nem permitem "chutar" o próximo ID.
+- **CHECK de domínio** em status/porte/sexo: o banco recusa valor inválido
+  mesmo se alguém furar a aplicação.
+- **FK com ON DELETE SET NULL**: excluir um animal não apaga o histórico de
+  solicitações da ONG (interesse administrativo).
+- **Índices** em `animal_id` e `(status, created_at)`: consultas do painel
+  ficam rápidas conforme os dados crescem.
+
+### 12.6 O que recomendamos antes de ir ao ar (roadmap curto)
+
+1. Domínio próprio (registro.br, ~R$40/ano) e HTTPS gerenciado;
+2. Página de Política de Privacidade completa;
+3. Ativar MFA na conta Supabase e rotacionar a senha do banco pós-apresentação;
+4. Branch protection + CI básico (padrão dos projetos maduros: cal.com, dub);
+5. Google Search Console + sitemap.xml com a URL final;
+6. Sentry para erros em produção (plano gratuito).
+
+---
+
+## 13. Referências Bibliográficas
 
 - BRASIL. Ministério da Educação. **Resolução nº 7, de 18 de dezembro de 2018.** Estabelece as Diretrizes para a Extensão na Educação Superior Brasileira. Brasília, 2018.
 - MOREIRA, Heloisa de Souza Pimentel. **Atividades Práticas Interdisciplinares de Extensão I.** Recife: Editora Ser Educacional, 2023.
