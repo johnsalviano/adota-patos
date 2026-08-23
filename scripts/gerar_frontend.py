@@ -336,6 +336,105 @@ html = html.replace(
 )
 print('contador de caracteres do motivo adicionado')
 
+# 5. Politica de Privacidade (LGPD): link no rodape abre modal proprio,
+#    reutilizando as classes do modal de detalhes. O prototipo do Matheus
+#    permanece intocado - a injecao acontece aqui no gerador.
+old_footer = '''<p>
+            © 2026 Adota Patos - PB — Todos os direitos reservados.
+        </p>'''
+assert old_footer in html, 'rodape original nao encontrado'
+html = html.replace(old_footer, '''<p>
+            © 2026 Adota Patos - PB — Todos os direitos reservados.
+            <button type="button" class="abrir-politica">Política de Privacidade</button>
+        </p>''')
+
+bloco_politica = '''<style>
+        .abrir-politica { background:none; border:none; padding:0; margin-left:6px;
+            font:inherit; text-decoration:underline; cursor:pointer }
+        #politicaModal .modal-content { max-width:720px; max-height:82vh;
+            overflow-y:auto; text-align:left }
+        #politicaModal h4 { margin:18px 0 6px }
+        #politicaModal p, #politicaModal li { font-size:0.95rem; line-height:1.55 }
+        #politicaModal ul { margin:6px 0; padding-left:20px }
+    </style>
+
+    <div class="modal" id="politicaModal">
+
+        <div class="modal-content">
+
+            <span class="close-modal" id="fecharPolitica">
+                &times;
+            </span>
+
+            <h3>🔒 Política de Privacidade</h3>
+            <p style="font-size:0.85rem;color:#888">Última atualização: 23/08/2026</p>
+
+            <h4>Quem somos</h4>
+            <p>A Associação Adota Patos (CNPJ 30.688.644/0001-85) é uma organização sem fins lucrativos de Patos-PB dedicada ao resgate, tratamento veterinário e adoção responsável de cães e gatos. Somos o controlador dos dados pessoais tratados nesta plataforma.</p>
+
+            <h4>Quais dados coletamos</h4>
+            <ul>
+                <li><strong>Formulário de adoção:</strong> nome, telefone, e-mail, cidade, experiência com animais e motivo do interesse.</li>
+                <li><strong>Estatísticas anônimas de acesso</strong> (páginas vistas), apenas se você aceitar os cookies de estatística.</li>
+            </ul>
+
+            <h4>Para quê usamos</h4>
+            <p>Exclusivamente para avaliar a sua solicitação de adoção e entrar em contato sobre ela. As estatísticas anônimas nos ajudam a entender como melhorar o site. <strong>Não vendemos, trocamos ou alugamos seus dados</strong> — para ninguém, nunca.</p>
+
+            <h4>Base legal</h4>
+            <p>O seu consentimento explícito (art. 7º, I, da Lei nº 13.709/2018 – LGPD), dado quando você marca a autorização no formulário. Sem essa marcação, nada é enviado para nós.</p>
+
+            <h4>Por quanto tempo guardamos</h4>
+            <ul>
+                <li>Solicitações de adoção não aprovadas são apagadas automaticamente em até <strong>6 meses</strong>.</li>
+                <li>Registros técnicos de segurança ficam até <strong>90 dias</strong> e contêm apenas evento, IP e detalhe técnico — nenhum dado pessoal.</li>
+            </ul>
+
+            <h4>Com quem compartilhamos</h4>
+            <p>Somente entre membros autorizados da equipe da ONG e com a infraestrutura que hospeda o sistema (Supabase). Nenhuma outra empresa recebe seus dados.</p>
+
+            <h4>Cookies e Google Analytics</h4>
+            <p>Na sua primeira visita perguntamos se aceita cookies de estatística. O Google Analytics só é ativado após o seu aceite; quem recusa navega com o site funcionando exatamente igual.</p>
+
+            <h4>Como protegemos</h4>
+            <p>Acesso restrito por controle de permissões no banco de dados, limites automáticos contra robôs, transporte criptografado (HTTPS) e proteções contra injeção de código. Nenhuma tecnologia é infalível, mas seguimos o princípio da defesa em camadas.</p>
+
+            <h4>Seus direitos (art. 18 da LGPD)</h4>
+            <p>Você pode confirmar que tratamos seus dados, acessá-los, corrigi-los, pedir anonimização, bloqueio ou exclusão, solicitar portabilidade, saber com quem foram compartilhados e revogar o consentimento a qualquer momento. É só falar com a gente:</p>
+            <ul>
+                <li>E-mail: adotapatospbong@gmail.com</li>
+                <li>WhatsApp: (83) 98156-7801</li>
+            </ul>
+            <p>Pedidos são respondidos em até 15 dias.</p>
+
+            <h4>Mudanças nesta política</h4>
+            <p>Qualquer alteração será publicada nesta página com nova data de atualização.</p>
+
+        </div>
+
+    </div>
+
+    <script>
+        const politicaModal = document.getElementById("politicaModal");
+
+        document.querySelectorAll(".abrir-politica").forEach(botao => {
+            botao.addEventListener("click", () => politicaModal.classList.add("active"));
+        });
+
+        document.getElementById("fecharPolitica").addEventListener("click", () => {
+            politicaModal.classList.remove("active");
+        });
+
+        politicaModal.addEventListener("click", event => {
+            if (event.target === politicaModal) {
+                politicaModal.classList.remove("active");
+            }
+        });
+    </script>'''
+
+html = html.replace('</body>', bloco_politica + '\n    </body>')
+print('politica de privacidade adicionada ao rodape')
+
 CAMINHO_SAIDA = os.path.join(RAIZ, 'frontend', 'index.html')
 open(CAMINHO_SAIDA, 'w', encoding='utf-8', newline='\n').write(html)
 print('frontend/index.html gerado:', len(html), 'bytes')
