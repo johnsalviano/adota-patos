@@ -23,3 +23,6 @@ desktop.ini
 *.log
 tmp/
 temp/
+
+# temporarios do Supabase CLI
+backend/supabase/.temp/

@@ -66,6 +66,9 @@ adota-patos/
 │   └── MODELO_CONCEITUAL.md ← MER + dicionário de dados
 ├── backend/
 │   └── supabase/
-│       └── schema.sql     ← criação do banco (tabelas, RLS, storage)
+│       ├── schema.sql            ← criação do banco (tabelas, RLS, storage)
+│       ├── 002_acessos_ong.sql   ← migração: acesso restrito à equipe da ONG
+│       └── functions/
+│           └── receber-adocao/index.ts ← endpoint do formulário (Edge Function)
 └── frontend/              ← (site público e painel — Matheus)
 ```
