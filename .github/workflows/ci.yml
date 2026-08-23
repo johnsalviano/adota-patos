@@ -1,4 +1,4 @@
-name: CI
+﻿name: CI
 
 on:
   pull_request:
@@ -6,8 +6,8 @@ on:
     branches: [main]
 
 jobs:
+  # O id do job e o nome do check exigido pela protecao da main.
   gerador-sincronizado:
-    name: Site público sincronizado com o gerador
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,7 +29,6 @@ jobs:
           fi
 
   sintaxe-python:
-    name: Sintaxe dos scripts Python
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
