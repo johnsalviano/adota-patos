@@ -219,6 +219,8 @@ Um animal pode receber **várias** solicitações; cada solicitação aponta par
 
 | 2026-08-23 | **Política de Privacidade completa** (#35): link no rodapé abre modal dedicado com a política em linguagem simples — quem somos (CNPJ), dados coletados, finalidade, base legal (consentimento, art. 7º I), retenção (6 meses/90 dias), compartilhamento, cookies condicionais, segurança e direitos do titular (art. 18) com canais da ONG; fecha a pendência LGPD apontada na seção 12.4 | John |
 
+| 2026-08-23 | **Auditoria de segredos + endurecimento do CI/GitHub** (#37): varredura no working tree e em TODO o histórico git não encontrou nenhum segredo real (só placeholders do .env.example); ativados dependabot security updates e enforce_admins/strict na proteção da main; novo workflow `security.yml` com CodeQL (SAST JS+Python) e gitleaks (segredos) rodando a cada push/PR/semana; criado `docs/HANDOFF-MATHEUS.md` com os contratos de API para o front-end conectar | John |
+
 *(próximos registros entram aqui)*
 
 ---
