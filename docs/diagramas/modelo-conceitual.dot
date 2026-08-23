@@ -1,0 +1,88 @@
+// ============================================================
+// 🐾 ADOTA PATOS — Modelo Conceitual (notação de Peter Chen)
+// Entidades (retângulos), relacionamento (losango),
+// atributos (elipses; chave primária sublinhada) e cardinalidade.
+// Gerar PNG: dot -Tpng modelo-conceitual.dot -o modelo-conceitual.png
+// ============================================================
+
+digraph MER {
+    rankdir=TB;
+    splines=spline;
+    nodesep=0.45;
+    ranksep=1.0;
+    bgcolor=white;
+    node [fontname="Segoe UI, Arial, sans-serif", fontsize=12];
+    edge [fontname="Segoe UI, Arial, sans-serif", fontsize=11, color="#444444"];
+
+    // ---------- ENTIDADES ----------
+    animal [
+        shape=box, style="filled", penwidth=2.5,
+        fillcolor="#FFE9BF", color="#8C6A1D",
+        label=<<FONT POINT-SIZE="16"><B>ANIMAL</B></FONT>>
+    ];
+
+    candidatura [
+        shape=box, style="filled", penwidth=2.5,
+        fillcolor="#CFE8FF", color="#1F4E79",
+        label=<<FONT POINT-SIZE="15"><B>SOLICITAÇÃO<BR/>DE ADOÇÃO</B></FONT>>
+    ];
+
+    // ---------- RELACIONAMENTO ----------
+    recebe [
+        shape=diamond, style="filled",
+        fillcolor="#D3F2D9", color="#1E7A34", penwidth=2,
+        height=1.35, width=2.6, fixedsize=true,
+        label=<<B>RECEBE</B>>
+    ];
+
+    animal -> recebe  [dir=none, penwidth=1.6, taillabel=<<B>&nbsp;&nbsp;1&nbsp;&nbsp;</B>>, labeldistance=1.4, labelfontcolor="#111111"];
+    recebe -> candidatura [dir=none, penwidth=1.6, headlabel=<<B>&nbsp;&nbsp;N&nbsp;&nbsp;</B>>, labeldistance=1.4, labelfontcolor="#111111"];
+
+    // ---------- ATRIBUTOS DE ANIMAL (acima) ----------
+    an_id      [shape=ellipse, style=filled, fillcolor="#FFF7E6", color="#8C6A1D", label=<<U><B>id</B></U>>];
+    an_nome    [shape=ellipse, style=filled, fillcolor="#FFF7E6", color="#8C6A1D", label="nome"];
+    an_idade   [shape=ellipse, style=filled, fillcolor="#FFF7E6", color="#8C6A1D", label="idade"];
+    an_sexo    [shape=ellipse, style=filled, fillcolor="#FFF7E6", color="#8C6A1D", label="sexo"];
+    an_porte   [shape=ellipse, style=filled, fillcolor="#FFF7E6", color="#8C6A1D", label="porte"];
+    an_desc    [shape=ellipse, style=filled, fillcolor="#FFF7E6", color="#8C6A1D", label="descrição"];
+    an_foto    [shape=ellipse, style=filled, fillcolor="#FFF7E6", color="#8C6A1D", label="foto_url"];
+    an_status  [shape=ellipse, style=filled, fillcolor="#FFF7E6", color="#8C6A1D", label="status"];
+    an_data    [shape=ellipse, style=filled, fillcolor="#FFF7E6", color="#8C6A1D", label="data_de_cadastro"];
+
+    { rank=same; an_id; an_nome; an_idade; an_sexo; an_porte; }
+    { rank=same; an_desc; an_foto; an_status; an_data; }
+
+    an_id     -> animal;
+    an_nome   -> animal;
+    an_idade  -> animal;
+    an_sexo   -> animal;
+    an_porte  -> animal;
+    an_desc   -> animal;
+    an_foto   -> animal;
+    an_status -> animal;
+    an_data   -> animal;
+
+    // ---------- ATRIBUTOS DE SOLICITACAO (abaixo) ----------
+    so_id      [shape=ellipse, style=filled, fillcolor="#EDF5FF", color="#1F4E79", label=<<U><B>id</B></U>>];
+    so_nome    [shape=ellipse, style=filled, fillcolor="#EDF5FF", color="#1F4E79", label="nome_do_candidato"];
+    so_tel     [shape=ellipse, style=filled, fillcolor="#EDF5FF", color="#1F4E79", label="telefone"];
+    so_email   [shape=ellipse, style=filled, fillcolor="#EDF5FF", color="#1F4E79", label="email"];
+    so_cidade  [shape=ellipse, style=filled, fillcolor="#EDF5FF", color="#1F4E79", label="cidade"];
+    so_exp     [shape=ellipse, style=filled, fillcolor="#EDF5FF", color="#1F4E79", label="experiência_com_animais"];
+    so_motivo  [shape=ellipse, style=filled, fillcolor="#EDF5FF", color="#1F4E79", label="motivo_da_adocao"];
+    so_status  [shape=ellipse, style=filled, fillcolor="#EDF5FF", color="#1F4E79", label="status_da_solicitacao"];
+    so_data    [shape=ellipse, style=filled, fillcolor="#EDF5FF", color="#1F4E79", label="data_da_solicitacao"];
+
+    { rank=same; so_id; so_nome; so_tel; so_email; so_cidade; }
+    { rank=same; so_exp; so_motivo; so_status; so_data; }
+
+    candidatura -> so_id;
+    candidatura -> so_nome;
+    candidatura -> so_tel;
+    candidatura -> so_email;
+    candidatura -> so_cidade;
+    candidatura -> so_exp;
+    candidatura -> so_motivo;
+    candidatura -> so_status;
+    candidatura -> so_data;
+}
