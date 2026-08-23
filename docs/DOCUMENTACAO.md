@@ -217,6 +217,8 @@ Um animal pode receber **várias** solicitações; cada solicitação aponta par
 
 | 2026-08-23 | **Google Analytics 4 integrado** (#33): criada a propriedade oficial da ONG no analytics.google.com com fluxo de dados Web; ID de medição `G-S08M6034SR` preenchido no gerador - o site agora carrega a tag de estatísticas, mantendo o gatilho LGPD (nada é coletado sem aceite no banner de cookies) | John |
 
+| 2026-08-23 | **Política de Privacidade completa** (#35): link no rodapé abre modal dedicado com a política em linguagem simples — quem somos (CNPJ), dados coletados, finalidade, base legal (consentimento, art. 7º I), retenção (6 meses/90 dias), compartilhamento, cookies condicionais, segurança e direitos do titular (art. 18) com canais da ONG; fecha a pendência LGPD apontada na seção 12.4 | John |
+
 *(próximos registros entram aqui)*
 
 ---
