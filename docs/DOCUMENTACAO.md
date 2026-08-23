@@ -187,6 +187,7 @@ Um animal pode receber **várias** solicitações; cada solicitação aponta par
 | 2026-08-22 | Criadas as Issues #1–#9 cobrindo o cronograma: banco Supabase, webhook n8n, integração do site, painel da ONG, ferramentas de qualidade, testes E2E, Sentry e deploy | John |
 | 2026-08-22 | **Banco no ar** (#1 concluída): `schema.sql` executado — tabelas `animais`/`adocoes`, bucket `fotos-animais`, políticas RLS ativas | John |
 | 2026-08-22 | Testes de segurança aprovados via API pública: visitante lê catálogo (200), escrita anônima bloqueada em ambas as tabelas (401) | John |
+| 2026-08-22 | **Migração 002** (`backend/supabase/002_acessos_ong.sql`): criada lista `perfis_membros` — só e-mails autorizados pela ONG têm poderes administrativos, mesmo entre contas logadas. Defesa contra criação de contas falsas. Passo a passo de como dar/remover acesso documentado no MODELO_CONCEITUAL.md §5 | John |
 
 *(próximos registros entram aqui)*
 

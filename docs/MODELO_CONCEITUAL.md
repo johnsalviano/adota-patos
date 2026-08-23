@@ -108,15 +108,26 @@ As fotos não entram dentro das tabelas — isso deixaria o banco pesado. Elas f
 
 ## 5. Segurança de acesso (RLS — Row Level Security)
 
-O Supabase permite definir **quem pode ler e quem pode escrever** cada tabela. Nossa política:
+O Supabase permite definir **quem pode ler e quem pode escrever** cada tabela. Nossa política tem **duas fechaduras**:
 
-| Quem | Tabela `animais` | Tabela `adocoes` |
-|---|---|---|
-| Visitante do site (sem login) | ✅ **Lê** apenas animais | ❌ Não acessa direto |
-| Formulário via n8n | ❌ | ✅ **Escreve** (com chave privada do servidor) |
-| ONG logada no painel | ✅ Lê, cria, edita, exclui | ✅ Lê e atualiza status |
+**Fechadura 1 — tipo de conta:** visitante anônimo vs. pessoa logada.
 
-Resultado: ninguém consegue mexer nos dados sem passar pelos caminhos certos.
+**Fechadura 2 — lista de membros (`perfis_membros`):** mesmo entre quem está logado, só quem tem o e-mail **na lista autorizada pela ONG** exerce poderes administrativos. A função `eh_membro_ong()` faz essa verificação a cada operação.
+
+| Quem | `animais` | `adocoes` | Fotos |
+|---|---|---|---|
+| Visitante do site (sem login) | ✅ Lê apenas Disponíveis | ❌ Não acessa direto | ✅ Só vê |
+| Conta logada FORA da lista | ❌ Nada | ❌ Nada | ❌ Nada |
+| Membro da ONG (logado + na lista) | ✅ Controla tudo | ✅ Lê e avalia | ✅ Envia/edita |
+| n8n (servidor, chave privada) | ❌ | ✅ Grava novas candidaturas | ❌ |
+
+### Como a ONG dá acesso a uma nova pessoa
+
+1. **Authentication → Users → Add user**: cria o login (e-mail + senha) da pessoa;
+2. **Table Editor → perfis_membros**: insere o mesmo e-mail na lista;
+3. Pronto: a pessoa entra pelo painel com poderes de administração.
+
+Remover acesso = tirar o e-mail da lista (a conta deixa de ter poderes imediatamente).
 
 ---
 
