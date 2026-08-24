@@ -51,7 +51,7 @@ Notas honestas sobre escopo:
 1. **Linguagem humanizada**: toda documentação, commit, comentário e texto de interface deve ser claro e acessível — fácil de entender mantendo o rigor técnico. Explique como quem conversa; analogias são bem-vindas; jargão só quando necessário.
 2. **Idioma**: português brasileiro em tudo (código pode manter termos técnicos em inglês).
 3. **Documento vivo**: qualquer coisa inserida, alterada ou melhorada no projeto deve ser registrada na seção 11 (*Registro de Desenvolvimento*) de `docs/DOCUMENTACAO.md`, com data e responsável.
-4. **Zero segredos**: nenhuma chave, token ou credencial no repositório. Nunca. Use variáveis de ambiente / `.env` listado no `.gitignore`.
+4. **Zero segredos**: nenhuma chave de acesso, segredo ou token no repositório. Nunca. Use variáveis de ambiente / `.env` listado no `.gitignore`. **Única exceção: a chave publicável** (`sb_publishable_...`), que é pública por design e vive apenas nos arquivos de front-end (`frontend/`). Chaves administrativas (`sb_secret_...`) e o access token pessoal (`sbp_...`, conta Supabase) nunca entram em código, documento ou conversa versionada — girá-las após eventos relevantes (ex.: aprovação do projeto).
 5. **Documentação atualizada junto com o código**: PR que muda comportamento e não atualiza a documentação correspondente não deve ser aprovado.
 
 ---
