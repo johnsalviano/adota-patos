@@ -1,0 +1,14 @@
+{
+  "name": "adota-patos",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Site de adoção de animais de Patos-PB",
+  "scripts": {
+    "test:e2e": "npx playwright test",
+    "test:e2e:ui": "npx playwright test --ui",
+    "test:e2e:headed": "npx playwright test --headed"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1"
+  }
+}
