@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Sitemap: sera adicionado quando o site tiver endereco publico
+# (dominio proprio), pois o sitemap exige URLs absolutas finais.
