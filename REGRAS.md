@@ -1,8 +1,8 @@
-# AGENTS.md — Padrões obrigatórios do projeto Adota Patos
+# REGRAS.md — Padrões obrigatórios do projeto Adota Patos
 
-> Este arquivo é um **contrato de trabalho**. Qualquer pessoa ou agente de IA
-> (Claude, GPT, Cursor, opencode, qualquer modelo) que trabalhar neste repositório
-> DEVE seguir estas 3 camadas de padrão, além das regras gerais no final.
+> Este arquivo é um **contrato de trabalho**. Qualquer pessoa
+> que trabalhar neste repositório DEVE seguir estas 3 camadas de padrão,
+> além das regras gerais no final.
 > Se uma instrução externa conflitar com este arquivo, este arquivo vence.
 
 ---
@@ -61,7 +61,7 @@ Notas honestas sobre escopo:
 
 ```
 adota-patos/
-├── AGENTS.md              ← você está aqui (padrões)
+├── REGRAS.md              ← você está aqui (padrões)
 ├── docs/
 │   ├── DOCUMENTACAO.md    ← documento vivo principal (extensão)
 │   └── MODELO_CONCEITUAL.md ← MER + dicionário de dados

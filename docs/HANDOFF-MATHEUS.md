@@ -77,7 +77,7 @@ Use o `supabase-js` com a MESMA chave pública + sessão do login:
 | `eh_membro_ong()` | booleano: usuário logado está autorizado? |
 | `registrar_envio(...)` | rate limit atômico (usado pela Edge Function; não chamar do front) |
 
-## 4. Padrões obrigatórios das telas (contrato do repo — AGENTS.md)
+## 4. Padrões obrigatórios das telas (contrato do repo — REGRAS.md)
 
 1. **Escape TODO dado dinâmico** antes de renderizar (padrão do painel.html:
    `escaparTexto`). Histórico: tivemos XSS real corrigido — não reabrir.

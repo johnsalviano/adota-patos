@@ -62,7 +62,7 @@ Escolhida com uma regra clara: **custo zero para a ONG**, hoje e sempre.
 |---|---|---|
 | Banco + auth + storage | [Supabase](https://supabase.com) (PostgreSQL) | Plano gratuito permanente e RLS nativa |
 | Porta de entrada do formulário | Supabase Edge Functions (Deno) | Roda sem servidor próprio, sem custo fixo |
-| Site público | HTML/CSS/JS puros, gerados por script | Simples de manter, rápido de carregar |
+| Site público | HTML/CSS/JS puros, processados por script | Simples de manter, rápido de carregar |
 | Testes | [Playwright](https://playwright.dev) | Automatiza um navegador de verdade |
 
 O agendador n8n foi descartado: a nuvem vira ~R$150/mês após o trial e a versão
@@ -72,7 +72,7 @@ local exigiria um PC ligado dia e noite.
 
 ```
 adota-patos/
-├── AGENTS.md                  ← padrões obrigatórios de trabalho
+├── REGRAS.md                  ← padrões obrigatórios de trabalho
 ├── backend/supabase/
 │   ├── schema.sql             ← banco completo: tabelas, RLS, storage
 │   ├── 002…005_*.sql          ← migrações incrementais
@@ -82,19 +82,19 @@ adota-patos/
 │   ├── MODELO_CONCEITUAL.md   ← MER + dicionário de dados
 │   └── diagramas/             ← diagrama entidade-relacionamento
 ├── frontend/
-│   ├── index.html             ← site público (GERADO — não editar direto!)
+│   ├── index.html             ← site público (compilado a partir do protótipo)
 │   ├── admin/                 ← login e painel da equipe
 │   └── robots.txt
 ├── prototipo/
 │   └── adota-patos.html       ← arte original (fonte do gerador)
 └── scripts/
-    └── gerar_frontend.py      ← injeta integração no protótipo
+    └── gerar_frontend.py      ← compila o protótipo em HTML final
 ```
 
 ### ⚠️ Regra de ouro do front-end
 
-`frontend/index.html` é **gerado** por `scripts/gerar_frontend.py` a partir do
-protótipo. Editá-lo diretamente significa perder as mudanças na próxima geração.
+`frontend/index.html` é **compilado** por `scripts/gerar_frontend.py` a partir do
+protótipo. Editá-lo diretamente significa perder as mudanças na próxima compilação.
 O fluxo correto: altere o protótipo ou o gerador e rode `python scripts/gerar_frontend.py`.
 Nosso CI reprova PRs em que os dois estiverem dessincronizados.
 
