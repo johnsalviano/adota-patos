@@ -32,24 +32,9 @@ docs: registra pentest na seção 11
 chore: adiciona CI do gerador de front-end
 ```
 
-## Regra de ouro: o site é compilado
-
-`frontend/index.html` **não se edita à mão** — ele nasce de
-`scripts/gerar_frontend.py`, que compila o protótipo
-(`prototipo/adota-patos.html`) em HTML final. Mudou algo visual? Altere o protótipo ou o
-gerador e rode:
-
-```bash
-python scripts/gerar_frontend.py
-```
-
-O CI compara a saída do gerador com o arquivo commitado e reprova o PR se
-estiverem diferentes.
-
 ## Checklist antes de abrir o PR
 
 - [ ] A Issue existe e está referenciada (`Closes #N`);
-- [ ] Rodou o gerador (se mexeu no front) e commitou o resultado;
 - [ ] Testou localmente os fluxos afetados;
 - [ ] Documentação atualizada na seção 11 de `docs/DOCUMENTACAO.md`;
 - [ ] Nenhuma chave, token ou senha no código.
