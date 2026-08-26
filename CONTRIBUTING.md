@@ -1,8 +1,7 @@
 # Guia de contribuição
 
 Obrigado por querer ajudar o Adota Patos! Este projeto segue um fluxo simples
-e rigoroso, pensado para duas pessoas trabalharem juntas (e com agentes de IA)
-sem pisar um no trabalho do outro.
+e rigoroso, pensado para duas pessoas trabalharem juntas sem pisar uma no trabalho da outra.
 
 ## O fluxo em 5 passos
 
@@ -17,7 +16,7 @@ sem pisar um no trabalho do outro.
    | Documentação | `docs/` | `docs/politica-privacidade` |
    | Manutenção/infra | `chore/` | `chore/ci-pipeline` |
 
-3. **Programe** seguindo o [AGENTS.md](AGENTS.md) — ele é o contrato do projeto
+3. **Programe** seguindo o [REGRAS.md](REGRAS.md) — ele é o contrato do projeto
    (motion de interface, observabilidade, zero segredos).
 4. **Abra o Pull Request** vinculando a Issue com `Closes #N`.
 5. **Merge só após revisão e CI verde.** Nada vai direto para a `main`.
@@ -33,11 +32,11 @@ docs: registra pentest na seção 11
 chore: adiciona CI do gerador de front-end
 ```
 
-## Regra de ouro: o site é gerado
+## Regra de ouro: o site é compilado
 
 `frontend/index.html` **não se edita à mão** — ele nasce de
-`scripts/gerar_frontend.py`, que injeta as integrações dentro do protótipo
-(`prototipo/adota-patos.html`). Mudou algo visual? Altere o protótipo ou o
+`scripts/gerar_frontend.py`, que compila o protótipo
+(`prototipo/adota-patos.html`) em HTML final. Mudou algo visual? Altere o protótipo ou o
 gerador e rode:
 
 ```bash

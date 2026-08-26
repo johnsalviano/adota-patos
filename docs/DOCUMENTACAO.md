@@ -187,7 +187,7 @@ Um animal pode receber **várias** solicitações; cada solicitação aponta par
 | 2026-08-22 | Criada esta documentação viva + modelo conceitual dos dados | John |
 | 2026-08-22 | Projeto criado no Supabase (conta conectada) | John |
 | 2026-08-22 | Script SQL do banco criado (`backend/supabase/schema.sql`) — pendente de execução | John |
-| 2026-08-22 | Criado repositório público [johnsalviano/adota-patos](https://github.com/johnsalviano/adota-patos) e o contrato `AGENTS.md` (3 camadas de padrão: Issues/PRs, motion principles, observabilidade+qualidade+testes) | John |
+| 2026-08-22 | Criado repositório público [johnsalviano/adota-patos](https://github.com/johnsalviano/adota-patos) e o contrato `REGRAS.md` (3 camadas de padrão: Issues/PRs, motion principles, observabilidade+qualidade+testes) | John |
 | 2026-08-22 | Criadas as Issues #1–#9 cobrindo o cronograma: banco Supabase, webhook n8n, integração do site, painel da ONG, ferramentas de qualidade, testes E2E, Sentry e deploy | John |
 | 2026-08-22 | **Banco no ar** (#1 concluída): `schema.sql` executado — tabelas `animais`/`adocoes`, bucket `fotos-animais`, políticas RLS ativas | John |
 | 2026-08-22 | Testes de segurança aprovados via API pública: visitante lê catálogo (200), escrita anônima bloqueada em ambas as tabelas (401) | John |
