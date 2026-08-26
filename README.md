@@ -91,13 +91,6 @@ adota-patos/
     └── gerar_frontend.py      ← compila o protótipo em HTML final
 ```
 
-### ⚠️ Regra de ouro do front-end
-
-`frontend/index.html` é **compilado** por `scripts/gerar_frontend.py` a partir do
-protótipo. Editá-lo diretamente significa perder as mudanças na próxima compilação.
-O fluxo correto: altere o protótipo ou o gerador e rode `python scripts/gerar_frontend.py`.
-Nosso CI reprova PRs em que os dois estiverem dessincronizados.
-
 ## Como rodar localmente
 
 Pré-requisitos: [Python 3](https://python.org), [Deno](https://deno.com) e conta no Supabase.
