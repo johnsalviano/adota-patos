@@ -221,6 +221,8 @@ Um animal pode receber **várias** solicitações; cada solicitação aponta par
 
 | 2026-08-23 | **Auditoria de segredos + endurecimento do CI/GitHub** (#37): varredura no working tree e em TODO o histórico git não encontrou nenhum segredo real (só placeholders do .env.example); ativados dependabot security updates e enforce_admins/strict na proteção da main; novo workflow `security.yml` com CodeQL (SAST JS+Python) e gitleaks (segredos) rodando a cada push/PR/semana; criado `docs/HANDOFF-MATHEUS.md` com os contratos de API para o front-end conectar | John |
 
+| 2026-08-28 | **Refatoração da Edge Function `receber-adocao` por responsabilidade única**: dividido o `index.ts` (340 linhas) em `cors.ts` (origens/horizontes), `validar.ts` (regras e limites) e `seguranca.ts` (IP, rate limit, log), cada um conversando com um pequeno orquestrador via imports — atende ao pedido dos professores de separar as linguagens mantendo a comunicação entre elas; comentários enxugados | John |
+
 *(próximos registros entram aqui)*
 
 ---
