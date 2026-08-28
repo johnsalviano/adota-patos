@@ -1,0 +1,6 @@
+# Donos de revisão por área do repositório.
+# Quem alterar um arquivo sem approval do dono da área fica bloqueado na main.
+
+* @johnsalviano
+frontend/** @johnsalviano @matheuz2002
+docs/HANDOFF-MATHEUS.md @matheuz2002

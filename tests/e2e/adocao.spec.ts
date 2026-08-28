@@ -1,25 +1,4 @@
 import { test, expect, type Page } from "@playwright/test";
-import { createServer } from "http";
-import { readFileSync } from "fs";
-import { resolve } from "path";
-
-const PORT = 3456;
-const HTML_PATH = resolve(__dirname, "../../frontend/index.html");
-
-let server: ReturnType<typeof createServer>;
-
-test.beforeAll(async () => {
-  const html = readFileSync(HTML_PATH, "utf-8");
-  server = createServer((_req, res) => {
-    res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-    res.end(html);
-  });
-  await new Promise<void>((r) => server.listen(PORT, r));
-});
-
-test.afterAll(async () => {
-  server?.close();
-});
 
 const FAKE_ANIMALS = [
   {
@@ -55,10 +34,17 @@ async function mockSupabase(page: Page) {
   );
 }
 
-const BASE = `http://localhost:${PORT}`;
+async function mockAnalytics(page: Page) {
+  await page.route("**/googletagmanager.com/**", (route) =>
+    route.fulfill({ status: 204, body: "" })
+  );
+}
+
+const BASE = `http://127.0.0.1:3456`;
 
 test("catalogo carrega e mostra animais", async ({ page }) => {
   await mockSupabase(page);
+  await mockAnalytics(page);
   await page.goto(BASE);
   const card = page.locator(".animal-card:not([aria-hidden])").first();
   await expect(card).toBeVisible({ timeout: 15_000 });
@@ -67,6 +53,7 @@ test("catalogo carrega e mostra animais", async ({ page }) => {
 
 test("modal abre ao clicar no botao Conhecer", async ({ page }) => {
   await mockSupabase(page);
+  await mockAnalytics(page);
   await page.goto(BASE);
   await page.locator(".btn-details").first().click();
   await expect(page.locator("#animalModal")).toHaveClass(/active/);
@@ -75,6 +62,7 @@ test("modal abre ao clicar no botao Conhecer", async ({ page }) => {
 
 test("modal fecha no botao fechar", async ({ page }) => {
   await mockSupabase(page);
+  await mockAnalytics(page);
   await page.goto(BASE);
   await page.locator(".btn-details").first().click();
   await expect(page.locator("#animalModal")).toHaveClass(/active/);
@@ -84,6 +72,7 @@ test("modal fecha no botao fechar", async ({ page }) => {
 
 test("formulario tem campos obrigatorios", async ({ page }) => {
   await mockSupabase(page);
+  await mockAnalytics(page);
   await page.goto(BASE);
   await page.locator("#adocao").scrollIntoViewIfNeeded();
   await expect(page.locator("#name")).toBeVisible();
@@ -95,6 +84,7 @@ test("formulario tem campos obrigatorios", async ({ page }) => {
 
 test("preencher e enviar formulario de adocao", async ({ page }) => {
   await mockSupabase(page);
+  await mockAnalytics(page);
   await page.goto(BASE);
   await page.locator("#adocao").scrollIntoViewIfNeeded();
 
@@ -111,4 +101,32 @@ test("preencher e enviar formulario de adocao", async ({ page }) => {
   const feedback = page.locator("#form-feedback");
   await expect(feedback).toBeVisible({ timeout: 10_000 });
   await expect(feedback).toContainText("🐶");
+});
+
+test("banner de cookies aparece para quem nunca decidiu", async ({ page }) => {
+  await mockSupabase(page);
+  await mockAnalytics(page);
+  await page.goto(BASE);
+  await expect(page.locator("#banner-cookies")).toBeVisible();
+  await expect(page.locator(".btn", { hasText: "Aceitar" })).toBeVisible();
+});
+
+test("aceitar cookies salva consentimento e carrega analytics", async ({ page }) => {
+  await mockSupabase(page);
+  await mockAnalytics(page);
+  await page.goto(BASE);
+  await page.locator("#banner-cookies .btn", { hasText: "Aceitar" }).click();
+  await expect(page.locator("#banner-cookies")).toHaveCount(0);
+  expect(await page.evaluate(() => localStorage.getItem("consentimento-cookies"))).toBe("aceito");
+  await expect(page.locator('script[src*="googletagmanager.com"]')).toHaveCount(1);
+});
+
+test("recusar cookies salva escolha e nao carrega analytics", async ({ page }) => {
+  await mockSupabase(page);
+  await mockAnalytics(page);
+  await page.goto(BASE);
+  await page.locator("#banner-cookies button", { hasText: "Recusar" }).click();
+  await expect(page.locator("#banner-cookies")).toHaveCount(0);
+  expect(await page.evaluate(() => localStorage.getItem("consentimento-cookies"))).toBe("recusado");
+  await expect(page.locator('script[src*="googletagmanager.com"]')).toHaveCount(0);
 });
