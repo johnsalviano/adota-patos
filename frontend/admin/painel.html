@@ -6,90 +6,7 @@
     <title>Painel da ONG | Adota Patos</title>
     <meta name="robots" content="noindex, nofollow">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐾</text></svg>">
-    <style>
-        :root {
-            --primary: #57d8c3;
-            --primary-dark: #29a794;
-            --primary-light: #a9eee1;
-            --secondary: #ffffe3;
-            --gold: #f5c567;
-            --dark: #16332e;
-            --text: #55655f;
-            --white: #ffffff;
-            --gray: #fbfbea;
-            --radius-lg: 28px;
-            --radius-md: 18px;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: var(--gray);
-            color: var(--dark);
-            min-height: 100vh;
-        }
-
-        header {
-            background: var(--white);
-            padding: 18px 32px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 12px rgba(22, 51, 46, 0.08);
-        }
-
-        .logo { font-size: 1.3rem; font-weight: bold; color: var(--primary-dark); }
-        .logo span { color: var(--text); font-weight: normal; font-size: 0.9rem; margin-left: 8px; }
-
-        button.sair {
-            background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--dark);
-            border-radius: var(--radius-md);
-            padding: 8px 20px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        button.sair:hover { background: var(--primary-light); }
-
-        main { max-width: 1000px; margin: 40px auto; padding: 0 24px; }
-
-        .cartao {
-            background: var(--white);
-            border-radius: var(--radius-lg);
-            padding: 40px;
-            box-shadow: 0 8px 28px rgba(22, 51, 46, 0.08);
-        }
-
-        h1 { font-size: 1.5rem; margin-bottom: 10px; }
-
-        .ola { color: var(--text); margin-bottom: 30px; }
-
-        .proximos-passos {
-            list-style: none;
-            display: grid;
-            gap: 14px;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            margin-top: 24px;
-        }
-
-        .passo {
-            background: var(--secondary);
-            border-radius: var(--radius-md);
-            padding: 20px;
-            font-size: 0.92rem;
-        }
-        .passo strong { display: block; margin-bottom: 6px; color: var(--dark); }
-
-        .carregando {
-            text-align: center;
-            padding: 80px 0;
-            color: var(--text);
-        }
-
-        .oculto { display: none; }
-    </style>
+    <link rel="stylesheet" href="painel.css">
 </head>
 <body>
 
@@ -118,53 +35,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        const cliente = window.supabase.createClient(
-            'https://fnlqruzbgwffhrqmpfvi.supabase.co',
-            'sb_publishable_jLvZpI_9Kg97Yqg6sdOzrQ_9gvAmRIR'
-        );
-
-        // Guarda dupla: precisa ter sessao E ser membro autorizado.
-        async function verificarAcesso() {
-            const { data: { session } } = await cliente.auth.getSession();
-
-            if (!session) {
-                window.location.href = 'login.html';
-                return;
-            }
-
-            const { data: membro } = await cliente.rpc('eh_membro_ong');
-
-            if (!membro) {
-                await cliente.auth.signOut();
-                window.location.href = 'login.html';
-                return;
-            }
-
-            document.getElementById('email-logado').textContent =
-                escaparTexto(session.user.email || '');
-            document.getElementById('tela-carregando').classList.add('oculto');
-            document.getElementById('conteudo-painel').classList.remove('oculto');
-        }
-
-        function escaparTexto(t) {
-            const d = document.createElement('div');
-            d.textContent = t;
-            return d.textContent;
-        }
-
-        document.getElementById('botao-sair').addEventListener('click', async () => {
-            await cliente.auth.signOut();
-            window.location.href = 'login.html';
-        });
-
-        // Se a sessao expirar enquanto navega, volta pro login.
-        cliente.auth.onAuthStateChange((evento) => {
-            if (evento === 'SIGNED_OUT') window.location.href = 'login.html';
-        });
-
-        verificarAcesso();
-    </script>
+    <script src="painel.js"></script>
 </body>
 </html>
 
