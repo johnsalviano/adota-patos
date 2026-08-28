@@ -1,0 +1,10 @@
+[extend]
+useDefault = true
+
+# Chaves publishable do Supabase sao publicas por design: ficam no frontend
+# porque a seguranca real vem da RLS do banco (nao da chave).
+[allowlist]
+description = "Supabase publishable key (publica por design, seguranca vem da RLS)"
+regexes = [
+    '''sb_publishable_[A-Za-z0-9_]+''',
+]

@@ -438,3 +438,40 @@ print('politica de privacidade adicionada ao rodape')
 CAMINHO_SAIDA = os.path.join(RAIZ, 'frontend', 'index.html')
 open(CAMINHO_SAIDA, 'w', encoding='utf-8', newline='\n').write(html)
 print('frontend/index.html gerado:', len(html), 'bytes')
+
+# 6. Separa as linguagens: extrai todo CSS e JS do HTML final e grava em
+#    arquivos externos. O HTML passa a referenciar os blocos por
+#    <link rel="stylesheet"> e <script src>, mantendo a comunicacao entre
+#    eles (a ordem de cascata do CSS e a ordem de execucao do JS sao
+#    preservadas concatenando os blocos na ordem em que aparecem).
+
+def extrair_blocos(html, tag):
+    """Retira do HTML todos os blocos <tag>...</tag> e devolve a lista
+    (em ordem) de conteudos. Scripts com atributo src (externos) nao sao
+    tocados — casamos apenas `<tag>` sem espaco depois)."""
+    abertura = r'<' + tag + r'>'
+    fechamento = r'</' + tag + r'>'
+    blocos = re.findall(abertura + r'(.*?)' + fechamento, html, re.S)
+    html_final = re.sub(abertura + r'.*?' + fechamento, '', html, flags=re.S)
+    return html_final, blocos
+
+# 6a. CSS -> frontend/css/estilo.css (referenciado no <head>)
+html, blocos_css = extrair_blocos(html, 'style')
+if blocos_css:
+    dir_css = os.path.join(RAIZ, 'frontend', 'css')
+    os.makedirs(dir_css, exist_ok=True)
+    conteudo_css = '\n\n'.join(b.strip() for b in blocos_css)
+    open(os.path.join(dir_css, 'estilo.css'), 'w', encoding='utf-8', newline='\n').write(conteudo_css + '\n')
+    html = html.replace('</title>', '</title>\n    <link rel="stylesheet" href="css/estilo.css">')
+
+# 6b. JS -> frontend/js/app.js (carregado antes do </body>)
+html, blocos_js = extrair_blocos(html, 'script')
+if blocos_js:
+    dir_js = os.path.join(RAIZ, 'frontend', 'js')
+    os.makedirs(dir_js, exist_ok=True)
+    conteudo_js = '\n\n'.join(b for b in blocos_js)
+    open(os.path.join(dir_js, 'app.js'), 'w', encoding='utf-8', newline='\n').write(conteudo_js + '\n')
+    html = html.replace('</body>', '    <script src="js/app.js"></script>\n</body>')
+
+open(CAMINHO_SAIDA, 'w', encoding='utf-8', newline='\n').write(html)
+print('frontend/css/estilo.css e frontend/js/app.js gerados — o HTML virou estrutura pura')
