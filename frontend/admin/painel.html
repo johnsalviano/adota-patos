@@ -5,7 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel da ONG | Adota Patos</title>
     <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#57d8c3">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐾</text></svg>">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="../css/tema.css">
     <link rel="stylesheet" href="painel.css">
 </head>
@@ -14,153 +20,99 @@
     <div id="tela-carregando" class="carregando">Verificando seu acesso...</div>
 
     <div id="conteudo-painel" class="oculto">
-        <header>
-            <div class="logo">🐾 Adota Patos <span>Painel da equipe</span></div>
-            <div class="header-direita">
-                <span id="email-logado" class="email-badge"></span>
-                <button type="button" class="btn-sair" id="botao-sair">Sair</button>
+        <header class="cabecalho">
+            <div class="cabecalho-conteudo">
+                <div class="logo" aria-hidden="true">
+                    <img src="../img/logo.webp" alt="">
+                </div>
+                <span class="logo-nome">🐾 Adota Patos <span class="logo-legenda">Painel da equipe</span></span>
+                <button type="button" class="sair" id="botao-sair">Sair</button>
             </div>
         </header>
 
-        <main>
-            <!-- TELA INICIAL -->
-            <section id="tela-inicial" class="tela ativa">
-                <div class="cartao">
-                    <h1>Bem-vindo(a) de volta! 🐶</h1>
-                    <p class="ola">Você está logado como <strong id="email-logado-inicial"></strong>.</p>
-                    <p class="escolha">O que deseja fazer?</p>
+        <main class="principal">
+            <div class="cartao">
+                <h1>Painel Administrativo 🐶</h1>
+                <p class="ola">Você está logado como <strong id="email-logado"></strong>.</p>
 
-                    <div class="opcoes">
-                        <button type="button" class="opcao" data-tela="cadastrar">
-                            <span class="opcao-numero">1</span>
-                            <span class="opcao-texto">
-                                <strong>Cadastrar animais</strong>
-                                <small>Nome, idade, porte, sexo, história e foto.</small>
-                            </span>
-                        </button>
+                <div class="abas" role="tablist" aria-label="Navegação do painel">
+                    <button type="button" class="aba-btn ativa" id="aba-solicitacoes" role="tab" aria-selected="true">Solicitações de Adoção</button>
+                    <button type="button" class="aba-btn" id="aba-cadastrar" role="tab" aria-selected="false">Cadastrar Animal</button>
+                </div>
+            </div>
 
-                        <button type="button" class="opcao" data-tela="solicitacoes">
-                            <span class="opcao-numero">2</span>
-                            <span class="opcao-texto">
-                                <strong>Ver solicitações</strong>
-                                <small>Lista das adoções pedidas pelo site, com contato do adotante.</small>
-                            </span>
-                        </button>
-
-                        <button type="button" class="opcao" data-tela="aprovar">
-                            <span class="opcao-numero">3</span>
-                            <span class="opcao-texto">
-                                <strong>Aprovar ou recusar</strong>
-                                <small>Muda o status da solicitação e do animal.</small>
-                            </span>
-                        </button>
-                    </div>
+            <section id="secao-solicitacoes" class="cartao" aria-labelledby="titulo-solicitacoes">
+                <h2 id="titulo-solicitacoes">Solicitações de Adoção</h2>
+                <div id="lista-solicitacoes" class="lista-solicitacoes" aria-live="polite">
+                    <p class="carregando">Carregando solicitações...</p>
                 </div>
             </section>
 
-            <!-- TELA: CADASTRAR ANIMAIS -->
-            <section id="tela-cadastrar" class="tela">
-                <div class="cartao">
-                    <div class="cabecalho-tela">
-                        <h2>Cadastrar animal</h2>
-                        <button type="button" class="btn-voltar" data-tela="inicial">Voltar</button>
-                    </div>
-
-                    <form id="form-animal" enctype="multipart/form-data">
-                        <div class="campos-grid">
-                            <div class="campo">
-                                <label for="animal-nome">Nome *</label>
-                                <input type="text" id="animal-nome" required maxlength="80" placeholder="Ex: Thor">
-                            </div>
-                            <div class="campo">
-                                <label for="animal-idade">Idade *</label>
-                                <input type="text" id="animal-idade" required maxlength="30" placeholder="Ex: 2 anos">
-                            </div>
-                            <div class="campo">
-                                <label for="animal-sexo">Sexo *</label>
-                                <select id="animal-sexo" required>
-                                    <option value="">Selecione</option>
-                                    <option value="Macho">Macho</option>
-                                    <option value="Femea">Fêmea</option>
-                                </select>
-                            </div>
-                            <div class="campo">
-                                <label for="animal-porte">Porte *</label>
-                                <select id="animal-porte" required>
-                                    <option value="">Selecione</option>
-                                    <option value="Pequeno">Pequeno</option>
-                                    <option value="Medio">Médio</option>
-                                    <option value="Grande">Grande</option>
-                                </select>
-                            </div>
+            <section id="secao-cadastrar" class="cartao oculto" aria-labelledby="titulo-cadastrar">
+                <h2 id="titulo-cadastrar">Cadastrar Novo Animal 🐾</h2>
+                <form id="form-cadastrar-animal" novalidate>
+                    <div class="form-grid">
+                        <div class="form-grupo">
+                            <label for="nome">Nome do Animal *</label>
+                            <input type="text" id="nome" maxlength="80" required placeholder="Ex: Thor">
                         </div>
-                        <div class="campo">
-                            <label for="animal-descricao">História / Descrição *</label>
-                            <textarea id="animal-descricao" required maxlength="500" rows="3" placeholder="Conte um pouco sobre este animal..."></textarea>
+
+                        <div class="form-grupo">
+                            <label for="especie">Espécie *</label>
+                            <select id="especie" required>
+                                <option value="Cão">Cão</option>
+                                <option value="Gato">Gato</option>
+                                <option value="Outro">Outro</option>
+                            </select>
                         </div>
-                        <div class="campo">
-                            <label for="animal-foto">Foto</label>
-                            <input type="file" id="animal-foto" accept="image/*">
-                            <span class="dica">Formats aceitos: JPG, PNG, WebP. Max 5MB.</span>
+
+                        <div class="form-grupo">
+                            <label for="raca">Raça</label>
+                            <input type="text" id="raca" maxlength="80" placeholder="Ex: Vira-lata (SRD)">
                         </div>
-                        <div id="form-animal-feedback" class="feedback" aria-live="polite"></div>
-                        <button type="submit" class="btn-salvar" id="btn-salvar-animal">Cadastrar animal</button>
-                    </form>
-                </div>
 
-                <div class="cartao">
-                    <h2>Animais cadastrados</h2>
-                    <div id="lista-animais-cadastro" class="lista-itens" aria-live="polite">
-                        <p class="carregando-texto">Carregando...</p>
-                    </div>
-                </div>
-            </section>
+                        <div class="form-grupo">
+                            <label for="idade">Idade</label>
+                            <input type="text" id="idade" maxlength="40" placeholder="Ex: 2 anos / 5 meses">
+                        </div>
 
-            <!-- TELA: VER SOLICITACOES -->
-            <section id="tela-solicitacoes" class="tela">
-                <div class="cartao">
-                    <div class="cabecalho-tela">
-                        <h2>Solicitações de adoção</h2>
-                        <button type="button" class="btn-voltar" data-tela="inicial">Voltar</button>
-                    </div>
-                    <div id="lista-solicitacoes" class="lista-itens" aria-live="polite">
-                        <p class="carregando-texto">Carregando...</p>
-                    </div>
-                </div>
-            </section>
+                        <div class="form-grupo">
+                            <label for="sexo">Sexo *</label>
+                            <select id="sexo" required>
+                                <option value="Macho">Macho</option>
+                                <option value="Fêmea">Fêmea</option>
+                            </select>
+                        </div>
 
-            <!-- TELA: APROVAR OU RECUSAR -->
-            <section id="tela-aprovar" class="tela">
-                <div class="cartao">
-                    <div class="cabecalho-tela">
-                        <h2>Aprovar ou recusar</h2>
-                        <button type="button" class="btn-voltar" data-tela="inicial">Voltar</button>
-                    </div>
+                        <div class="form-grupo">
+                            <label for="porte">Porte *</label>
+                            <select id="porte" required>
+                                <option value="Pequeno">Pequeno</option>
+                                <option value="Médio">Médio</option>
+                                <option value="Grande">Grande</option>
+                            </select>
+                        </div>
 
-                    <h3 class="subtitulo">Solicitações pendentes</h3>
-                    <div id="lista-pendentes" class="lista-itens" aria-live="polite">
-                        <p class="carregando-texto">Carregando...</p>
+                        <div class="form-grupo full-width">
+                            <label for="foto">Foto do Animal *</label>
+                            <input type="file" id="foto" accept="image/*" required>
+                            <span class="dica">Formatos aceitos: JPG, PNG, WebP. Máximo 5MB.</span>
+                        </div>
+
+                        <div class="form-grupo full-width">
+                            <label for="descricao">História / Descrição</label>
+                            <textarea id="descricao" rows="3" maxlength="300" placeholder="Conte um pouco sobre o temperamento do animal..."></textarea>
+                        </div>
                     </div>
 
-                    <h3 class="subtitulo">Status dos animais</h3>
-                    <div id="lista-status-animais" class="lista-itens" aria-live="polite">
-                        <p class="carregando-texto">Carregando...</p>
+                    <div class="form-rodape">
+                        <button type="submit" class="btn-principal" id="btn-salvar-animal">Salvar Animal</button>
+                        <div id="msg-status" class="mensagem-status" aria-live="polite"></div>
                     </div>
-                </div>
+                </form>
             </section>
         </main>
     </div>
-
-    <dialog id="modal-confirmar" class="modal-dialog">
-        <div class="modal-conteudo">
-            <h3>Excluir animal</h3>
-            <p id="modal-confirmar-texto">Tem certeza que deseja excluir este animal?</p>
-            <div class="modal-botoes">
-                <button type="button" class="btn-cancelar" id="modal-btn-cancelar">Cancelar</button>
-                <button type="button" class="btn-excluir" id="modal-btn-confirmar">Excluir</button>
-            </div>
-        </div>
-    </dialog>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="painel.js"></script>

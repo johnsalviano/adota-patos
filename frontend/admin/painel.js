@@ -1,363 +1,288 @@
-const SUPABASE_URL = "https://fnlqruzbgwffhrqmpfvi.supabase.co";
-const SUPABASE_KEY = "sb_publishable_jLvZpI_9Kg97Yqg6sdOzrQ_9gvAmRIR";
+(function () {
+    'use strict';
 
-const cliente = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    var SUPABASE_URL = 'https://fnlqruzbgwffhrqmpfvi.supabase.co';
+    var SUPABASE_KEY = 'sb_publishable_jLvZpI_9Kg97Yqg6sdOzrQ_9gvAmRIR';
+    var cliente = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-function escaparTexto(t) {
-    const d = document.createElement("div");
-    d.textContent = t;
-    return d.textContent;
-}
+    var TAMANHO_MAX_FOTO = 5 * 1024 * 1024;
 
-function mostrarFeedback(el, texto, erro) {
-    el.textContent = texto;
-    el.className = "feedback" + (erro ? " erro" : " sucesso");
-}
-
-function formatarData(iso) {
-    try {
-        return new Date(iso).toLocaleDateString("pt-BR");
-    } catch (e) {
-        return "";
-    }
-}
-
-// =========================
-// GUARDA DE ACESSO
-// =========================
-
-async function verificarAcesso() {
-    const { data: { session } } = await cliente.auth.getSession();
-    if (!session) { window.location.href = "login.html"; return null; }
-
-    const { data: membro } = await cliente.rpc("eh_membro_ong");
-    if (!membro) { await cliente.auth.signOut(); window.location.href = "login.html"; return null; }
-
-    const email = session.user.email || "";
-    document.getElementById("email-logado").textContent = email;
-    document.getElementById("email-logado-inicial").textContent = email;
-    document.getElementById("tela-carregando").classList.add("oculto");
-    document.getElementById("conteudo-painel").classList.remove("oculto");
-    return session;
-}
-
-// =========================
-// NAVEGACAO ENTRE TELAS
-// =========================
-
-function mostrarTela(id) {
-    document.querySelectorAll(".tela").forEach(t => t.classList.remove("ativa"));
-    const alvo = document.getElementById("tela-" + id);
-    if (alvo) alvo.classList.add("ativa");
-
-    if (id === "solicitacoes") carregarSolicitacoes();
-    if (id === "aprovar") carregarAprovar();
-    if (id === "cadastrar") carregarAnimaisCadastro();
-}
-
-function configurarNavegacao() {
-    document.querySelectorAll("[data-tela]").forEach(el => {
-        el.addEventListener("click", () => mostrarTela(el.dataset.tela));
-    });
-}
-
-// =========================
-// TELA 1: CADASTRAR ANIMAIS
-// =========================
-
-async function carregarAnimaisCadastro() {
-    const container = document.getElementById("lista-animais-cadastro");
-    container.innerHTML = '<p class="carregando-texto">Carregando...</p>';
-
-    const { data, error } = await cliente
-        .from("animais")
-        .select("id, nome, idade, sexo, porte, descricao, foto_url, status, created_at")
-        .order("created_at", { ascending: false });
-
-    if (error) {
-        container.innerHTML = '<p class="erro-texto">Erro ao carregar os animais.</p>';
-        return;
+    function badgeStatus(status) {
+        var mapa = {
+            'Pendente': 'Pendente',
+            'Em análise': 'Em-analise',
+            'Aprovada': 'Aprovada',
+            'Aprovado': 'Aprovada',
+            'Recusada': 'Recusada',
+            'Recusado': 'Recusada',
+            'Rejeitada': 'Recusada'
+        };
+        var chave = status || '';
+        return mapa[chave] || 'Pendente';
     }
 
-    if (!data || data.length === 0) {
-        container.innerHTML = '<p class="vazio-texto">Nenhum animal cadastrado ainda.</p>';
-        return;
+    function podeAvaliar(status) {
+        return status === 'Pendente' || status === 'Em análise';
     }
 
-    container.innerHTML = data.map(a => `
-        <div class="item-linha">
-            <div class="item-info">
-                <strong>${escaparTexto(a.nome)}</strong>
-                <span class="item-meta">${escaparTexto(a.idade)} · ${escaparTexto(a.sexo)} · ${escaparTexto(a.porte)} — ${escaparTexto(a.status)}</span>
-            </div>
-            <button type="button" class="btn-excluir-animal" data-id="${a.id}" data-nome="${escaparTexto(a.nome)}">Excluir</button>
-        </div>
-    `).join("");
+    function mostrarFeedback(msg, ehErro) {
+        var caixa = document.getElementById('msg-status');
+        caixa.textContent = '';
+        caixa.classList.remove('sucesso', 'erro');
+        if (!msg) return;
+        caixa.textContent = msg;
+        caixa.classList.add(ehErro ? 'erro' : 'sucesso');
+    }
 
-    container.querySelectorAll(".btn-excluir-animal").forEach(btn => {
-        btn.addEventListener("click", () => confirmarExclusaoAnimal(btn.dataset.id, btn.dataset.nome));
-    });
-}
+    // ---------------- Abas ----------------
+    function mudarAba(aba) {
+        var btns = document.querySelectorAll('.aba-btn');
+        btns.forEach(function (b) { b.classList.remove('ativa'); });
+        if (aba === 'solicitacoes') {
+            btns[0].classList.add('ativa');
+            document.getElementById('secao-solicitacoes').classList.remove('oculto');
+            document.getElementById('secao-cadastrar').classList.add('oculto');
+            carregarSolicitacoes();
+        } else {
+            btns[1].classList.add('ativa');
+            document.getElementById('secao-solicitacoes').classList.add('oculto');
+            document.getElementById('secao-cadastrar').classList.remove('oculto');
+        }
+    }
 
-async function cadastrarAnimal(evento) {
-    evento.preventDefault();
-    const feedback = document.getElementById("form-animal-feedback");
-    const btnSalvar = document.getElementById("btn-salvar-animal");
+    // ---------------- Acesso ----------------
+    async function verificarAcesso() {
+        var sessionResp = await cliente.auth.getSession();
+        var session = sessionResp.data.session;
 
-    const nome = document.getElementById("animal-nome").value.trim();
-    const idade = document.getElementById("animal-idade").value.trim();
-    const sexo = document.getElementById("animal-sexo").value;
-    const porte = document.getElementById("animal-porte").value;
-    const descricao = document.getElementById("animal-descricao").value.trim();
-    const fotoInput = document.getElementById("animal-foto");
-
-    btnSalvar.disabled = true;
-    btnSalvar.textContent = "Salvando...";
-
-    let fotoUrl = null;
-
-    try {
-        if (fotoInput.files && fotoInput.files[0]) {
-            const arquivo = fotoInput.files[0];
-            if (arquivo.size > 5 * 1024 * 1024) {
-                mostrarFeedback(feedback, "A foto deve ter no maximo 5MB.", true);
-                return;
-            }
-            const extensao = arquivo.name.split(".").pop().toLowerCase();
-            const caminho = `animais/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${extensao}`;
-            const { error: uploadErro } = await cliente.storage
-                .from("fotos-animais")
-                .upload(caminho, arquivo, { contentType: arquivo.type });
-            if (uploadErro) throw new Error("Falha ao enviar a foto.");
-            const { data: urlData } = cliente.storage.from("fotos-animais").getPublicUrl(caminho);
-            fotoUrl = urlData.publicUrl;
+        if (!session) {
+            window.location.href = 'login.html';
+            return;
         }
 
-        const { error } = await cliente.from("animais").insert({
-            nome, idade, sexo, porte, descricao,
-            foto_url: fotoUrl,
-            status: "Disponível"
+        var rpcResp = await cliente.rpc('eh_membro_ong');
+        if (rpcResp.error || !rpcResp.data) {
+            await cliente.auth.signOut();
+            window.location.href = 'login.html';
+            return;
+        }
+
+        document.getElementById('email-logado').textContent = session.user.email || '';
+        document.getElementById('tela-carregando').classList.add('oculto');
+        document.getElementById('conteudo-painel').classList.remove('oculto');
+
+        carregarSolicitacoes();
+    }
+
+    // ---------------- Solicitações ----------------
+    async function carregarSolicitacoes() {
+        var container = document.getElementById('lista-solicitacoes');
+        container.textContent = '';
+        var p = document.createElement('p');
+        p.className = 'carregando';
+        p.textContent = 'Carregando solicitações...';
+        container.appendChild(p);
+
+        var resp = await cliente
+            .from('adocoes')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (resp.error) {
+            container.textContent = '';
+            var msg = document.createElement('p');
+            msg.textContent = 'Erro ao carregar solicitações: ' + resp.error.message;
+            container.appendChild(msg);
+            return;
+        }
+
+        if (!resp.data || resp.data.length === 0) {
+            container.textContent = '';
+            var vazio = document.createElement('p');
+            vazio.className = 'vazio';
+            vazio.textContent = 'Nenhuma solicitação de adoção encontrada.';
+            container.appendChild(vazio);
+            return;
+        }
+
+        var idsAnimais = (resp.data
+            .map(function (a) { return a.animal_id; })
+            .filter(Boolean)).join(',');
+
+        var mapaAnimais = {};
+        if (idsAnimais) {
+            var animaisResp = await cliente
+                .from('animais')
+                .select('id, nome')
+                .in('id', idsAnimais.split(','));
+            if (!animaisResp.error && animaisResp.data) {
+                animaisResp.data.forEach(function (animal) {
+                    mapaAnimais[animal.id] = animal.nome;
+                });
+            }
+        }
+
+        resp.data.forEach(function (item) {
+            var card = document.createElement('div');
+            card.className = 'solicitacao-card';
+
+            var header = document.createElement('div');
+            header.className = 'solicitacao-header';
+            var nomeAdotante = document.createElement('strong');
+            nomeAdotante.textContent = 'Adotante: ' + item.nome;
+            var badge = document.createElement('span');
+            badge.className = 'badge-status badge-' + badgeStatus(item.status);
+            badge.textContent = item.status;
+            header.appendChild(nomeAdotante);
+            header.appendChild(badge);
+            card.appendChild(header);
+
+            var corpo = document.createElement('div');
+            corpo.className = 'solicitacao-corpo';
+            var dados = [
+                ['E-mail', item.email],
+                ['Telefone', item.telefone],
+                ['Cidade', item.cidade],
+                ['Motivo', item.motivo]
+            ];
+            if (item.animal_id) {
+                var nomeAnimal = mapaAnimais[item.animal_id];
+                dados.push(['Animal', nomeAnimal ? nomeAnimal : item.animal_id]);
+            }
+            dados.forEach(function (par) {
+                var linha = document.createElement('p');
+                var rotulo = document.createElement('strong');
+                rotulo.textContent = par[0] + ': ';
+                linha.appendChild(rotulo);
+                linha.appendChild(document.createTextNode(par[1] || 'Não informado'));
+                corpo.appendChild(linha);
+            });
+            card.appendChild(corpo);
+
+            if (podeAvaliar(item.status)) {
+                var acoes = document.createElement('div');
+                acoes.className = 'solicitacao-acoes';
+
+                var btnAprovar = document.createElement('button');
+                btnAprovar.type = 'button';
+                btnAprovar.className = 'btn-aprovar';
+                btnAprovar.textContent = 'Aprovar';
+                btnAprovar.addEventListener('click', function () {
+                    atualizarStatus(item.id, 'Aprovada');
+                });
+
+                var btnRecusar = document.createElement('button');
+                btnRecusar.type = 'button';
+                btnRecusar.className = 'btn-recusar';
+                btnRecusar.textContent = 'Recusar';
+                btnRecusar.addEventListener('click', function () {
+                    atualizarStatus(item.id, 'Recusada');
+                });
+
+                acoes.appendChild(btnAprovar);
+                acoes.appendChild(btnRecusar);
+                card.appendChild(acoes);
+            }
+
+            container.appendChild(card);
         });
-
-        if (error) throw error;
-
-        mostrarFeedback(feedback, "Animal cadastrado com sucesso!", false);
-        evento.target.reset();
-        carregarAnimaisCadastro();
-    } catch (e) {
-        mostrarFeedback(feedback, "Erro ao cadastrar: " + (e.message || "tente novamente."), true);
-    } finally {
-        btnSalvar.disabled = false;
-        btnSalvar.textContent = "Cadastrar animal";
-    }
-}
-
-// =========================
-// TELA 2: VER SOLICITACOES
-// =========================
-
-async function carregarSolicitacoes() {
-    const container = document.getElementById("lista-solicitacoes");
-    container.innerHTML = '<p class="carregando-texto">Carregando...</p>';
-
-    const { data, error } = await cliente
-        .from("adocoes")
-        .select("id, nome, telefone, email, cidade, experiencia, motivo, status, created_at, animal_id")
-        .order("created_at", { ascending: false });
-
-    if (error) {
-        container.innerHTML = '<p class="erro-texto">Erro ao carregar as solicitações.</p>';
-        return;
     }
 
-    if (!data || data.length === 0) {
-        container.innerHTML = '<p class="vazio-texto">Nenhuma solicitação recebida ainda.</p>';
-        return;
+    async function atualizarStatus(idSolicitacao, novoStatus) {
+        var resp = await cliente
+            .from('adocoes')
+            .update({ status: novoStatus })
+            .eq('id', idSolicitacao);
+
+        if (resp.error) {
+            window.alert('Erro ao atualizar status: ' + resp.error.message);
+        } else {
+            carregarSolicitacoes();
+        }
     }
 
-    const animalIds = [...new Set(data.map(s => s.animal_id).filter(Boolean))];
-    let animaisMap = {};
-    if (animalIds.length > 0) {
-        const { data: animais } = await cliente.from("animais").select("id, nome").in("id", animalIds);
-        if (animais) animais.forEach(a => { animaisMap[a.id] = a.nome; });
-    }
+    // ---------------- Cadastro ----------------
+    document.getElementById('form-cadastrar-animal').addEventListener('submit', async function (e) {
+        e.preventDefault();
 
-    container.innerHTML = data.map(s => `
-        <div class="item-card">
-            <div class="item-card-cabecalho">
-                <strong>${escaparTexto(s.nome)}</strong>
-                <span class="status-pill status-${s.status.toLowerCase()}">${escaparTexto(s.status)}</span>
-            </div>
-            <div class="item-card-linhas">
-                <span>Animal: ${escaparTexto(s.animal_id ? (animaisMap[s.animal_id] || "—") : "—")}</span>
-                <span>E-mail: ${escaparTexto(s.email)}</span>
-                <span>Telefone: ${escaparTexto(s.telefone)}</span>
-                <span>Cidade: ${escaparTexto(s.cidade)}</span>
-                <span>Data: ${formatarData(s.created_at)}</span>
-            </div>
-            <div class="item-card-texto">
-                <p><strong>Experiência:</strong> ${escaparTexto(s.experiencia)}</p>
-                <p><strong>Motivo:</strong> ${escaparTexto(s.motivo)}</p>
-            </div>
-        </div>
-    `).join("");
-}
+        var btnSubmit = document.getElementById('btn-salvar-animal');
+        var foto = document.getElementById('foto');
 
-// =========================
-// TELA 3: APROVAR OU RECUSAR
-// =========================
+        if (!foto.files || foto.files.length === 0) {
+            mostrarFeedback('Selecione uma foto para o animal.', true);
+            return;
+        }
 
-async function carregarAprovar() {
-    await carregarPendentes();
-    await carregarStatusAnimais();
-}
+        var arquivoFoto = foto.files[0];
+        if (arquivoFoto.size > TAMANHO_MAX_FOTO) {
+            mostrarFeedback('A foto deve ter no máximo 5MB.', true);
+            return;
+        }
 
-async function carregarPendentes() {
-    const container = document.getElementById("lista-pendentes");
-    container.innerHTML = '<p class="carregando-texto">Carregando...</p>';
+        var msgStatus = document.getElementById('msg-status');
+        btnSubmit.disabled = true;
+        btnSubmit.textContent = 'Enviando foto e salvando...';
+        mostrarFeedback('', false);
 
-    const { data, error } = await cliente
-        .from("adocoes")
-        .select("id, nome, telefone, email, cidade, status, created_at, animal_id")
-        .eq("status", "Pendente")
-        .order("created_at", { ascending: true });
+        try {
+            var extensao = arquivoFoto.name.split('.').pop() || 'jpg';
+            var caminhoFoto = 'animais/' + crypto.randomUUID() + '.' + extensao;
 
-    if (error) {
-        container.innerHTML = '<p class="erro-texto">Erro ao carregar as solicitações.</p>';
-        return;
-    }
+            var upload = await cliente.storage
+                .from('fotos-animais')
+                .upload(caminhoFoto, arquivoFoto);
 
-    if (!data || data.length === 0) {
-        container.innerHTML = '<p class="vazio-texto">Nenhuma solicitação pendente.</p>';
-        return;
-    }
+            if (upload.error) throw upload.error;
 
-    const animalIds = [...new Set(data.map(s => s.animal_id).filter(Boolean))];
-    let animaisMap = {};
-    if (animalIds.length > 0) {
-        const { data: animais } = await cliente.from("animais").select("id, nome").in("id", animalIds);
-        if (animais) animais.forEach(a => { animaisMap[a.id] = a.nome; });
-    }
+            var urlData = cliente.storage
+                .from('fotos-animais')
+                .getPublicUrl(caminhoFoto);
 
-    container.innerHTML = data.map(s => `
-        <div class="item-card">
-            <div class="item-card-cabecalho">
-                <strong>${escaparTexto(s.nome)}</strong>
-                <span class="status-pill status-pendente">${escaparTexto(s.status)}</span>
-            </div>
-            <div class="item-card-linhas">
-                <span>Animal: ${escaparTexto(s.animal_id ? (animaisMap[s.animal_id] || "—") : "—")}</span>
-                <span>E-mail: ${escaparTexto(s.email)}</span>
-                <span>Telefone: ${escaparTexto(s.telefone)}</span>
-                <span>Cidade: ${escaparTexto(s.cidade)}</span>
-            </div>
-            <div class="item-card-acoes">
-                <button type="button" class="btn-aprovar" data-id="${s.id}">Aprovar</button>
-                <button type="button" class="btn-recusar" data-id="${s.id}">Recusar</button>
-            </div>
-        </div>
-    `).join("");
+            var dadosAnimal = {
+                nome: document.getElementById('nome').value.trim(),
+                especie: document.getElementById('especie').value,
+                raca: document.getElementById('raca').value.trim() || null,
+                idade: document.getElementById('idade').value.trim() || null,
+                sexo: document.getElementById('sexo').value,
+                porte: document.getElementById('porte').value,
+                descricao: document.getElementById('descricao').value.trim() || null,
+                foto_url: urlData.data.publicUrl,
+                status: 'Disponível'
+            };
 
-    container.querySelectorAll(".btn-aprovar").forEach(btn => {
-        btn.addEventListener("click", () => definirStatusSolicitacao(btn.dataset.id, "Aprovado"));
+            var dbResp = await cliente.from('animais').insert(dadosAnimal);
+            if (dbResp.error) throw dbResp.error;
+
+            document.getElementById('form-cadastrar-animal').reset();
+            mostrarFeedback('Animal cadastrado com sucesso!', false);
+        } catch (err) {
+            console.error(err);
+            mostrarFeedback('Erro ao cadastrar animal: ' + err.message, true);
+        } finally {
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = 'Salvar Animal';
+        }
     });
-    container.querySelectorAll(".btn-recusar").forEach(btn => {
-        btn.addEventListener("click", () => definirStatusSolicitacao(btn.dataset.id, "Recusado"));
-    });
-}
 
-async function carregarStatusAnimais() {
-    const container = document.getElementById("lista-status-animais");
-    container.innerHTML = '<p class="carregando-texto">Carregando...</p>';
-
-    const { data, error } = await cliente
-        .from("animais")
-        .select("id, nome, idade, sexo, porte, status")
-        .order("created_at", { ascending: false });
-
-    if (error) {
-        container.innerHTML = '<p class="erro-texto">Erro ao carregar os animais.</p>';
-        return;
-    }
-
-    if (!data || data.length === 0) {
-        container.innerHTML = '<p class="vazio-texto">Nenhum animal cadastrado.</p>';
-        return;
-    }
-
-    container.innerHTML = data.map(a => {
-        const disponivel = a.status === "Disponível";
-        return `
-        <div class="item-linha">
-            <div class="item-info">
-                <strong>${escaparTexto(a.nome)}</strong>
-                <span class="item-meta">${escaparTexto(a.idade)} · ${escaparTexto(a.sexo)} · ${escaparTexto(a.porte)}</span>
-            </div>
-            <button type="button" class="btn-alterar-status ${disponivel ? "btn-adotar" : "btn-disponibilizar"}" data-id="${a.id}" data-status="${escaparTexto(a.status)}">
-                ${disponivel ? "Marcar como adotado" : "Marcar como disponível"}
-            </button>
-        </div>`;
-    }).join("");
-
-    container.querySelectorAll(".btn-alterar-status").forEach(btn => {
-        btn.addEventListener("click", () => alternarStatusAnimal(btn.dataset.id, btn.dataset.status));
-    });
-}
-
-// =========================
-// ACOES DE STATUS
-// =========================
-
-async function alternarStatusAnimal(id, statusAtual) {
-    const novoStatus = statusAtual === "Disponível" ? "Adotado" : "Disponível";
-    const { error } = await cliente.from("animais").update({ status: novoStatus }).eq("id", id);
-    if (!error) carregarStatusAnimais();
-}
-
-async function definirStatusSolicitacao(id, novoStatus) {
-    const { error } = await cliente.from("adocoes").update({ status: novoStatus }).eq("id", id);
-    if (!error) carregarPendentes();
-}
-
-// =========================
-// EXCLUSAO COM CONFIRMACAO
-// =========================
-
-function confirmarExclusaoAnimal(id, nome) {
-    const modal = document.getElementById("modal-confirmar");
-    document.getElementById("modal-confirmar-texto").textContent =
-        `Tem certeza que deseja excluir "${nome}"? Esta ação não pode ser desfeita.`;
-    modal.showModal();
-
-    const confirmar = () => {
-        cliente.from("animais").delete().eq("id", id).then(() => {
-            modal.close();
-            carregarAnimaisCadastro();
-        });
-    };
-
-    document.getElementById("modal-btn-confirmar").addEventListener("click", confirmar, { once: true });
-    document.getElementById("modal-btn-cancelar").addEventListener("click", () => modal.close(), { once: true });
-}
-
-// =========================
-// INICIALIZACAO
-// =========================
-
-document.addEventListener("DOMContentLoaded", async () => {
-    const session = await verificarAcesso();
-    if (!session) return;
-
-    configurarNavegacao();
-
-    document.getElementById("form-animal").addEventListener("submit", cadastrarAnimal);
-
-    document.getElementById("botao-sair").addEventListener("click", async () => {
+    // ---------------- Sair ----------------
+    document.getElementById('botao-sair').addEventListener('click', async function () {
         await cliente.auth.signOut();
-        window.location.href = "login.html";
+        window.location.href = 'login.html';
     });
 
-    cliente.auth.onAuthStateChange((evento) => {
-        if (evento === "SIGNED_OUT") window.location.href = "login.html";
+    cliente.auth.onAuthStateChange(function (evento) {
+        if (evento === 'SIGNED_OUT') {
+            window.location.href = 'login.html';
+        }
     });
-});
+
+    document.getElementById('aba-solicitacoes').addEventListener('click', function () {
+        mudarAba('solicitacoes');
+    });
+
+    document.getElementById('aba-cadastrar').addEventListener('click', function () {
+        mudarAba('cadastrar');
+    });
+
+    verificarAcesso();
+})();

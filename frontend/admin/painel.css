@@ -1,564 +1,369 @@
-@import url("../css/tema.css");
+/* ============================================================
+   ADOTA PATOS — Painel administrativo
+   Visual baseado no design do Matheus, integrado ao tema do site.
+   ============================================================ */
 
-/* =========================
-   BASE
-   ========================= */
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-    font-family: var(--font-body);
-    background: var(--gray);
-    color: var(--text);
+    font-family: var(--font-body, 'Segoe UI', Arial, sans-serif);
+    background: var(--gray, #fbfbea);
+    color: var(--dark, #16332e);
     min-height: 100vh;
+}
+
+/* ---------- Estado inicial ---------- */
+
+.carregando {
+    text-align: center;
+    padding: 80px 0;
+    color: var(--text, #55655f);
 }
 
 .oculto { display: none !important; }
-.oculta { display: none !important; }
 
-.carregando {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    font-size: 1.1rem;
-    color: var(--muted);
-}
+/* ---------- Cabeçalho ---------- */
 
-/* =========================
-   HEADER
-   ========================= */
-
-header {
-    background: var(--cream);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-    padding: 1rem 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+.cabecalho {
+    background: var(--white);
+    padding: 14px 24px;
+    box-shadow: 0 2px 12px rgba(22, 51, 46, 0.08);
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 10;
 }
 
-.logo {
-    font-family: var(--font-display);
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: var(--primary);
-}
-
-.logo span {
-    font-size: 0.85rem;
-    font-weight: 400;
-    color: var(--muted);
-    margin-left: 0.5rem;
-}
-
-.header-direita {
+.cabecalho-conteudo {
+    max-width: 1000px;
+    margin: 0 auto;
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 14px;
 }
 
-.email-badge {
-    font-size: 0.8rem;
-    color: var(--muted);
-    background: var(--gray);
-    padding: 0.3rem 0.7rem;
-    border-radius: 20px;
+.logo img {
+    height: 42px;
+    width: auto;
+    display: block;
 }
 
-.btn-sair {
-    background: none;
-    border: 2px solid var(--primary);
-    color: var(--primary);
-    padding: 0.4rem 1rem;
-    border-radius: 20px;
-    font-family: var(--font-body);
+.logo-nome {
+    font-family: var(--font-display, 'Baloo 2', cursive);
+    font-size: 1.3rem;
     font-weight: 700;
+    color: var(--primary-dark, #29a794);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo-legenda {
+    color: var(--text, #55655f);
+    font-weight: 400;
     font-size: 0.85rem;
+}
+
+button.sair {
+    margin-left: auto;
+    background: transparent;
+    border: 2px solid var(--primary, #57d8c3);
+    color: var(--dark, #16332e);
+    border-radius: var(--radius-md, 18px);
+    padding: 8px 20px;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 0.9rem;
     cursor: pointer;
-    transition: 0.25s;
+    transition: background 0.2s, color 0.2s;
 }
 
-.btn-sair:hover {
-    background: var(--primary);
-    color: #fff;
+button.sair:hover {
+    background: var(--primary-light, #a9eee1);
 }
 
-/* =========================
-   CONTEUDO / CARTÃO
-   ========================= */
+/* ---------- Layout principal ---------- */
 
-main {
-    max-width: 760px;
-    margin: 0 auto;
-    padding: 2rem;
+.principal {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 24px;
 }
-
-.tela { display: none; }
-.tela.ativa { display: block; }
 
 .cartao {
-    background: var(--cream);
-    border-radius: var(--radius-lg);
-    padding: 1.8rem;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-    margin-bottom: 1.5rem;
+    background: var(--white);
+    border-radius: var(--radius-lg, 28px);
+    padding: 32px;
+    box-shadow: 0 8px 28px rgba(22, 51, 46, 0.08);
+    margin-bottom: 30px;
 }
 
-.cartao h1 {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
-    color: var(--text);
-    margin-bottom: 0.4rem;
-}
-
-.cartao h2 {
-    font-family: var(--font-display);
-    font-size: 1.25rem;
-    color: var(--text);
+h1, h2 {
+    font-family: var(--font-display, 'Baloo 2', cursive);
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--dark, #16332e);
 }
 
 .ola {
-    color: var(--muted);
-    font-size: 0.95rem;
-    margin-bottom: 1.2rem;
+    color: var(--text, #55655f);
+    margin-bottom: 20px;
 }
 
-.escolha {
-    font-weight: 600;
-    margin-bottom: 1rem;
-}
+/* ---------- Abas de Navegação ---------- */
 
-/* =========================
-   OPCOES (tela inicial)
-   ========================= */
-
-.opcoes {
+.abas {
     display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
+    gap: 12px;
+    margin-top: 8px;
+    border-bottom: 2px solid #eaeaea;
+    padding-bottom: 8px;
 }
 
-.opcao {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    text-align: left;
-    background: #fff;
-    border: 2px solid rgba(0, 0, 0, 0.06);
-    border-radius: 16px;
-    padding: 1rem 1.2rem;
-    cursor: pointer;
-    font-family: var(--font-body);
-    transition: 0.2s;
-}
-
-.opcao:hover {
-    border-color: var(--primary);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-}
-
-.opcao-numero {
-    flex-shrink: 0;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: var(--primary);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 1rem;
-}
-
-.opcao-texto {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-}
-
-.opcao-texto strong {
-    font-size: 1rem;
-    color: var(--text);
-}
-
-.opcao-texto small {
-    font-size: 0.82rem;
-    color: var(--muted);
-}
-
-/* =========================
-   CABECALHO DAS TELAS
-   ========================= */
-
-.cabecalho-tela {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1.2rem;
-}
-
-.btn-voltar {
+.aba-btn {
     background: none;
-    border: 2px solid rgba(0, 0, 0, 0.12);
-    color: var(--text);
-    padding: 0.4rem 1rem;
-    border-radius: 20px;
-    font-family: var(--font-body);
+    border: none;
+    padding: 10px 18px;
+    font-family: inherit;
+    font-size: 1rem;
     font-weight: 600;
-    font-size: 0.85rem;
+    color: var(--text, #55655f);
     cursor: pointer;
-    transition: 0.2s;
+    border-radius: var(--radius-md, 18px);
+    transition: background 0.2s, color 0.2s;
 }
 
-.btn-voltar:hover {
-    border-color: var(--primary);
-    color: var(--primary);
+.aba-btn:hover {
+    background: var(--primary-light, #a9eee1);
+    color: var(--primary-dark, #29a794);
 }
 
-.subtitulo {
-    font-family: var(--font-display);
-    font-size: 1.05rem;
-    color: var(--text);
-    margin: 1.4rem 0 0.8rem;
+.aba-btn.ativa {
+    background: var(--primary-light, #a9eee1);
+    color: var(--primary-dark, #29a794);
 }
 
-/* =========================
-   FORMULARIO ANIMAL
-   ========================= */
+/* ---------- Formulário de Cadastro ---------- */
 
-.campos-grid {
+.form-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-bottom: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
 }
 
-.campo {
+.form-grupo {
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
+    gap: 6px;
 }
 
-.campo label {
-    font-size: 0.85rem;
+.form-grupo.full-width { grid-column: 1 / -1; }
+
+label {
+    font-size: 0.88rem;
     font-weight: 600;
-    color: var(--text);
+    color: var(--dark, #16332e);
 }
 
-.campo input,
-.campo select,
-.campo textarea {
-    padding: 0.6rem 0.8rem;
-    border: 2px solid rgba(0, 0, 0, 0.08);
-    border-radius: 12px;
-    font-family: var(--font-body);
-    font-size: 0.9rem;
-    background: #fff;
-    transition: border-color 0.2s;
-}
-
-.campo input:focus,
-.campo select:focus,
-.campo textarea:focus {
+input, select, textarea {
+    padding: 12px 16px;
+    border: 1px solid #dcdcd0;
+    border-radius: var(--radius-md, 18px);
+    font-family: inherit;
+    font-size: 0.95rem;
+    background: var(--gray, #fbfbea);
     outline: none;
-    border-color: var(--primary);
+    width: 100%;
 }
 
-.campo textarea {
-    resize: vertical;
-    min-height: 80px;
+input:focus, select:focus, textarea:focus {
+    border-color: var(--primary-dark, #29a794);
+    background: var(--white);
+}
+
+input:invalid, select:invalid {
+    border-color: #f0b4ae;
 }
 
 .dica {
-    font-size: 0.75rem;
-    color: var(--muted);
-    margin-top: 0.2rem;
+    font-size: 0.78rem;
+    color: var(--text, #55655f);
 }
 
-.btn-salvar {
-    background: var(--primary);
-    color: #fff;
-    border: none;
-    padding: 0.7rem 1.8rem;
-    border-radius: 20px;
-    font-family: var(--font-body);
-    font-weight: 700;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: 0.25s;
-    margin-top: 0.5rem;
-}
-
-.btn-salvar:hover { opacity: 0.85; }
-.btn-salvar:disabled { opacity: 0.5; cursor: not-allowed; }
-
-.feedback {
-    padding: 0.6rem 1rem;
-    border-radius: 10px;
-    font-size: 0.85rem;
-    margin-top: 0.8rem;
-    display: none;
-}
-
-.feedback.sucesso { display: block; background: #d4edda; color: #155724; }
-.feedback.erro { display: block; background: #f8d7da; color: #721c24; }
-
-/* =========================
-   LISTAS / ITENS
-   ========================= */
-
-.lista-itens {
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-}
-
-.item-linha {
+.form-rodape {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    background: #fff;
-    border-radius: 14px;
-    padding: 0.9rem 1.1rem;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
-}
-
-.item-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-}
-
-.item-info strong {
-    font-size: 0.95rem;
-}
-
-.item-meta {
-    font-size: 0.8rem;
-    color: var(--muted);
-}
-
-.item-card {
-    background: #fff;
-    border-radius: 14px;
-    padding: 1.1rem 1.2rem;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
-}
-
-.item-card-cabecalho {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-}
-
-.item-card-cabecalho strong {
-    font-size: 1rem;
-}
-
-.item-card-linhas {
-    display: flex;
+    gap: 16px;
     flex-wrap: wrap;
-    gap: 0.4rem 1.2rem;
-    font-size: 0.82rem;
-    color: var(--muted);
-    margin-bottom: 0.5rem;
+    margin-top: 20px;
 }
 
-.item-card-texto {
-    font-size: 0.85rem;
-    line-height: 1.5;
-    color: var(--text);
-}
-
-.item-card-texto p {
-    margin-bottom: 0.3rem;
-}
-
-.item-card-acoes {
-    display: flex;
-    gap: 0.6rem;
-    margin-top: 0.8rem;
-}
-
-/* =========================
-   BOTOES DE ACAO
-   ========================= */
-
-.btn-excluir-animal {
-    background: #f8d7da;
+.btn-principal {
+    background: var(--primary, #57d8c3);
+    color: var(--dark, #16332e);
     border: none;
-    color: #721c24;
-    padding: 0.45rem 1rem;
-    border-radius: 10px;
-    font-family: var(--font-body);
-    font-size: 0.8rem;
-    font-weight: 600;
+    border-radius: var(--radius-md, 18px);
+    padding: 12px 24px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 0.95rem;
     cursor: pointer;
-    transition: 0.2s;
-    white-space: nowrap;
+    transition: background 0.2s, color 0.2s;
 }
 
-.btn-excluir-animal:hover { background: #f5c6cb; }
+.btn-principal:hover {
+    background: var(--primary-dark, #29a794);
+    color: var(--white);
+}
 
-.btn-alterar-status {
-    background: none;
-    border: 2px solid;
-    padding: 0.45rem 1rem;
-    border-radius: 10px;
-    font-family: var(--font-body);
+.btn-principal:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.mensagem-status {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: var(--radius-md, 18px);
+    font-size: 0.9rem;
+    display: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.mensagem-status.sucesso {
+    background: var(--primary-light, #a9eee1);
+    color: var(--dark, #16332e);
+    display: block;
+}
+
+.mensagem-status.erro {
+    background: #ffd8d8;
+    color: #8a1f1f;
+    display: block;
+}
+
+/* ---------- Lista de Solicitações ---------- */
+
+.solicitacao-card {
+    border: 1px solid #e2e8f0;
+    border-radius: var(--radius-md, 18px);
+    padding: 20px;
+    margin-bottom: 16px;
+    background: var(--white);
+}
+
+.solicitacao-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed #e2e8f0;
+}
+
+.solicitacao-header strong {
+    color: var(--dark, #16332e);
+}
+
+.badge-status {
+    padding: 4px 12px;
+    border-radius: 20px;
     font-size: 0.8rem;
     font-weight: 700;
-    cursor: pointer;
-    transition: 0.2s;
+    text-transform: uppercase;
     white-space: nowrap;
 }
 
-.btn-adotar {
-    border-color: #d4edda;
-    color: #155724;
-    background: #f2fbf4;
+.badge-Pendente      { background: #fff3cd; color: #856404; }
+.badge-Em-analise    { background: #cce5ff; color: #004085; }
+.badge-Aprovada      { background: #d4edda; color: #155724; }
+.badge-Recusada      { background: #f8d7da; color: #721c24; }
+
+.solicitacao-corpo p {
+    margin-bottom: 6px;
+    font-size: 0.92rem;
+    color: var(--text, #55655f);
 }
 
-.btn-adotar:hover { background: #d4edda; }
-
-.btn-disponibilizar {
-    border-color: #fff3cd;
-    color: #856404;
-    background: #fffdf2;
+.solicitacao-corpo strong {
+    color: var(--dark, #16332e);
 }
 
-.btn-disponibilizar:hover { background: #fff3cd; }
+.solicitacao-acoes {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.btn-aprovar, .btn-recusar {
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--radius-md, 18px);
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: filter 0.2s, opacity 0.2s;
+}
 
 .btn-aprovar {
-    background: #28a745;
-    border: none;
-    color: #fff;
-    padding: 0.5rem 1.2rem;
-    border-radius: 10px;
-    font-family: var(--font-body);
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
+    background: var(--success, #2ec4b6);
+    color: #ffffff;
 }
-
-.btn-aprovar:hover { background: #218838; }
 
 .btn-recusar {
-    background: #dc3545;
-    border: none;
-    color: #fff;
-    padding: 0.5rem 1.2rem;
-    border-radius: 10px;
-    font-family: var(--font-body);
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
+    background: var(--danger, #e74c3c);
+    color: #ffffff;
 }
 
-.btn-recusar:hover { background: #c82333; }
-
-/* =========================
-   STATUS
-   ========================= */
-
-.status-pill {
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 0.2rem 0.7rem;
-    border-radius: 10px;
+.btn-aprovar:hover, .btn-recusar:hover {
+    filter: brightness(0.92);
 }
 
-.status-pendente { background: #fff3cd; color: #856404; }
-.status-aprovado { background: #d4edda; color: #155724; }
-.status-recusado { background: #f8d7da; color: #721c24; }
-
-/* =========================
-   MODAL
-   ========================= */
-
-.modal-dialog {
-    border: none;
-    border-radius: 16px;
-    padding: 0;
-    max-width: 400px;
-    margin: auto;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+.vazio {
+    padding: 20px 0;
+    color: var(--text, #55655f);
 }
 
-.modal-dialog::backdrop {
-    background: rgba(0, 0, 0, 0.4);
-}
+/* ---------- Responsivo ---------- */
 
-.modal-conteudo {
-    padding: 1.5rem;
-}
+@media (max-width: 640px) {
+    .cabecalho-conteudo {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
 
-.modal-conteudo h3 {
-    font-family: var(--font-display);
-    margin-bottom: 0.6rem;
-}
+    .logo-nome {
+        font-size: 1.1rem;
+    }
 
-.modal-conteudo p {
-    font-size: 0.9rem;
-    color: var(--muted);
-    margin-bottom: 1.2rem;
-}
+    .logo-legenda {
+        display: none;
+    }
 
-.modal-botoes {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.6rem;
-}
+    .principal {
+        margin: 24px auto;
+        padding: 0 14px;
+    }
 
-.btn-cancelar {
-    background: var(--gray);
-    border: none;
-    padding: 0.5rem 1.2rem;
-    border-radius: 10px;
-    font-family: var(--font-body);
-    font-weight: 600;
-    cursor: pointer;
-}
+    .cartao {
+        padding: 22px;
+    }
 
-.btn-excluir {
-    background: #dc3545;
-    color: #fff;
-    border: none;
-    padding: 0.5rem 1.2rem;
-    border-radius: 10px;
-    font-family: var(--font-body);
-    font-weight: 600;
-    cursor: pointer;
-}
+    .abas {
+        flex-direction: column;
+        gap: 8px;
+    }
 
-/* =========================
-   TEXTOS AUXILIARES
-   ========================= */
+    .aba-btn {
+        text-align: left;
+    }
 
-.erro-texto { color: #721c24; font-size: 0.9rem; }
-.vazio-texto { color: var(--muted); font-size: 0.9rem; font-style: italic; }
-.carregando-texto { color: var(--muted); font-size: 0.9rem; }
-
-/* =========================
-   RESPONSIVO
-   ========================= */
-
-@media (max-width: 650px) {
-    header { padding: 0.8rem 1rem; }
-    .logo { font-size: 1.1rem; }
-    .logo span { display: none; }
-    main { padding: 1.2rem; }
-    .cartao { padding: 1.2rem; }
-    .campos-grid { grid-template-columns: 1fr; }
-    .item-card-linhas { flex-direction: column; gap: 0.3rem; }
-    .item-linha { flex-wrap: wrap; }
+    .solicitacao-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
