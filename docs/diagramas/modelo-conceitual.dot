@@ -1,88 +1,112 @@
 // ============================================================
-// 🐾 ADOTA PATOS — Modelo Conceitual (notação de Peter Chen)
-// Entidades (retângulos), relacionamento (losango),
-// atributos (elipses; chave primária sublinhada) e cardinalidade.
+// ADOTA PATOS — Modelo Conceitual (notacao de Peter Chen)
+// Entidades (retangulos), relacionamento (losango),
+// atributos (elipses; chave primaria sublinhada) e cardinalidade.
 // Gerar PNG: dot -Tpng modelo-conceitual.dot -o modelo-conceitual.png
 // ============================================================
 
 digraph MER {
     rankdir=TB;
-    splines=spline;
-    nodesep=0.45;
-    ranksep=1.0;
-    bgcolor=white;
-    node [fontname="Segoe UI, Arial, sans-serif", fontsize=12];
-    edge [fontname="Segoe UI, Arial, sans-serif", fontsize=11, color="#444444", arrowhead=none, arrowtail=none];
+    splines=true;
+    nodesep=0.6;
+    ranksep=1.2;
+    bgcolor="white";
+    pad="0.5";
+    dpi=150;
 
-    // ---------- ENTIDADES ----------
+    // Global styles
+    node [
+        fontname="Helvetica, Arial, sans-serif",
+        fontsize=12,
+        penwidth=1.2
+    ];
+    edge [
+        fontname="Helvetica, Arial, sans-serif",
+        fontsize=11,
+        color="#555555",
+        penwidth=1.5,
+        arrowhead=none,
+        arrowtail=none
+    ];
+
+    // ---------- ENTITIES ----------
     animal [
-        shape=box, style="filled", penwidth=2.5,
-        fillcolor="#FFE9BF", color="#8C6A1D",
-        label=<<FONT POINT-SIZE="16"><B>ANIMAL</B></FONT>>
+        shape=box, style="filled,rounded",
+        fillcolor="#EBF5FB", color="#2C3E50", penwidth=2,
+        label=<<FONT POINT-SIZE="15" COLOR="#2C3E50"><B>ANIMAL</B></FONT>>
     ];
 
-    candidatura [
-        shape=box, style="filled", penwidth=2.5,
-        fillcolor="#CFE8FF", color="#1F4E79",
-        label=<<FONT POINT-SIZE="15"><B>SOLICITAÇÃO<BR/>DE ADOÇÃO</B></FONT>>
+    solicitacao [
+        shape=box, style="filled,rounded",
+        fillcolor="#EBF5FB", color="#2C3E50", penwidth=2,
+        label=<<FONT POINT-SIZE="15" COLOR="#2C3E50"><B>SOLICITACAO<BR/>DE ADOCAO</B></FONT>>
     ];
 
-    // ---------- RELACIONAMENTO ----------
+    // ---------- RELATIONSHIP ----------
     recebe [
         shape=diamond, style="filled",
-        fillcolor="#D3F2D9", color="#1E7A34", penwidth=2,
-        height=1.35, width=2.6, fixedsize=true,
-        label=<<B>RECEBE</B>>
+        fillcolor="#D5F5E3", color="#1E8449", penwidth=2,
+        height=1.2, width=2.4, fixedsize=true,
+        label=<<FONT POINT-SIZE="12" COLOR="#1E8449"><B>RECEBE</B></FONT>>
     ];
 
-    animal -> recebe  [dir=none, penwidth=1.6, taillabel=<<B>&nbsp;&nbsp;1&nbsp;&nbsp;</B>>, labeldistance=1.4, labelfontcolor="#111111"];
-    recebe -> candidatura [dir=none, penwidth=1.6, headlabel=<<B>&nbsp;&nbsp;N&nbsp;&nbsp;</B>>, labeldistance=1.4, labelfontcolor="#111111"];
+    // Cardinality
+    animal -> recebe [
+        dir=none, penwidth=1.5,
+        taillabel=<<FONT POINT-SIZE="13" COLOR="#2C3E50"><B>  1  </B></FONT>>,
+        labeldistance=1.5, labelfontcolor="#2C3E50"
+    ];
+    recebe -> solicitacao [
+        dir=none, penwidth=1.5,
+        headlabel=<<FONT POINT-SIZE="13" COLOR="#2C3E50"><B>  N  </B></FONT>>,
+        labeldistance=1.5, labelfontcolor="#2C3E50"
+    ];
 
-    // ---------- ATRIBUTOS DE ANIMAL (acima) ----------
-    an_id      [shape=ellipse, style=filled, fillcolor="#FFF7E6", color="#8C6A1D", label=<<U><B>id</B></U>>];
-    an_nome    [shape=ellipse, style=filled, fillcolor="#FFF7E6", color="#8C6A1D", label="nome"];
-    an_idade   [shape=ellipse, style=filled, fillcolor="#FFF7E6", color="#8C6A1D", label="idade"];
-    an_sexo    [shape=ellipse, style=filled, fillcolor="#FFF7E6", color="#8C6A1D", label="sexo"];
-    an_porte   [shape=ellipse, style=filled, fillcolor="#FFF7E6", color="#8C6A1D", label="porte"];
-    an_desc    [shape=ellipse, style=filled, fillcolor="#FFF7E6", color="#8C6A1D", label="descrição"];
-    an_foto    [shape=ellipse, style=filled, fillcolor="#FFF7E6", color="#8C6A1D", label="foto_url"];
-    an_status  [shape=ellipse, style=filled, fillcolor="#FFF7E6", color="#8C6A1D", label="status"];
-    an_data    [shape=ellipse, style=filled, fillcolor="#FFF7E6", color="#8C6A1D", label="data_de_cadastro"];
+    // ---------- ATTRIBUTES: ANIMAL ----------
+    an_id      [shape=ellipse, style=filled, fillcolor="#FDFEFE", color="#85929E", label=<<U><B>id</B></U>>];
+    an_nome    [shape=ellipse, style=filled, fillcolor="#FDFEFE", color="#85929E", label="nome"];
+    an_idade   [shape=ellipse, style=filled, fillcolor="#FDFEFE", color="#85929E", label="idade"];
+    an_sexo    [shape=ellipse, style=filled, fillcolor="#FDFEFE", color="#85929E", label="sexo"];
+    an_porte   [shape=ellipse, style=filled, fillcolor="#FDFEFE", color="#85929E", label="porte"];
+    an_desc    [shape=ellipse, style=filled, fillcolor="#FDFEFE", color="#85929E", label="descricao"];
+    an_foto    [shape=ellipse, style=filled, fillcolor="#FDFEFE", color="#85929E", label="foto_url"];
+    an_status  [shape=ellipse, style=filled, fillcolor="#FDFEFE", color="#85929E", label="status"];
+    an_data    [shape=ellipse, style=filled, fillcolor="#FDFEFE", color="#85929E", label="data_de_cadastro"];
 
     { rank=same; an_id; an_nome; an_idade; an_sexo; an_porte; }
     { rank=same; an_desc; an_foto; an_status; an_data; }
 
-    an_id     -> animal;
-    an_nome   -> animal;
-    an_idade  -> animal;
-    an_sexo   -> animal;
-    an_porte  -> animal;
-    an_desc   -> animal;
-    an_foto   -> animal;
-    an_status -> animal;
-    an_data   -> animal;
+    an_id     -> animal [color="#85929E"];
+    an_nome   -> animal [color="#85929E"];
+    an_idade  -> animal [color="#85929E"];
+    an_sexo   -> animal [color="#85929E"];
+    an_porte  -> animal [color="#85929E"];
+    an_desc   -> animal [color="#85929E"];
+    an_foto   -> animal [color="#85929E"];
+    an_status -> animal [color="#85929E"];
+    an_data   -> animal [color="#85929E"];
 
-    // ---------- ATRIBUTOS DE SOLICITACAO (abaixo) ----------
-    so_id      [shape=ellipse, style=filled, fillcolor="#EDF5FF", color="#1F4E79", label=<<U><B>id</B></U>>];
-    so_nome    [shape=ellipse, style=filled, fillcolor="#EDF5FF", color="#1F4E79", label="nome_do_candidato"];
-    so_tel     [shape=ellipse, style=filled, fillcolor="#EDF5FF", color="#1F4E79", label="telefone"];
-    so_email   [shape=ellipse, style=filled, fillcolor="#EDF5FF", color="#1F4E79", label="email"];
-    so_cidade  [shape=ellipse, style=filled, fillcolor="#EDF5FF", color="#1F4E79", label="cidade"];
-    so_exp     [shape=ellipse, style=filled, fillcolor="#EDF5FF", color="#1F4E79", label="experiência_com_animais"];
-    so_motivo  [shape=ellipse, style=filled, fillcolor="#EDF5FF", color="#1F4E79", label="motivo_da_adocao"];
-    so_status  [shape=ellipse, style=filled, fillcolor="#EDF5FF", color="#1F4E79", label="status_da_solicitacao"];
-    so_data    [shape=ellipse, style=filled, fillcolor="#EDF5FF", color="#1F4E79", label="data_da_solicitacao"];
+    // ---------- ATTRIBUTES: SOLICITACAO ----------
+    so_id      [shape=ellipse, style=filled, fillcolor="#FDFEFE", color="#85929E", label=<<U><B>id</B></U>>];
+    so_nome    [shape=ellipse, style=filled, fillcolor="#FDFEFE", color="#85929E", label="nome_do_candidato"];
+    so_tel     [shape=ellipse, style=filled, fillcolor="#FDFEFE", color="#85929E", label="telefone"];
+    so_email   [shape=ellipse, style=filled, fillcolor="#FDFEFE", color="#85929E", label="email"];
+    so_cidade  [shape=ellipse, style=filled, fillcolor="#FDFEFE", color="#85929E", label="cidade"];
+    so_exp     [shape=ellipse, style=filled, fillcolor="#FDFEFE", color="#85929E", label="experiencia_com_animais"];
+    so_motivo  [shape=ellipse, style=filled, fillcolor="#FDFEFE", color="#85929E", label="motivo_da_adocao"];
+    so_status  [shape=ellipse, style=filled, fillcolor="#FDFEFE", color="#85929E", label="status_da_solicitacao"];
+    so_data    [shape=ellipse, style=filled, fillcolor="#FDFEFE", color="#85929E", label="data_da_solicitacao"];
 
     { rank=same; so_id; so_nome; so_tel; so_email; so_cidade; }
     { rank=same; so_exp; so_motivo; so_status; so_data; }
 
-    candidatura -> so_id;
-    candidatura -> so_nome;
-    candidatura -> so_tel;
-    candidatura -> so_email;
-    candidatura -> so_cidade;
-    candidatura -> so_exp;
-    candidatura -> so_motivo;
-    candidatura -> so_status;
-    candidatura -> so_data;
+    solicitacao -> so_id     [color="#85929E"];
+    solicitacao -> so_nome   [color="#85929E"];
+    solicitacao -> so_tel    [color="#85929E"];
+    solicitacao -> so_email  [color="#85929E"];
+    solicitacao -> so_cidade [color="#85929E"];
+    solicitacao -> so_exp    [color="#85929E"];
+    solicitacao -> so_motivo [color="#85929E"];
+    solicitacao -> so_status [color="#85929E"];
+    solicitacao -> so_data   [color="#85929E"];
 }
