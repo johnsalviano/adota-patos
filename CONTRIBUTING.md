@@ -29,7 +29,7 @@ Padrão *conventional commits*, em português, direto ao ponto:
 feat: contador de caracteres no campo motivo
 fix: valida tamanho do telefone antes de gravar
 docs: registra pentest na seção 11
-chore: adiciona CI do gerador de front-end
+chore: adiciona CI de estrutura do front-end
 ```
 
 ## Checklist antes de abrir o PR

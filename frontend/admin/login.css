@@ -1,17 +1,4 @@
-:root {
-    --primary: #57d8c3;
-    --primary-dark: #29a794;
-    --primary-light: #a9eee1;
-    --secondary: #ffffe3;
-    --gold: #f5c567;
-    --gold-dark: #dfa634;
-    --dark: #16332e;
-    --text: #55655f;
-    --white: #ffffff;
-    --gray: #fbfbea;
-    --radius-lg: 28px;
-    --radius-md: 18px;
-}
+@import url('../css/tema.css');
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 

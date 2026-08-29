@@ -1,0 +1,26 @@
+/* ============================================
+   TEMA UNICO DO PROJETO
+   Fonte unica das variaveis de design.
+   Importado por estilo.css, login.css e painel.css.
+   ============================================ */
+
+:root {
+    --primary: #57d8c3;
+    --primary-dark: #29a794;
+    --primary-light: #a9eee1;
+    --secondary: #ffffe3;
+    --gold: #f5c567;
+    --gold-dark: #dfa634;
+    --dark: #16332e;
+    --text: #55655f;
+    --white: #ffffff;
+    --gray: #fbfbea;
+    --cream: #ffffe3;
+    --radius-lg: 28px;
+    --radius-md: 18px;
+    --radius-pill: 999px;
+    --shadow: 0 16px 40px rgba(22, 51, 46, 0.08);
+    --shadow-glow: 0 20px 45px rgba(87, 216, 195, 0.35);
+    --font-display: 'Baloo 2', system-ui, sans-serif;
+    --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+}

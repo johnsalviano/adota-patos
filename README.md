@@ -62,7 +62,7 @@ Escolhida com uma regra clara: **custo zero para a ONG**, hoje e sempre.
 |---|---|---|
 | Banco + auth + storage | [Supabase](https://supabase.com) (PostgreSQL) | Plano gratuito permanente e RLS nativa |
 | Porta de entrada do formulário | Supabase Edge Functions (Deno) | Roda sem servidor próprio, sem custo fixo |
-| Site público | HTML/CSS/JS puros, processados por script | Simples de manter, rápido de carregar |
+| Site público | HTML/CSS/JS puros e estáticos (sem build) | Simples de manter, rápido de carregar, separação total de estrutura/presentação/comportamento |
 | Testes | [Playwright](https://playwright.dev) | Automatiza um navegador de verdade |
 
 O agendador n8n foi descartado: a nuvem vira ~R$150/mês após o trial e a versão
@@ -82,18 +82,20 @@ adota-patos/
 │   ├── MODELO_CONCEITUAL.md   ← MER + dicionário de dados
 │   └── diagramas/             ← diagrama entidade-relacionamento
 ├── frontend/
-│   ├── index.html             ← site público (compilado a partir do protótipo)
+│   ├── index.html             ← site público (estrutura, escrita à mão)
+│   ├── css/
+│   │   ├── tema.css           ← variáveis de design (fonte única)
+│   │   └── estilo.css         ← apresentação do site público
+│   ├── js/app.js              ← comportamento do site público
 │   ├── admin/                 ← login e painel da equipe
 │   └── robots.txt
-├── prototipo/
-│   └── adota-patos.html       ← arte original (fonte do gerador)
-└── scripts/
-    └── gerar_frontend.py      ← compila o protótipo em HTML final
+└── docs/arte-original/
+    └── adota-patos.html       ← arte original do Matheus (referência visual)
 ```
 
 ## Como rodar localmente
 
-Pré-requisitos: [Python 3](https://python.org), [Deno](https://deno.com) e conta no Supabase.
+Pré-requisitos: [Deno](https://deno.com) e conta no Supabase.
 
 ```bash
 # 1. Clone e entre no projeto
@@ -109,9 +111,6 @@ cd frontend && python -m http.server 8788
 
 # 4. Rode a função do formulário localmente
 supabase functions serve receber-adocao --env-file ./backend/supabase/.env
-
-# 5. Regenere o site público depois de mudanças no protótipo
-python scripts/gerar_frontend.py
 ```
 
 ## Testes
