@@ -10,12 +10,12 @@ const botao = document.getElementById('botao-entrar');
 
 function mostrarErro(texto) {
     erro.textContent = texto;
-    erro.style.display = 'block';
+    erro.classList.add('visivel');
 }
 
 form.addEventListener('submit', async (evento) => {
     evento.preventDefault();
-    erro.style.display = 'none';
+    erro.classList.remove('visivel');
 
     const email = document.getElementById('email').value.trim();
     const senha = document.getElementById('senha').value;

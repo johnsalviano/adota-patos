@@ -6,7 +6,8 @@
 // ============================================================
 
 export const ORIGENS_PERMITIDAS = new Set([
-  'http://localhost:8788', // ambiente de testes local
+  'http://localhost:8788', // teste local servindo o frontend
+  'https://johnsalviano.github.io', // site publicado (GitHub Pages)
 ])
 
 export function corsPara(origem: string | null): Record<string, string> {

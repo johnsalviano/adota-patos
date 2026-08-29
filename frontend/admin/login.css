@@ -91,6 +91,10 @@ button:disabled { opacity: 0.6; cursor: wait; }
     margin-bottom: 20px;
 }
 
+.mensagem-erro.visivel {
+    display: block;
+}
+
 .voltar-site {
     text-align: center;
     margin-top: 26px;
