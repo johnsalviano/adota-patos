@@ -55,6 +55,34 @@ section {
     color: var(--dark);
 }
 
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.sr-only:focus {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: auto;
+    height: auto;
+    padding: 12px 24px;
+    margin: 0;
+    background: var(--primary);
+    color: var(--dark);
+    font-weight: 700;
+    z-index: 9999;
+    clip: auto;
+    white-space: normal;
+}
+
 /* -------------------------
    REVEAL (animacao de scroll)
    ------------------------- */

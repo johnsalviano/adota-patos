@@ -1,6 +1,3 @@
-// Origem e JS continuam separados — seria bom separar CSS/JS em arquivos,
-// mas sobre o backend segue:
-
 // ============================================================
 // CORS — origens autorizadas a chamar esta função
 // ============================================================

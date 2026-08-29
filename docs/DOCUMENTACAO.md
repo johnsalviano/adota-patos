@@ -175,56 +175,46 @@ Um animal pode receber **várias** solicitações; cada solicitação aponta par
 
 ---
 
-## 11. Registro de Desenvolvimento 📝
+## 11. Registro de Desenvolvimento
 
-> **Regra do projeto: cada coisa que entrarmos ou melhorarmos ganha uma linha aqui.** É o nosso diário de bordo — serve para o relatório final da extensão e para lembrar decisões.
+> **Regra do projeto: cada coisa que entrarmos ou melhorarmos ganha uma linha aqui.** E o nosso diario de bordo — serve para o relatorio final da extensao e para lembrar decisoes.
 
-| Data | O que foi feito | Responsável |
+| Data | O que foi feito | Responsavel |
 |---|---|---|
-| 2026-08-01 a 08-18 | **Fase de estudo e pesquisa (antes de qualquer código)**: levantamento de plataformas similares de adoção, comparação entre ferramentas (Supabase, Firebase, n8n), estudo de Row Level Security, LGPD aplicada a pequenos sites e boas práticas de segurança em projetos web. Essa base teórica orientou todas as decisões seguintes | John e Matheus |
-| 2026-08-19 | Matheus entregou o protótipo HTML do site público (layout completo: catálogo, modal, formulário, responsivo) | Matheus |
-| 2026-08-19 | Divisão formal do trabalho: John = back-end/banco/integrações; Matheus = front-end/painel da ONG | John e Matheus |
-| 2026-08-22 | Criada esta documentação viva + modelo conceitual dos dados | John |
-| 2026-08-22 | Projeto criado no Supabase (conta conectada) | John |
-| 2026-08-22 | Script SQL do banco criado (`backend/supabase/schema.sql`) — pendente de execução | John |
-| 2026-08-22 | Criado repositório público [johnsalviano/adota-patos](https://github.com/johnsalviano/adota-patos) e o contrato `REGRAS.md` (3 camadas de padrão: Issues/PRs, motion principles, observabilidade+qualidade+testes) | John |
-| 2026-08-22 | Criadas as Issues #1–#9 cobrindo o cronograma: banco Supabase, webhook n8n, integração do site, painel da ONG, ferramentas de qualidade, testes E2E, Sentry e deploy | John |
-| 2026-08-22 | **Banco no ar** (#1 concluída): `schema.sql` executado — tabelas `animais`/`adocoes`, bucket `fotos-animais`, políticas RLS ativas | John |
-| 2026-08-22 | Testes de segurança aprovados via API pública: visitante lê catálogo (200), escrita anônima bloqueada em ambas as tabelas (401) | John |
-| 2026-08-22 | **Migração 002** (`backend/supabase/002_acessos_ong.sql`): criada lista `perfis_membros` — só e-mails autorizados pela ONG têm poderes administrativos, mesmo entre contas logadas. Defesa contra criação de contas falsas. Passo a passo de como dar/remover acesso documentado no MODELO_CONCEITUAL.md §5 | John |
-| 2026-08-22 | **Decisão de arquitetura**: substituímos o n8n por uma Edge Function do próprio Supabase (`receber-adocao`). Motivo: n8n Cloud não tem plano gratuito permanente (~R$150/mês após o trial) e a ONG exige custo zero. A função roda 24/7 nos servidores do Supabase sem máquina dedicada. Critério registrado: custo zero > ferramenta específica | John |
-| 2026-08-22 | **Formulário no ar** (#2 concluída): endpoint público testado de ponta a ponta — valida campos com mensagens amigáveis, grava em `adocoes` com status `Pendente`, responde ao site em JSON humanizado. Testes: payload válido (200 + linha gravada), campos faltando (400 com lista do que falta), payload malformado (400). Linha de teste removida após verificação | John |
-| 2026-08-22 | Gerada a **imagem do modelo conceitual** na notação clássica de Peter Chen (`docs/diagramas/modelo-conceitual.png`, fonte editável `.dot` no mesmo diretório) para o relatório/apresentação da faculdade | John |
+| 2026-08-01 a 08-18 | **Fase de estudo e pesquisa**: levantamento de plataformas similares, comparacao entre ferramentas (Supabase, Firebase, n8n), estudo de RLS, LGPD e boas praticas de seguranca. Base teorica que orientou todas as decisoes seguintes | John e Matheus |
+| 2026-08-19 | Matheus entregou o prototipo HTML do site publico (layout completo: catalogo, modal, formulario, responsivo) | Matheus |
+| 2026-08-19 | Divisao formal do trabalho: John = back-end/banco/integracoes; Matheus = front-end/painel da ONG | John e Matheus |
+| 2026-08-22 | **Infraestrutura base**: projeto Supabase criado, `schema.sql` executado (tabelas `animais`/`adocoes`, bucket `fotos-animais`, RLS ativa), documentacao viva + modelo conceitual, repositorio publico com `REGRAS.md` e Issues #1-#9 | John |
+| 2026-08-22 | Testes de seguranca via API publica: visitante le catalogo (200), escrita anonima bloqueada (401) | John |
+| 2026-08-22 | **Migracao 002** (`002_acessos_ong.sql`): lista `perfis_membros` — so e-mails autorizados pela ONG tem poderes administrativos. Defesa contra criacao de contas falsas | John |
+| 2026-08-22 | **Decisao de arquitetura**: substituicao do n8n por Edge Function do Supabase. Motivo: n8n cobra ~R$150/mes apos o trial; a ONG exige custo zero | John e Matheus |
+| 2026-08-22 | **Formulario no ar** (#2): endpoint publico testado ponta a ponta — valida campos, grava em `adocoes`, responde em JSON humanizado | John |
+| 2026-08-22 | Imagem do modelo conceitual na notacao de Peter Chen (`docs/diagramas/modelo-conceitual.png`, fonte `.dot`) | John |
+| 2026-08-23 | **Integracao do prototipo ao back-end real**: criado `gerar_frontend.py`; correcao: coluna `criado_em` nao existia, corrigido para `created_at` | John |
+| 2026-08-23 | **Vulnerabilidade XSS corrigida**: `innerHTML` sem tratamento permitia injecao via cadastro. Solucao: funcao de escape + URLs somente `https://` | John |
+| 2026-08-23 | **Pacote LGPD** (Issues #13 e #18): migracao 003 adicionou `consentimento_lgpd` e `termo_versao`; formulario com autorizacao obrigatoria; Edge Function recusa sem consentimento (400) | John |
+| 2026-08-23 | **Banner de cookies** (#15): aviso na primeira visita com Aceitar/Recusar; Google Analytics so carrega apos aceite | John |
+| 2026-08-23 | **Protecao contra robos e abuso** (#16): migracao 004 criou tabela de controle + funcao atomica `registrar_envio`; limite 5 envios/min por IP, teto global 60/min; honeypot com resposta falsa | John |
+| 2026-08-23 | **Teto global de rate limit**: IP pode ser forjado na cadeia XFF; o teto global garante protecao mesmo contra esse truque | John e Matheus |
+| 2026-08-23 | **Log de seguranca** (#19, migracao 005): tabela `log_seguranca` com evento/IP/detalhe tecnico; limpeza automatica aos 90 dias | John |
+| 2026-08-23 | **Retencao automatica de dados** (#14): job diario remove solicitacoes com mais de 6 meses — LGPD | John |
+| 2026-08-23 | **CORS restrito**: Edge Function so responde as origens conhecidas | John |
+| 2026-08-23 | **Pentest com 12 vetores**: SQL injection (403 WAF), leitura anonima bloqueada (RLS), envio sem consentimento (400), honeypot, rajada (429), JSON malformado, origem desconhecida. 2 falhas reais corrigidas: XSS persistente e rate limit por IP forjado | John |
+| 2026-08-23 | **Endurecimento da funcao** (F1-F4): IP pelo ultimo da cadeia XFF, limite de payload (413), regex de e-mail, limites server-side espelhando os do navegador | John |
+| 2026-08-23 | **Limites de digitacao**: nome 80 (padrao PF), telefone 15 (ANATEL), cidade 40, motivo 300 com contador. Aplicados no navegador E no servidor | John |
+| 2026-08-23 | **SEO basico**: `robots titulo`, meta description, Open Graph e favicon | John |
+| 2026-08-23 | **Bateria tecnica 16/16**: carregamento, responsividade, maxlength, modal, consentimento, console e rede limpos | John e Matheus |
+| 2026-08-23 | **Auditoria final de seguranca**: RLS ativa nas 5 tabelas, anonimo le lista vazia em dados sensiveis, storage publico restrito as fotos, indices, FK, CHECKs | John |
+| 2026-08-23 | **Historia real da ONG no site** (#31): secao "Sobre nos" com dados verdadeiros (fundacao 11/06/2018) e canais oficiais — fim dos links placeholder | John |
+| 2026-08-23 | **Google Analytics 4** (#33): propriedade oficial criada, ID `G-S08M6034SR` — tag com gatilho LGPD | John |
+| 2026-08-23 | **Politica de Privacidade completa** (#35): modal com linguagem simples, CNPJ, dados, finalidade, base legal, retencao, compartilhamento, cookies, seguranca, direitos (art. 18) | John |
+| 2026-08-23 | **CI/GitHub endurecido** (#37): CodeQL + gitleaks, dependabot, `HANDOFF-MATHEUS.md` com contratos de API | John |
+| 2026-08-28 | **Refatoracao da Edge Function**: `index.ts` dividido em `cors.ts`, `validar.ts` e `seguranca.ts` — separacao de responsabilidades | John |
+| 2026-08-28 | **Front-end reescrito a mao** (#52/Rota B): HTML limpo (zero inline), CSS em `tema.css` + `estilo.css`, JS em `app.js`, CI com `estrutura-frontend` | John |
+| 2026-08-28 | **Correcoes de producao** (PR #59): CORS com origem publicada, `login.js` com classes CSS, `Cache-Control: no-store`, header `Allow` no 405, CI varrendo JS do admin | John |
+| 2026-08-29 | **Melhorias de acessibilidade e qualidade**: focus trap + Escape nos modais, skip-to-content, alt texts, theme-color, JSON-LD, `<small>` no rodape, passive scroll, schema.sql atualizado | John |
 
-| 2026-08-23 | **Protótipo integrado ao back-end real**: criado `gerar_frontend.py`, script que lê o HTML do Matheus e injeta as chamadas reais (catálogo via API, modal dinâmico, formulário → Edge Function). Motivo: permite evoluir o site sem apagar o trabalho do colega - o protótipo continua sendo a fonte visual | John |
-| 2026-08-23 | **Correção importante de integração**: o catálogo dava erro 400 porque o código buscava coluna inexistente (`criado_em`); a coluna real do banco é `created_at`. Lição registrada: sempre conferir o schema antes de consumir a API | John |
-| 2026-08-23 | **Vulnerabilidade XSS corrigida**: o protótipo renderizava dados do banco com `innerHTML` sem tratamento - um animal cadastrado com `<script>` no nome executaria código no navegador de todo visitante. Solução: função de escape aplicada a TODO dado antes de renderizar + URLs de foto aceitas somente `https://`. Prova: inserimos animal malicioso de teste, confirmamos que aparece como texto inerte e limpamos o banco | John |
-| 2026-08-23 | **Pacote LGPD implementado** (Issues #13 e #18): migração 003 adicionou `consentimento_lgpd` e `termo_versao` em `adocoes`; o formulário ganhou caixa de autorização obrigatória (não envia sem marcar) com resumo legível do uso dos dados; a Edge Function recusa envio sem consentimento (400) e grava a versão do termo aceita | John |
-| 2026-08-23 | **Banner de cookies** (#15): aviso na primeira visita com Aceitar/Recusar; escolha fica salva no navegador; Google Analytics só carrega após aceite - conformidade LGPD desde o primeiro clique | John |
-| 2026-08-23 | **Proteção contra robôs e abuso** (#16): migração 004 criou tabela de controle + função atômica `registrar_envio`; limite de 5 envios/minuto por IP e teto global de 60/min; campo-armadilha (honeypot) invisível para humanos - bot que preenche recebe resposta falsa de sucesso e não polui o banco | John |
-| 2026-08-23 | **Por que o limite tem também um teto global**: descobrimos nos testes que o cabeçalho de IP pode ser forjado (chega como lista de IPs internos), diluindo o limite por IP. O teto global garante proteção mesmo contra esse truque, sem afetar uso legítimo | John |
-| 2026-08-23 | **Log de segurança** (#19, migração 005): tabela `log_seguranca` registra eventos suspeitos (honeypot acionado, rate limit estourado) apenas com evento, IP e detalhe técnico - nenhum dado pessoal; limpeza automática aos 90 dias via agendador do banco | John |
-| 2026-08-23 | **Retenção automática de dados** (#14): job diário à meia-noite remove solicitações de adoção com mais de 6 meses - a LGPD exige guardar dados pessoais só pelo tempo necessário à finalidade | John |
-| 2026-08-23 | **CORS restrito**: a Edge Function só responde às origens conhecidas (localhost hoje, domínio futuro depois); site desconhecido não consegue disparar nosso endpoint escondido | John |
-| 2026-08-23 | **Teste de invasão (pentest) com 12 vetores**: SQL injection (bloqueado pela WAF Cloudflare do Supabase, 403), leitura de dados pessoais por anônimo (bloqueado pela RLS), envio sem consentimento (400), honeypot (resposta falsa), rajada de envios (429), JSON malformado, origem desconhecida etc. Encontradas e corrigidas 2 falhas reais: XSS persistente (registro acima) e rate limit contornável por IP forjado (resolvido com teto global) | John |
-| 2026-08-23 | **Endurecimento da função** (auditoria F1-F4): IP pega o último da cadeia XFF (mais confiável), limite de tamanho do payload (413 acima de 10 KB), regex de e-mail reforçada, limites server-side espelhando os do navegador - defesa em camadas | John |
-| 2026-08-23 | **Limites de digitação com padrão brasileiro**: nome 80 (padrão Polícia Federal/passaporte gov.br), telefone 15 (formato ANATEL "(83) 99999-9999"), cidade 40, motivo 300 com contador visível (referência PRODABEL-BH). Aplicados no navegador E no servidor | John |
-| 2026-08-23 | **SEO básico** (das 9 dicas pós-lançamento, as que já dependiam só de nós): `robots.txt`, título com palavra-chave local ("Adote cães e gatos para adoção em Patos-PB"), meta description, Open Graph para compartilhamento bonito e favicon 🐾 (eliminou o único erro 404 do console). Search Console, Meu Negócio, sitemap final e domínio próprio ficam para quando o site estiver publicado - dependem de URL pública | John |
-| 2026-08-23 | **Bateria técnica final 16/16**: carregamento ~670ms, responsividade provada por geometria em 3 larguras (3/2/1 colunas), imagens carregadas, maxlength reais, contador, modal abre/fecha por X e clique fora, consentimento persistente, console e rede limpos | John |
-| 2026-08-23 | **Auditoria final de segurança e banco**: RLS ativa nas 5 tabelas, anônimo lê lista vazia em dados sensíveis e recebe 401 em escrita, storage público restrito às fotos do catálogo, índices adequados, FK com ON DELETE SET NULL, CHECKs de domínio (status/porte/sexo), e-mail único em membros. Comparação com o caso Moltbook/Wiz (fev/2026) confirma nossa arquitetura | John |
-
-| 2026-08-23 | **História real da ONG no site** (#31): seção "Sobre nós" reescrita com dados verdadeiros (fundação em 11/06/2018, resgate/tratamento/castração/adoção, apoio a tutores de baixa renda, sustentação por doações e voluntariado) e canais oficiais no "Contato" (@adotapatosoficial no Instagram/Facebook, WhatsApp, e-mail da ONG) - fim dos links placeholder | John |
-
-| 2026-08-23 | **Google Analytics 4 integrado** (#33): criada a propriedade oficial da ONG no analytics.google.com com fluxo de dados Web; ID de medição `G-S08M6034SR` preenchido no gerador - o site agora carrega a tag de estatísticas, mantendo o gatilho LGPD (nada é coletado sem aceite no banner de cookies) | John |
-
-| 2026-08-23 | **Política de Privacidade completa** (#35): link no rodapé abre modal dedicado com a política em linguagem simples — quem somos (CNPJ), dados coletados, finalidade, base legal (consentimento, art. 7º I), retenção (6 meses/90 dias), compartilhamento, cookies condicionais, segurança e direitos do titular (art. 18) com canais da ONG; fecha a pendência LGPD apontada na seção 12.4 | John |
-
-| 2026-08-23 | **Auditoria de segredos + endurecimento do CI/GitHub** (#37): varredura no working tree e em TODO o histórico git não encontrou nenhum segredo real (só placeholders do .env.example); ativados dependabot security updates e enforce_admins/strict na proteção da main; novo workflow `security.yml` com CodeQL (SAST JS+Python) e gitleaks (segredos) rodando a cada push/PR/semana; criado `docs/HANDOFF-MATHEUS.md` com os contratos de API para o front-end conectar | John |
-
-| 2026-08-28 | **Refatoração da Edge Function `receber-adocao` por responsabilidade única**: dividido o `index.ts` (340 linhas) em `cors.ts` (origens/horizontes), `validar.ts` (regras e limites) e `seguranca.ts` (IP, rate limit, log), cada um conversando com um pequeno orquestrador via imports — atende ao pedido dos professores de separar as linguagens mantendo a comunicação entre elas; comentários enxugados | John |
-| 2026-08-28 | **Front-end reescrito à mão; gerador aposentado** (#52/Rota B): o `gerar_frontend.py` era um atalho para aproveitar a arte do Matheus, mas movia 87 KB de HTML numa substituição de texto por script — frágil (quebrou em produção), difícil de manter e nada profissional (ninguém compila HTML por string de Python num projeto real). Reescrevemos `frontend/index.html` limpo à mão (847 linhas): zero estilo/script/evento inline, logo extraído do base64 para `frontend/img/logo.webp`, LGPD/honeypot/contador em classes do CSS, SEO preservado. CSS separado em 3 responsabilidades: `css/tema.css` (variáveis únicas do projeto, agora importadas também pelo admin — fim da duplicação de `:root`), `css/estilo.css` (site público) e CSS dos admin. JS em `frontend/js/app.js` sem estilos inline (banner de cookies, feedback e menu usam classes). `scripts/` e `prototipo/` removidos do build; arte original arquivada em `docs/arte-original/adota-patos.html`. CI novo: job `estrutura-frontend` reprova qualquer HTML com `style=`, evento inline ou `<script>` sem `src` — a separação vira regra permanente | John |
-
-*(próximos registros entram aqui)*
+*(proximos registros entram aqui)*
 
 ---
 
@@ -278,11 +268,8 @@ escrever em qualquer tabela.
   logs de segurança guardam apenas evento/IP/detalhe técnico.
 - **Retenção**: job diário apaga solicitações com mais de 6 meses
   (art. 15/16 - dados mantidos apenas pelo período necessário).
-- **Cookies/analytics**: banner com Aceitar/Recusar; GA só carrega com aceite;
-  recusa também é memorizada.
-- **Pendências honestas** (pós-MVP): página completa de Política de
-  Privacidade; avaliação formal de incidente (o caso iFood mostra o custo de
-  não ter processo claro de comunicação à ANPD).
+- **Cookies/analytics**: banner com Aceitar/Recusar; GA so carrega com aceite;
+  recusa tambem e memorizada.
 
 ### 12.5 Banco de dados — escolhas de modelagem
 
@@ -297,12 +284,11 @@ escrever em qualquer tabela.
 
 ### 12.6 O que recomendamos antes de ir ao ar (roadmap curto)
 
-1. Domínio próprio (registro.br, ~R$40/ano) e HTTPS gerenciado;
-2. Página de Política de Privacidade completa;
-3. Ativar MFA na conta Supabase e rotacionar a senha do banco pós-apresentação;
-4. Branch protection + CI básico (padrão dos projetos maduros: cal.com, dub);
-5. Google Search Console + sitemap.xml com a URL final;
-6. Sentry para erros em produção (plano gratuito).
+1. Dominio proprio (registro.br, ~R$40/ano) e HTTPS gerenciado;
+2. Ativar MFA na conta Supabase e rotacionar a senha do banco pos-apresentacao;
+3. Branch protection + CI basico (ja ativo);
+4. Google Search Console + sitemap.xml com a URL final;
+5. Sentry para erros em producao (plano gratuito).
 
 ---
 

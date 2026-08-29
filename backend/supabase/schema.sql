@@ -41,17 +41,19 @@ COMMENT ON TABLE animais IS 'Ficha de cada animal da ONG. O site mostra apenas o
 -- ============================================================
 
 CREATE TABLE adocoes (
-    id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    animal_id    UUID REFERENCES animais(id) ON DELETE SET NULL,
-    nome         TEXT NOT NULL,
-    telefone     TEXT NOT NULL,
-    email        TEXT NOT NULL,
-    cidade       TEXT NOT NULL,
-    experiencia  TEXT NOT NULL,
-    motivo       TEXT NOT NULL,
-    status       TEXT NOT NULL DEFAULT 'Pendente'
-                 CHECK (status IN ('Pendente', 'Aprovada', 'Rejeitada')),
-    created_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    animal_id        UUID REFERENCES animais(id) ON DELETE SET NULL,
+    nome             TEXT NOT NULL,
+    telefone         TEXT NOT NULL,
+    email            TEXT NOT NULL,
+    cidade           TEXT NOT NULL,
+    experiencia      TEXT NOT NULL,
+    motivo           TEXT NOT NULL,
+    consentimento_lgpd BOOLEAN NOT NULL DEFAULT false,
+    termo_versao     TEXT,
+    status           TEXT NOT NULL DEFAULT 'Pendente'
+                     CHECK (status IN ('Pendente', 'Aprovada', 'Rejeitada')),
+    created_at       TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 COMMENT ON TABLE adocoes IS 'Solicitações de adoção recebidas pelo site. animal_id pode ficar vazio se o animal for removido do banco (histórico preservado).';

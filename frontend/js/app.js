@@ -29,22 +29,79 @@ document.addEventListener("click", (event) => {
     modalSex.textContent = botao.dataset.sex;
     modalSize.textContent = botao.dataset.size;
     modalDescription.textContent = botao.dataset.description;
+    focoAnterior = botao;
     modal.classList.add("active");
+    const primeiro = focoDentro(modal);
+    if (primeiro) primeiro.focus();
 });
 
 closeModal.addEventListener("click", () => {
-    modal.classList.remove("active");
+    fecharModal(modal);
 });
 
 modal.addEventListener("click", (event) => {
     if (event.target === modal) {
-        modal.classList.remove("active");
+        fecharModal(modal);
     }
 });
 
 document.getElementById("adoptButton").addEventListener("click", () => {
-    modal.classList.remove("active");
+    fecharModal(modal);
 });
+
+// =========================
+// FOCUS TRAP + ESCAPE (modais)
+// =========================
+
+let focoAnterior = null;
+
+function focoDentro(modalEl) {
+    const alvos = modalEl.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    return alvos.length ? alvos[0] : null;
+}
+
+function trancarFoco(event) {
+    if (event.key !== "Tab") return;
+    const modalAtivo = document.querySelector(".modal.active");
+    if (!modalAtivo) return;
+
+    const alvos = modalAtivo.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    if (!alvos.length) return;
+
+    const primeiro = alvos[0];
+    const ultimo = alvos[alvos.length - 1];
+
+    if (event.shiftKey && document.activeElement === primeiro) {
+        event.preventDefault();
+        ultimo.focus();
+    } else if (!event.shiftKey && document.activeElement === ultimo) {
+        event.preventDefault();
+        primeiro.focus();
+    }
+}
+
+function fecharModal(modalEl) {
+    modalEl.classList.remove("active");
+    if (focoAnterior) {
+        focoAnterior.focus();
+        focoAnterior = null;
+    }
+    document.removeEventListener("keydown", onEscape);
+    document.removeEventListener("keydown", trancarFoco);
+}
+
+function onEscape(event) {
+    if (event.key !== "Escape") return;
+    const modalAtivo = document.querySelector(".modal.active");
+    if (modalAtivo) fecharModal(modalAtivo);
+}
+
+document.addEventListener("keydown", onEscape);
+document.addEventListener("keydown", trancarFoco);
 
 // =========================
 // FORMULARIO DE ADOCAO
@@ -142,7 +199,7 @@ const siteHeader = document.querySelector("header");
 
 window.addEventListener("scroll", () => {
     siteHeader.classList.toggle("scrolled", window.scrollY > 20);
-});
+}, { passive: true });
 
 // =========================
 // ANIMACAO AO ROLAR (REVEAL)
@@ -307,15 +364,20 @@ carregarAnimais();
 const politicaModal = document.getElementById("politicaModal");
 
 document.querySelectorAll(".abrir-politica").forEach((botao) => {
-    botao.addEventListener("click", () => politicaModal.classList.add("active"));
+    botao.addEventListener("click", () => {
+        focoAnterior = botao;
+        politicaModal.classList.add("active");
+        const primeiro = focoDentro(politicaModal);
+        if (primeiro) primeiro.focus();
+    });
 });
 
 document.getElementById("fecharPolitica").addEventListener("click", () => {
-    politicaModal.classList.remove("active");
+    fecharModal(politicaModal);
 });
 
 politicaModal.addEventListener("click", (event) => {
     if (event.target === politicaModal) {
-        politicaModal.classList.remove("active");
+        fecharModal(politicaModal);
     }
 });
