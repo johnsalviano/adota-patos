@@ -16,13 +16,19 @@ jobs:
 
       - name: Proibe CSS, JS e eventos inline nos HTML de producao
         run: |
-          ARQUIVOS="frontend/index.html frontend/admin/*.html"
-          if grep -nE '<style|style[[:space:]]*=|on(click|input|change|submit|focus|blur|load|keydown|keyup|mouseenter|mouseover|dblclick|error|scroll)[[:space:]]*=' $ARQUIVOS; then
+          ARQUIVOS_HTML="frontend/index.html frontend/admin/*.html"
+          if grep -nE '<style|style[[:space:]]*=|on(click|input|change|submit|focus|blur|load|keydown|keyup|mouseenter|mouseover|dblclick|error|scroll)[[:space:]]*=' $ARQUIVOS_HTML; then
             echo "::error::HTML com estilo, script ou evento inline. Separe estrutura (HTML), apresentacao (CSS) e comportamento (JS)."
             exit 1
           fi
-          if grep -Pn '<script(?![^>]*\bsrc[[:space:]]*=)' $ARQUIVOS; then
+          if grep -Pn '<script(?![^>]*\bsrc[[:space:]]*=)' $ARQUIVOS_HTML; then
             echo "::error::Tag <script> sem src (JS inline). Mova o codigo para frontend/js/."
             exit 1
           fi
-          echo "OK: HTML de producao sem estilo, script ou evento inline."
+          # SoC tambem vale no JS: nada de manipular estilo diretamente.
+          # Toda mudanca visual via classes definidas no CSS.
+          if grep -nE '\.style\.[a-zA-Z]+|[.]style[[:space:]]*[=]|style\.cssText|setAttribute\([\x27\x22]style' frontend/js/app.js frontend/admin/*.js; then
+            echo "::error::JS manipulando estilo diretamente (inline). Use classes CSS."
+            exit 1
+          fi
+          echo "OK: HTML e JS de producao sem estilo, script ou evento inline."

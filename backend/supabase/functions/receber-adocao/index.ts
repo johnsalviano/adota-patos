@@ -16,10 +16,22 @@ import {
   LIMITE_GLOBAL_POR_MINUTO,
 } from './seguranca.ts'
 
-function json(corpo: unknown, status: number, cors: Record<string, string>): Response {
+function json(
+  corpo: unknown,
+  status: number,
+  cors: Record<string, string>,
+  extra?: Record<string, string>,
+): Response {
   return new Response(JSON.stringify(corpo), {
     status,
-    headers: { ...cors, 'Content-Type': 'application/json' },
+    headers: {
+      ...cors,
+      'Content-Type': 'application/json',
+      // Nunca cachear respostas de formulário: dados podem mudar
+      // (LGPD) e o conteúdo varia por chamada.
+      'Cache-Control': 'no-store',
+      ...extra,
+    },
   })
 }
 
@@ -31,7 +43,12 @@ Deno.serve(async (req: Request) => {
   }
 
   if (req.method !== 'POST') {
-    return json({ ok: false, mensagem: 'Método não permitido.' }, 405, cors)
+    return json(
+      { ok: false, mensagem: 'Método não permitido.' },
+      405,
+      cors,
+      { Allow: 'POST, OPTIONS' },
+    )
   }
 
   try {
@@ -54,10 +71,12 @@ Deno.serve(async (req: Request) => {
     const supabase = createClient(Deno.env.get('SUPABASE_URL')!, chaveServidor!)
 
     // Rate limit: protege contra envios automáticos.
+    const ip = ipDaRequisicao(req)
+
     const { data: dentroDoLimite, error: erroLimite } = await supabase.rpc(
       'registrar_envio',
       {
-        p_ip: ipDaRequisicao(req),
+        p_ip: ip,
         p_limite: LIMITE_POR_MINUTO,
         p_limite_global: LIMITE_GLOBAL_POR_MINUTO,
       },
@@ -79,7 +98,7 @@ Deno.serve(async (req: Request) => {
       await registrarLog(
         supabase,
         'rate_limit_estourado',
-        ipDaRequisicao(req),
+        ip,
         'Mais de 5 envios em 1 minuto',
       )
       return json(
@@ -101,7 +120,7 @@ Deno.serve(async (req: Request) => {
       await registrarLog(
         supabase,
         'honeypot_acionado',
-        ipDaRequisicao(req),
+        ip,
         String(dados['website']).slice(0, 200),
       )
       return json(

@@ -132,7 +132,6 @@ cada escolha, comece por lá.
 ## Roadmap
 
 - [ ] Domínio próprio e HTTPS
-- [ ] Página completa de Política de Privacidade
 - [ ] Painel da ONG: CRUD de animais e aprovação de solicitações
 - [ ] Google Search Console + sitemap.xml
 - [ ] Sentry para monitorar erros em produção

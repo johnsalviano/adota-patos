@@ -37,7 +37,7 @@ COMMENT ON TABLE animais IS 'Ficha de cada animal da ONG. O site mostra apenas o
 -- ============================================================
 -- 2. TABELA ADOCOES
 -- Cada linha é uma pessoa que se candidatou pelo formulário.
--- Chega aqui automaticamente via n8n.
+-- Chega aqui via Edge Function (receber-adocao) ou pelo painel.
 -- ============================================================
 
 CREATE TABLE adocoes (
@@ -73,7 +73,7 @@ CREATE INDEX idx_adocoes_status_created ON adocoes(status, created_at DESC);
 -- Quem acessa o quê:
 --   • Visitante anônimo → só LÊ animais disponíveis (site público)
 --   • ONG logada        → controla animais e lê/atualiza solicitações
---   • n8n (servidor)    → grava novas solicitações usando a chave
+--   • Edge Function     → grava novas solicitações usando a chave
 --                         privada service_role (que ignora RLS,
 --                         por isso NUNCA vai para o site)
 -- ============================================================
@@ -115,7 +115,7 @@ USING (true)
 WITH CHECK (true);
 
 -- 3.5 Gravação pública direta nas solicitações? NÃO existe política.
---     O anon não pode inserir nada aqui. Quem insere é o n8n,
+--     O anon não pode inserir nada aqui. Quem insere é a Edge Function,
 --     com a chave service_role — o visitante nunca tem contato.
 
 
