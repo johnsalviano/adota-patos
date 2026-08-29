@@ -14,6 +14,14 @@ function mostrarFeedback(el, texto, erro) {
     el.className = "feedback" + (erro ? " erro" : " sucesso");
 }
 
+function formatarData(iso) {
+    try {
+        return new Date(iso).toLocaleDateString("pt-BR");
+    } catch (e) {
+        return "";
+    }
+}
+
 // =========================
 // GUARDA DE ACESSO
 // =========================
@@ -25,42 +33,49 @@ async function verificarAcesso() {
     const { data: membro } = await cliente.rpc("eh_membro_ong");
     if (!membro) { await cliente.auth.signOut(); window.location.href = "login.html"; return null; }
 
-    document.getElementById("email-logado").textContent = session.user.email || "";
+    const email = session.user.email || "";
+    document.getElementById("email-logado").textContent = email;
+    document.getElementById("email-logado-inicial").textContent = email;
     document.getElementById("tela-carregando").classList.add("oculto");
     document.getElementById("conteudo-painel").classList.remove("oculto");
     return session;
 }
 
 // =========================
-// ABAS
+// NAVEGACAO ENTRE TELAS
 // =========================
 
-function configurarAbas() {
-    document.querySelectorAll(".aba").forEach(aba => {
-        aba.addEventListener("click", () => {
-            document.querySelectorAll(".aba").forEach(a => a.classList.remove("ativa"));
-            document.querySelectorAll(".conteudo-aba").forEach(c => c.classList.remove("ativo"));
-            aba.classList.add("ativa");
-            document.getElementById("aba-" + aba.dataset.aba).classList.add("ativo");
+function mostrarTela(id) {
+    document.querySelectorAll(".tela").forEach(t => t.classList.remove("ativa"));
+    const alvo = document.getElementById("tela-" + id);
+    if (alvo) alvo.classList.add("ativa");
 
-            if (aba.dataset.aba === "solicitacoes") carregarSolicitacoes();
-        });
+    if (id === "solicitacoes") carregarSolicitacoes();
+    if (id === "aprovar") carregarAprovar();
+    if (id === "cadastrar") carregarAnimaisCadastro();
+}
+
+function configurarNavegacao() {
+    document.querySelectorAll("[data-tela]").forEach(el => {
+        el.addEventListener("click", () => mostrarTela(el.dataset.tela));
     });
 }
 
 // =========================
-// CRUD ANIMAIS
+// TELA 1: CADASTRAR ANIMAIS
 // =========================
 
-async function carregarAnimais() {
-    const container = document.getElementById("lista-animais");
+async function carregarAnimaisCadastro() {
+    const container = document.getElementById("lista-animais-cadastro");
+    container.innerHTML = '<p class="carregando-texto">Carregando...</p>';
+
     const { data, error } = await cliente
         .from("animais")
         .select("id, nome, idade, sexo, porte, descricao, foto_url, status, created_at")
         .order("created_at", { ascending: false });
 
     if (error) {
-        container.innerHTML = '<p class="erro-texto">Erro ao carregar animais.</p>';
+        container.innerHTML = '<p class="erro-texto">Erro ao carregar os animais.</p>';
         return;
     }
 
@@ -70,40 +85,22 @@ async function carregarAnimais() {
     }
 
     container.innerHTML = data.map(a => `
-        <div class="animal-item" data-id="${a.id}">
-            <img src="${a.foto_url || ""}" alt="${escaparTexto(a.nome)}" class="animal-thumb">
-            <div class="animal-info">
+        <div class="item-linha">
+            <div class="item-info">
                 <strong>${escaparTexto(a.nome)}</strong>
-                <span class="animal-meta">${escaparTexto(a.idade)} · ${escaparTexto(a.sexo)} · ${escaparTexto(a.porte)}</span>
-                <span class="animal-status ${a.status === 'Disponível' ? 'status-disponivel' : 'status-indisponivel'}">${escaparTexto(a.status)}</span>
+                <span class="item-meta">${escaparTexto(a.idade)} · ${escaparTexto(a.sexo)} · ${escaparTexto(a.porte)} — ${escaparTexto(a.status)}</span>
             </div>
-            <div class="animal-acoes">
-                <button type="button" class="btn-acao btn-alterar-status" data-id="${a.id}" data-status="${a.status}">
-                    ${a.status === "Disponível" ? "Marcar como adotado" : "Marcar como disponível"}
-                </button>
-                <button type="button" class="btn-acao btn-excluir-animal" data-id="${a.id}" data-nome="${escaparTexto(a.nome)}">
-                    Excluir
-                </button>
-            </div>
+            <button type="button" class="btn-excluir-animal" data-id="${a.id}" data-nome="${escaparTexto(a.nome)}">Excluir</button>
         </div>
     `).join("");
 
-    container.querySelectorAll(".btn-alterar-status").forEach(btn => {
-        btn.addEventListener("click", () => alternarStatusAnimal(btn.dataset.id, btn.dataset.status));
-    });
-
     container.querySelectorAll(".btn-excluir-animal").forEach(btn => {
-        btn.addEventListener("click", () => confirmarExclusao(btn.dataset.id, btn.dataset.nome));
-    });
-
-    container.querySelectorAll(".animal-thumb").forEach(img => {
-        img.addEventListener("error", () => { img.classList.add("oculta"); });
+        btn.addEventListener("click", () => confirmarExclusaoAnimal(btn.dataset.id, btn.dataset.nome));
     });
 }
 
 async function cadastrarAnimal(evento) {
     evento.preventDefault();
-    const form = evento.target;
     const feedback = document.getElementById("form-animal-feedback");
     const btnSalvar = document.getElementById("btn-salvar-animal");
 
@@ -120,19 +117,18 @@ async function cadastrarAnimal(evento) {
     let fotoUrl = null;
 
     try {
-        // Upload da foto se houver
         if (fotoInput.files && fotoInput.files[0]) {
             const arquivo = fotoInput.files[0];
             if (arquivo.size > 5 * 1024 * 1024) {
-                mostrarFeedback(feedback, "Foto deve ter no maximo 5MB.", true);
+                mostrarFeedback(feedback, "A foto deve ter no maximo 5MB.", true);
                 return;
             }
-            const extensao = arquivo.name.split(".").pop();
+            const extensao = arquivo.name.split(".").pop().toLowerCase();
             const caminho = `animais/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${extensao}`;
             const { error: uploadErro } = await cliente.storage
                 .from("fotos-animais")
                 .upload(caminho, arquivo, { contentType: arquivo.type });
-            if (uploadErro) throw uploadErro;
+            if (uploadErro) throw new Error("Falha ao enviar a foto.");
             const { data: urlData } = cliente.storage.from("fotos-animais").getPublicUrl(caminho);
             fotoUrl = urlData.publicUrl;
         }
@@ -146,8 +142,8 @@ async function cadastrarAnimal(evento) {
         if (error) throw error;
 
         mostrarFeedback(feedback, "Animal cadastrado com sucesso!", false);
-        form.reset();
-        carregarAnimais();
+        evento.target.reset();
+        carregarAnimaisCadastro();
     } catch (e) {
         mostrarFeedback(feedback, "Erro ao cadastrar: " + (e.message || "tente novamente."), true);
     } finally {
@@ -156,33 +152,8 @@ async function cadastrarAnimal(evento) {
     }
 }
 
-async function alternarStatusAnimal(id, statusAtual) {
-    const novoStatus = statusAtual === "Disponível" ? "Adotado" : "Disponível";
-    const { error } = await cliente.from("animais").update({ status: novoStatus }).eq("id", id);
-    if (!error) carregarAnimais();
-}
-
-function confirmarExclusao(id, nome) {
-    const modal = document.getElementById("modal-confirmar");
-    document.getElementById("modal-confirmar-texto").textContent =
-        `Tem certeza que deseja excluir "${nome}"? Esta ação não pode ser desfeita.`;
-    modal.showModal();
-
-    const btnConfirmar = document.getElementById("modal-btn-confirmar");
-    const btnCancelar = document.getElementById("modal-btn-cancelar");
-
-    const fechar = () => { modal.close(); btnConfirmar.replaceWith(btnConfirmar.cloneNode(true)); btnCancelar.replaceWith(btnCancelar.cloneNode(true)); };
-
-    document.getElementById("modal-btn-confirmar").addEventListener("click", async () => {
-        await cliente.from("animais").delete().eq("id", id);
-        fechar();
-        carregarAnimais();
-    });
-    document.getElementById("modal-btn-cancelar").addEventListener("click", fechar);
-}
-
 // =========================
-// SOLICITACOES DE ADOCAO
+// TELA 2: VER SOLICITACOES
 // =========================
 
 async function carregarSolicitacoes() {
@@ -195,7 +166,7 @@ async function carregarSolicitacoes() {
         .order("created_at", { ascending: false });
 
     if (error) {
-        container.innerHTML = '<p class="erro-texto">Erro ao carregar solicitações.</p>';
+        container.innerHTML = '<p class="erro-texto">Erro ao carregar as solicitações.</p>';
         return;
     }
 
@@ -204,7 +175,6 @@ async function carregarSolicitacoes() {
         return;
     }
 
-    // Busca nomes dos animais para exibir
     const animalIds = [...new Set(data.map(s => s.animal_id).filter(Boolean))];
     let animaisMap = {};
     if (animalIds.length > 0) {
@@ -212,47 +182,162 @@ async function carregarSolicitacoes() {
         if (animais) animais.forEach(a => { animaisMap[a.id] = a.nome; });
     }
 
-    container.innerHTML = data.map(s => {
-        const dataFmt = new Date(s.created_at).toLocaleDateString("pt-BR");
-        const animalNome = s.animal_id ? animaisMap[s.animal_id] || "—" : "—";
-        const statusClasse = s.status === "Aprovado" ? "status-aprovado" :
-                             s.status === "Recusado" ? "status-recusado" : "status-pendente";
-        return `
-        <div class="solicitacao-item" data-id="${s.id}">
-            <div class="solicitacao-cabecalho">
+    container.innerHTML = data.map(s => `
+        <div class="item-card">
+            <div class="item-card-cabecalho">
                 <strong>${escaparTexto(s.nome)}</strong>
-                <span class="solicitacao-status ${statusClasse}">${escaparTexto(s.status)}</span>
+                <span class="status-pill status-${s.status.toLowerCase()}">${escaparTexto(s.status)}</span>
             </div>
-            <div class="solicitacao-detalhes">
-                <span>Animal: ${escaparTexto(animalNome)}</span>
-                <span>Email: ${escaparTexto(s.email)}</span>
+            <div class="item-card-linhas">
+                <span>Animal: ${escaparTexto(s.animal_id ? (animaisMap[s.animal_id] || "—") : "—")}</span>
+                <span>E-mail: ${escaparTexto(s.email)}</span>
                 <span>Telefone: ${escaparTexto(s.telefone)}</span>
                 <span>Cidade: ${escaparTexto(s.cidade)}</span>
-                <span>Data: ${dataFmt}</span>
+                <span>Data: ${formatarData(s.created_at)}</span>
             </div>
-            <div class="solicitacao-texto">
+            <div class="item-card-texto">
                 <p><strong>Experiência:</strong> ${escaparTexto(s.experiencia)}</p>
                 <p><strong>Motivo:</strong> ${escaparTexto(s.motivo)}</p>
             </div>
-            ${s.status === "Pendente" ? `
-            <div class="solicitacao-acoes">
-                <button type="button" class="btn-acao btn-aprovar" data-id="${s.id}">Aprovar</button>
-                <button type="button" class="btn-acao btn-recusar" data-id="${s.id}">Recusar</button>
-            </div>` : ""}
-        </div>`;
-    }).join("");
+        </div>
+    `).join("");
+}
+
+// =========================
+// TELA 3: APROVAR OU RECUSAR
+// =========================
+
+async function carregarAprovar() {
+    await carregarPendentes();
+    await carregarStatusAnimais();
+}
+
+async function carregarPendentes() {
+    const container = document.getElementById("lista-pendentes");
+    container.innerHTML = '<p class="carregando-texto">Carregando...</p>';
+
+    const { data, error } = await cliente
+        .from("adocoes")
+        .select("id, nome, telefone, email, cidade, status, created_at, animal_id")
+        .eq("status", "Pendente")
+        .order("created_at", { ascending: true });
+
+    if (error) {
+        container.innerHTML = '<p class="erro-texto">Erro ao carregar as solicitações.</p>';
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        container.innerHTML = '<p class="vazio-texto">Nenhuma solicitação pendente.</p>';
+        return;
+    }
+
+    const animalIds = [...new Set(data.map(s => s.animal_id).filter(Boolean))];
+    let animaisMap = {};
+    if (animalIds.length > 0) {
+        const { data: animais } = await cliente.from("animais").select("id, nome").in("id", animalIds);
+        if (animais) animais.forEach(a => { animaisMap[a.id] = a.nome; });
+    }
+
+    container.innerHTML = data.map(s => `
+        <div class="item-card">
+            <div class="item-card-cabecalho">
+                <strong>${escaparTexto(s.nome)}</strong>
+                <span class="status-pill status-pendente">${escaparTexto(s.status)}</span>
+            </div>
+            <div class="item-card-linhas">
+                <span>Animal: ${escaparTexto(s.animal_id ? (animaisMap[s.animal_id] || "—") : "—")}</span>
+                <span>E-mail: ${escaparTexto(s.email)}</span>
+                <span>Telefone: ${escaparTexto(s.telefone)}</span>
+                <span>Cidade: ${escaparTexto(s.cidade)}</span>
+            </div>
+            <div class="item-card-acoes">
+                <button type="button" class="btn-aprovar" data-id="${s.id}">Aprovar</button>
+                <button type="button" class="btn-recusar" data-id="${s.id}">Recusar</button>
+            </div>
+        </div>
+    `).join("");
 
     container.querySelectorAll(".btn-aprovar").forEach(btn => {
-        btn.addEventListener("click", () => atualizarSolicitacao(btn.dataset.id, "Aprovado"));
+        btn.addEventListener("click", () => definirStatusSolicitacao(btn.dataset.id, "Aprovado"));
     });
     container.querySelectorAll(".btn-recusar").forEach(btn => {
-        btn.addEventListener("click", () => atualizarSolicitacao(btn.dataset.id, "Recusado"));
+        btn.addEventListener("click", () => definirStatusSolicitacao(btn.dataset.id, "Recusado"));
     });
 }
 
-async function atualizarSolicitacao(id, novoStatus) {
+async function carregarStatusAnimais() {
+    const container = document.getElementById("lista-status-animais");
+    container.innerHTML = '<p class="carregando-texto">Carregando...</p>';
+
+    const { data, error } = await cliente
+        .from("animais")
+        .select("id, nome, idade, sexo, porte, status")
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        container.innerHTML = '<p class="erro-texto">Erro ao carregar os animais.</p>';
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        container.innerHTML = '<p class="vazio-texto">Nenhum animal cadastrado.</p>';
+        return;
+    }
+
+    container.innerHTML = data.map(a => {
+        const disponivel = a.status === "Disponível";
+        return `
+        <div class="item-linha">
+            <div class="item-info">
+                <strong>${escaparTexto(a.nome)}</strong>
+                <span class="item-meta">${escaparTexto(a.idade)} · ${escaparTexto(a.sexo)} · ${escaparTexto(a.porte)}</span>
+            </div>
+            <button type="button" class="btn-alterar-status ${disponivel ? "btn-adotar" : "btn-disponibilizar"}" data-id="${a.id}" data-status="${escaparTexto(a.status)}">
+                ${disponivel ? "Marcar como adotado" : "Marcar como disponível"}
+            </button>
+        </div>`;
+    }).join("");
+
+    container.querySelectorAll(".btn-alterar-status").forEach(btn => {
+        btn.addEventListener("click", () => alternarStatusAnimal(btn.dataset.id, btn.dataset.status));
+    });
+}
+
+// =========================
+// ACOES DE STATUS
+// =========================
+
+async function alternarStatusAnimal(id, statusAtual) {
+    const novoStatus = statusAtual === "Disponível" ? "Adotado" : "Disponível";
+    const { error } = await cliente.from("animais").update({ status: novoStatus }).eq("id", id);
+    if (!error) carregarStatusAnimais();
+}
+
+async function definirStatusSolicitacao(id, novoStatus) {
     const { error } = await cliente.from("adocoes").update({ status: novoStatus }).eq("id", id);
-    if (!error) carregarSolicitacoes();
+    if (!error) carregarPendentes();
+}
+
+// =========================
+// EXCLUSAO COM CONFIRMACAO
+// =========================
+
+function confirmarExclusaoAnimal(id, nome) {
+    const modal = document.getElementById("modal-confirmar");
+    document.getElementById("modal-confirmar-texto").textContent =
+        `Tem certeza que deseja excluir "${nome}"? Esta ação não pode ser desfeita.`;
+    modal.showModal();
+
+    const confirmar = () => {
+        cliente.from("animais").delete().eq("id", id).then(() => {
+            modal.close();
+            carregarAnimaisCadastro();
+        });
+    };
+
+    document.getElementById("modal-btn-confirmar").addEventListener("click", confirmar, { once: true });
+    document.getElementById("modal-btn-cancelar").addEventListener("click", () => modal.close(), { once: true });
 }
 
 // =========================
@@ -263,9 +348,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     const session = await verificarAcesso();
     if (!session) return;
 
-    configurarAbas();
+    configurarNavegacao();
 
     document.getElementById("form-animal").addEventListener("submit", cadastrarAnimal);
+
     document.getElementById("botao-sair").addEventListener("click", async () => {
         await cliente.auth.signOut();
         window.location.href = "login.html";
@@ -274,6 +360,4 @@ document.addEventListener("DOMContentLoaded", async () => {
     cliente.auth.onAuthStateChange((evento) => {
         if (evento === "SIGNED_OUT") window.location.href = "login.html";
     });
-
-    carregarAnimais();
 });

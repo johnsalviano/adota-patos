@@ -88,80 +88,148 @@ header {
 }
 
 /* =========================
-   ABAS
-   ========================= */
-
-.aba {
-    display: block;
-}
-
-.abas {
-    display: flex;
-    gap: 0;
-    background: var(--cream);
-    padding: 0 2rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-}
-
-.aba {
-    background: none;
-    border: none;
-    border-bottom: 3px solid transparent;
-    padding: 0.9rem 1.5rem;
-    font-family: var(--font-body);
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--muted);
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.aba:hover {
-    color: var(--text);
-}
-
-.aba.ativa {
-    color: var(--primary);
-    border-bottom-color: var(--primary);
-}
-
-/* =========================
-   CONTEUDO
+   CONTEUDO / CARTÃO
    ========================= */
 
 main {
-    max-width: 900px;
+    max-width: 760px;
     margin: 0 auto;
     padding: 2rem;
 }
 
-.conteudo-aba { display: none; }
-.conteudo-aba.ativo { display: block; }
+.tela { display: none; }
+.tela.ativa { display: block; }
 
-.cabecalho-secao {
+.cartao {
+    background: var(--cream);
+    border-radius: var(--radius-lg);
+    padding: 1.8rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    margin-bottom: 1.5rem;
+}
+
+.cartao h1 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+}
+
+.cartao h2 {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--text);
+}
+
+.ola {
+    color: var(--muted);
+    font-size: 0.95rem;
     margin-bottom: 1.2rem;
 }
 
-.secao-extra {
-    margin-top: 2rem;
+.escolha {
+    font-weight: 600;
+    margin-bottom: 1rem;
 }
 
-.cabecalho-secao h2 {
-    font-family: var(--font-display);
-    font-size: 1.3rem;
+/* =========================
+   OPCOES (tela inicial)
+   ========================= */
+
+.opcoes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.opcao {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-align: left;
+    background: #fff;
+    border: 2px solid rgba(0, 0, 0, 0.06);
+    border-radius: 16px;
+    padding: 1rem 1.2rem;
+    cursor: pointer;
+    font-family: var(--font-body);
+    transition: 0.2s;
+}
+
+.opcao:hover {
+    border-color: var(--primary);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.opcao-numero {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.opcao-texto {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.opcao-texto strong {
+    font-size: 1rem;
     color: var(--text);
+}
+
+.opcao-texto small {
+    font-size: 0.82rem;
+    color: var(--muted);
+}
+
+/* =========================
+   CABECALHO DAS TELAS
+   ========================= */
+
+.cabecalho-tela {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.2rem;
+}
+
+.btn-voltar {
+    background: none;
+    border: 2px solid rgba(0, 0, 0, 0.12);
+    color: var(--text);
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-voltar:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.subtitulo {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    color: var(--text);
+    margin: 1.4rem 0 0.8rem;
 }
 
 /* =========================
    FORMULARIO ANIMAL
    ========================= */
-
-.form-animal {
-    background: var(--cream);
-    border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-}
 
 .campos-grid {
     display: grid;
@@ -241,70 +309,93 @@ main {
 .feedback.erro { display: block; background: #f8d7da; color: #721c24; }
 
 /* =========================
-   LISTA DE ANIMAIS
+   LISTAS / ITENS
    ========================= */
 
-.lista-animais {
+.lista-itens {
     display: flex;
     flex-direction: column;
     gap: 0.8rem;
 }
 
-.animal-item {
+.item-linha {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 1rem;
-    background: var(--cream);
+    background: #fff;
     border-radius: 14px;
-    padding: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    padding: 0.9rem 1.1rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 
-.animal-thumb {
-    width: 64px;
-    height: 64px;
-    border-radius: 10px;
-    object-fit: cover;
-    flex-shrink: 0;
-}
-
-.animal-info {
-    flex: 1;
+.item-info {
     display: flex;
     flex-direction: column;
     gap: 0.2rem;
 }
 
-.animal-info strong {
-    font-size: 1rem;
+.item-info strong {
+    font-size: 0.95rem;
 }
 
-.animal-meta {
+.item-meta {
     font-size: 0.8rem;
     color: var(--muted);
 }
 
-.animal-status {
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 0.15rem 0.6rem;
-    border-radius: 10px;
-    width: fit-content;
+.item-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 1.1rem 1.2rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 
-.status-disponivel { background: #d4edda; color: #155724; }
-.status-indisponivel { background: #fff3cd; color: #856404; }
-
-.animal-acoes {
+.item-card-cabecalho {
     display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    flex-shrink: 0;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
 }
 
-.btn-acao {
+.item-card-cabecalho strong {
+    font-size: 1rem;
+}
+
+.item-card-linhas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.2rem;
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+}
+
+.item-card-texto {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text);
+}
+
+.item-card-texto p {
+    margin-bottom: 0.3rem;
+}
+
+.item-card-acoes {
+    display: flex;
+    gap: 0.6rem;
+    margin-top: 0.8rem;
+}
+
+/* =========================
+   BOTOES DE ACAO
+   ========================= */
+
+.btn-excluir-animal {
+    background: #f8d7da;
     border: none;
-    padding: 0.4rem 0.9rem;
+    color: #721c24;
+    padding: 0.45rem 1rem;
     border-radius: 10px;
     font-family: var(--font-body);
     font-size: 0.8rem;
@@ -314,53 +405,74 @@ main {
     white-space: nowrap;
 }
 
+.btn-excluir-animal:hover { background: #f5c6cb; }
+
 .btn-alterar-status {
-    background: var(--primary);
+    background: none;
+    border: 2px solid;
+    padding: 0.45rem 1rem;
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+    white-space: nowrap;
+}
+
+.btn-adotar {
+    border-color: #d4edda;
+    color: #155724;
+    background: #f2fbf4;
+}
+
+.btn-adotar:hover { background: #d4edda; }
+
+.btn-disponibilizar {
+    border-color: #fff3cd;
+    color: #856404;
+    background: #fffdf2;
+}
+
+.btn-disponibilizar:hover { background: #fff3cd; }
+
+.btn-aprovar {
+    background: #28a745;
+    border: none;
     color: #fff;
+    padding: 0.5rem 1.2rem;
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
-.btn-alterar-status:hover { opacity: 0.8; }
+.btn-aprovar:hover { background: #218838; }
 
-.btn-excluir-animal,
-.btn-excluir {
-    background: #f8d7da;
-    color: #721c24;
+.btn-recusar {
+    background: #dc3545;
+    border: none;
+    color: #fff;
+    padding: 0.5rem 1.2rem;
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
-.btn-excluir-animal:hover,
-.btn-excluir:hover { background: #f5c6cb; }
+.btn-recusar:hover { background: #c82333; }
 
 /* =========================
-   SOLICITACOES
+   STATUS
    ========================= */
 
-.lista-solicitacoes {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.solicitacao-item {
-    background: var(--cream);
-    border-radius: 14px;
-    padding: 1.2rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-}
-
-.solicitacao-cabecalho {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0.6rem;
-}
-
-.solicitacao-cabecalho strong {
-    font-size: 1.05rem;
-}
-
-.solicitacao-status {
+.status-pill {
     font-size: 0.75rem;
-    font-weight: 600;
+    font-weight: 700;
     padding: 0.2rem 0.7rem;
     border-radius: 10px;
 }
@@ -368,46 +480,6 @@ main {
 .status-pendente { background: #fff3cd; color: #856404; }
 .status-aprovado { background: #d4edda; color: #155724; }
 .status-recusado { background: #f8d7da; color: #721c24; }
-
-.solicitacao-detalhes {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1.2rem;
-    font-size: 0.82rem;
-    color: var(--muted);
-    margin-bottom: 0.6rem;
-}
-
-.solicitacao-texto {
-    font-size: 0.85rem;
-    line-height: 1.5;
-    color: var(--text);
-    margin-bottom: 0.6rem;
-}
-
-.solicitacao-texto p {
-    margin-bottom: 0.3rem;
-}
-
-.solicitacao-acoes {
-    display: flex;
-    gap: 0.6rem;
-    margin-top: 0.5rem;
-}
-
-.btn-aprovar {
-    background: #28a745;
-    color: #fff;
-}
-
-.btn-aprovar:hover { background: #218838; }
-
-.btn-recusar {
-    background: #dc3545;
-    color: #fff;
-}
-
-.btn-recusar:hover { background: #c82333; }
 
 /* =========================
    MODAL
@@ -418,6 +490,7 @@ main {
     border-radius: 16px;
     padding: 0;
     max-width: 400px;
+    margin: auto;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
 }
 
@@ -484,10 +557,8 @@ main {
     .logo { font-size: 1.1rem; }
     .logo span { display: none; }
     main { padding: 1.2rem; }
+    .cartao { padding: 1.2rem; }
     .campos-grid { grid-template-columns: 1fr; }
-    .abas { padding: 0 1rem; }
-    .aba { padding: 0.7rem 1rem; font-size: 0.85rem; }
-    .animal-item { flex-wrap: wrap; }
-    .animal-acoes { flex-direction: row; width: 100%; }
-    .solicitacao-detalhes { flex-direction: column; gap: 0.3rem; }
+    .item-card-linhas { flex-direction: column; gap: 0.3rem; }
+    .item-linha { flex-wrap: wrap; }
 }
