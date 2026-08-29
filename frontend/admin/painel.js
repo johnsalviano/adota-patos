@@ -32,14 +32,18 @@ function escaparTexto(t) {
     return d.textContent;
 }
 
-document.getElementById('botao-sair').addEventListener('click', async () => {
-    await cliente.auth.signOut();
-    window.location.href = 'login.html';
-});
+// Só acessa o DOM quando ele existe. No painel o script roda no fim
+// do body, mas a guarda protege contra qualquer mudança na ordem.
+document.addEventListener('DOMContentLoaded', async () => {
+    document.getElementById('botao-sair').addEventListener('click', async () => {
+        await cliente.auth.signOut();
+        window.location.href = 'login.html';
+    });
 
-// Se a sessao expirar enquanto navega, volta pro login.
-cliente.auth.onAuthStateChange((evento) => {
-    if (evento === 'SIGNED_OUT') window.location.href = 'login.html';
-});
+    // Se a sessao expirar enquanto navega, volta pro login.
+    cliente.auth.onAuthStateChange((evento) => {
+        if (evento === 'SIGNED_OUT') window.location.href = 'login.html';
+    });
 
-verificarAcesso();
+    await verificarAcesso();
+});

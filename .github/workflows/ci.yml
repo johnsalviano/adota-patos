@@ -7,35 +7,22 @@ on:
 
 jobs:
   # O id do job e o nome do check exigido pela protecao da main.
-  gerador-sincronizado:
+  # Garante a separacao de linguagens (SoC): HTML e so estrutura,
+  # sem estilo, script ou evento inline. CSS e JS vivem em arquivos.
+  estrutura-frontend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v7
-        with:
-          python-version: "3.12"
-
-      - name: Roda o gerador de front-end
-        run: python scripts/gerar_frontend.py
-
-      - name: Compara a saída com o arquivo commitado
+      - name: Proibe CSS, JS e eventos inline nos HTML de producao
         run: |
-          if ! git diff --exit-code -- frontend/index.html; then
-            echo ""
-            echo "::error::frontend/index.html está desatualizado."
-            echo "::error::Rode 'python scripts/gerar_frontend.py' e commite o resultado."
+          ARQUIVOS="frontend/index.html frontend/admin/*.html"
+          if grep -nE '<style|style[[:space:]]*=|on(click|input|change|submit|focus|blur|load|keydown|keyup|mouseenter|mouseover|dblclick|error|scroll)[[:space:]]*=' $ARQUIVOS; then
+            echo "::error::HTML com estilo, script ou evento inline. Separe estrutura (HTML), apresentacao (CSS) e comportamento (JS)."
             exit 1
           fi
-
-  sintaxe-python:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-
-      - uses: actions/setup-python@v7
-        with:
-          python-version: "3.12"
-
-      - name: Compila todos os scripts
-        run: python -m compileall scripts/
+          if grep -Pn '<script(?![^>]*\bsrc[[:space:]]*=)' $ARQUIVOS; then
+            echo "::error::Tag <script> sem src (JS inline). Mova o codigo para frontend/js/."
+            exit 1
+          fi
+          echo "OK: HTML de producao sem estilo, script ou evento inline."

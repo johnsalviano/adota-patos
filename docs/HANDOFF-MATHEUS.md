@@ -7,20 +7,23 @@
 
 | Peça | Onde | Estado |
 |---|---|---|
-| Catálogo dinâmico do site | `scripts/gerar_frontend.py` → gera `frontend/index.html` | ✅ no ar localmente, testado |
+| Catálogo dinâmico do site | `frontend/js/app.js` + `frontend/index.html` | ✅ no ar localmente, testado |
 | Formulário público → banco | Edge Function `receber-adocao` (Supabase) | ✅ testada ponta a ponta |
 | Login da equipe | `frontend/admin/login.html` | ✅ seu código, validado pelo back |
 | Painel (esqueleto) | `frontend/admin/painel.html` | 🚧 guarda dupla + logout prontos; CRUD é a issue #5 |
 
-**Regra de ouro do projeto:** o protótipo (`prototipo/adota-patos.html`) é a arte
-original. Mudanças no site público entram pelo **gerador**, nunca editando
-`frontend/index.html` à mão. Suas telas em `frontend/admin/` são arquivos
-normais — pode editar direto.
+**Regra de ouro do projeto:** o site público é escrito à mão em
+`frontend/index.html` (estrutura), `frontend/css/` (apresentação) e
+`frontend/js/app.js` (comportamento) — nada de estilo, script ou evento inline.
+Os três arquivos se comunicam por ids e classes estáveis. Suas telas em
+`frontend/admin/` seguem a mesma regra. A arte original do Matheus ficou
+arquivada em `docs/arte-original/adota-patos.html` como referência visual,
+fora do desenvolvimento ativo.
 
 ## 2. Chaves públicas (podem ficar no front, por design)
 
-Use as MESMAS constantes já presentes em `frontend/index.html` (bloco
-`SUPABASE_URL` / `SUPABASE_KEY` no topo do script) e em
+Use as MESMAS constantes já presentes em `frontend/js/app.js` (bloco
+`SUPABASE_URL` / `SUPABASE_KEY`) e em
 `frontend/admin/login.html`. Não copie a chave para outros arquivos ou
 documentos — um único lugar por arquivo, e o gitleaks do CI confere tudo.
 
@@ -85,7 +88,10 @@ Use o `supabase-js` com a MESMA chave pública + sessão do login:
    motivo 300 (espelhados no servidor).
 3. Linguagem humanizada pt-BR nas mensagens de UI.
 4. Comentários de código SEM acento.
-5. Toda mudança: Issue → branch → PR (main protegida, CI obrigatório).
+5. **Separation of Concerns**: HTML = estrutura, CSS = apresentação, JS =
+   comportamento. Sem `style=`, `onclick=`/`oninput=` inline nem `<style>`/
+   `<script>` embutidos — o CI (`estrutura-frontend`) reprova se aparecer.
+6. Toda mudança: Issue → branch → PR (main protegida, CI obrigatório).
 
 ## 5. Divisão sugerida da issue #5
 
@@ -99,7 +105,9 @@ na #5 — migração primeiro, tela depois.
 
 ## 6. Testar localmente
 
-1. Abra `frontend/index.html` direto no navegador (funciona por file://;
-   o banner de cookies aparece na primeira visita).
+1. Sirva `frontend/` com um servidor estático (ex.: `python -m http.server 8788`
+   dentro de `frontend/`) e abra `http://localhost:8788` — não abra via `file://`
+   porque as chamadas ao Supabase exigem origem servida por HTTP; o banner de
+   cookies aparece na primeira visita.
 2. Para o painel: crie uma conta de teste em login.html e peça ao John para
    incluir o e-mail em `perfis_membros` (passo a passo no MODELO_CONCEITUAL §5).
