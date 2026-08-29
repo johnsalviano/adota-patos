@@ -21,7 +21,8 @@ jobs:
             echo "::error::HTML com estilo, script ou evento inline. Separe estrutura (HTML), apresentacao (CSS) e comportamento (JS)."
             exit 1
           fi
-          if grep -Pn '<script(?![^>]*\bsrc[[:space:]]*=)' $ARQUIVOS_HTML; then
+          # JSON-LD (application/ld+json) e permitido como dado estruturado — so proibe <script> com JS inline
+          if grep -Pn '<script(?![^>]*\bsrc[[:space:]]*=)' $ARQUIVOS_HTML | grep -v 'type="application/ld+json"'; then
             echo "::error::Tag <script> sem src (JS inline). Mova o codigo para frontend/js/."
             exit 1
           fi
