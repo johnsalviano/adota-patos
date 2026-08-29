@@ -179,40 +179,40 @@ Um animal pode receber **várias** solicitações; cada solicitação aponta par
 
 > **Regra do projeto: cada coisa que entrarmos ou melhorarmos ganha uma linha aqui.** E o nosso diario de bordo — serve para o relatorio final da extensao e para lembrar decisoes.
 
-| Data | O que foi feito | Responsavel |
-|---|---|---|
-| 2026-08-01 a 08-18 | **Fase de estudo e pesquisa**: levantamento de plataformas similares, comparacao entre ferramentas (Supabase, Firebase, n8n), estudo de RLS, LGPD e boas praticas de seguranca. Base teorica que orientou todas as decisoes seguintes | John e Matheus |
-| 2026-08-19 | Matheus entregou o prototipo HTML do site publico (layout completo: catalogo, modal, formulario, responsivo) | Matheus |
-| 2026-08-19 | Divisao formal do trabalho: John = back-end/banco/integracoes; Matheus = front-end/painel da ONG | John e Matheus |
-| 2026-08-22 | **Infraestrutura base**: projeto Supabase criado, `schema.sql` executado (tabelas `animais`/`adocoes`, bucket `fotos-animais`, RLS ativa), documentacao viva + modelo conceitual, repositorio publico com `REGRAS.md` e Issues #1-#9 | John |
-| 2026-08-22 | Testes de seguranca via API publica: visitante le catalogo (200), escrita anonima bloqueada (401) | John |
-| 2026-08-22 | **Migracao 002** (`002_acessos_ong.sql`): lista `perfis_membros` — so e-mails autorizados pela ONG tem poderes administrativos. Defesa contra criacao de contas falsas | John |
-| 2026-08-22 | **Decisao de arquitetura**: substituicao do n8n por Edge Function do Supabase. Motivo: n8n cobra ~R$150/mes apos o trial; a ONG exige custo zero | John e Matheus |
-| 2026-08-22 | **Formulario no ar** (#2): endpoint publico testado ponta a ponta — valida campos, grava em `adocoes`, responde em JSON humanizado | John |
-| 2026-08-22 | Imagem do modelo conceitual na notacao de Peter Chen (`docs/diagramas/modelo-conceitual.png`, fonte `.dot`) | John |
-| 2026-08-23 | **Integracao do prototipo ao back-end real**: criado `gerar_frontend.py`; correcao: coluna `criado_em` nao existia, corrigido para `created_at` | John |
-| 2026-08-23 | **Vulnerabilidade XSS corrigida**: `innerHTML` sem tratamento permitia injecao via cadastro. Solucao: funcao de escape + URLs somente `https://` | John |
-| 2026-08-23 | **Pacote LGPD** (Issues #13 e #18): migracao 003 adicionou `consentimento_lgpd` e `termo_versao`; formulario com autorizacao obrigatoria; Edge Function recusa sem consentimento (400) | John |
-| 2026-08-23 | **Banner de cookies** (#15): aviso na primeira visita com Aceitar/Recusar; Google Analytics so carrega apos aceite | John |
-| 2026-08-23 | **Protecao contra robos e abuso** (#16): migracao 004 criou tabela de controle + funcao atomica `registrar_envio`; limite 5 envios/min por IP, teto global 60/min; honeypot com resposta falsa | John |
-| 2026-08-23 | **Teto global de rate limit**: IP pode ser forjado na cadeia XFF; o teto global garante protecao mesmo contra esse truque | John e Matheus |
-| 2026-08-23 | **Log de seguranca** (#19, migracao 005): tabela `log_seguranca` com evento/IP/detalhe tecnico; limpeza automatica aos 90 dias | John |
-| 2026-08-23 | **Retencao automatica de dados** (#14): job diario remove solicitacoes com mais de 6 meses — LGPD | John |
-| 2026-08-23 | **CORS restrito**: Edge Function so responde as origens conhecidas | John |
-| 2026-08-23 | **Pentest com 12 vetores**: SQL injection (403 WAF), leitura anonima bloqueada (RLS), envio sem consentimento (400), honeypot, rajada (429), JSON malformado, origem desconhecida. 2 falhas reais corrigidas: XSS persistente e rate limit por IP forjado | John |
-| 2026-08-23 | **Endurecimento da funcao** (F1-F4): IP pelo ultimo da cadeia XFF, limite de payload (413), regex de e-mail, limites server-side espelhando os do navegador | John |
-| 2026-08-23 | **Limites de digitacao**: nome 80 (padrao PF), telefone 15 (ANATEL), cidade 40, motivo 300 com contador. Aplicados no navegador E no servidor | John |
-| 2026-08-23 | **SEO basico**: `robots titulo`, meta description, Open Graph e favicon | John |
-| 2026-08-23 | **Bateria tecnica 16/16**: carregamento, responsividade, maxlength, modal, consentimento, console e rede limpos | John e Matheus |
-| 2026-08-23 | **Auditoria final de seguranca**: RLS ativa nas 5 tabelas, anonimo le lista vazia em dados sensiveis, storage publico restrito as fotos, indices, FK, CHECKs | John |
-| 2026-08-23 | **Historia real da ONG no site** (#31): secao "Sobre nos" com dados verdadeiros (fundacao 11/06/2018) e canais oficiais — fim dos links placeholder | John |
-| 2026-08-23 | **Google Analytics 4** (#33): propriedade oficial criada, ID `G-S08M6034SR` — tag com gatilho LGPD | John |
-| 2026-08-23 | **Politica de Privacidade completa** (#35): modal com linguagem simples, CNPJ, dados, finalidade, base legal, retencao, compartilhamento, cookies, seguranca, direitos (art. 18) | John |
-| 2026-08-23 | **CI/GitHub endurecido** (#37): CodeQL + gitleaks, dependabot, `HANDOFF-MATHEUS.md` com contratos de API | John |
-| 2026-08-28 | **Refatoracao da Edge Function**: `index.ts` dividido em `cors.ts`, `validar.ts` e `seguranca.ts` — separacao de responsabilidades | John |
-| 2026-08-28 | **Front-end reescrito a mao** (#52/Rota B): HTML limpo (zero inline), CSS em `tema.css` + `estilo.css`, JS em `app.js`, CI com `estrutura-frontend` | John |
-| 2026-08-28 | **Correcoes de producao** (PR #59): CORS com origem publicada, `login.js` com classes CSS, `Cache-Control: no-store`, header `Allow` no 405, CI varrendo JS do admin | John |
-| 2026-08-29 | **Melhorias de acessibilidade e qualidade**: focus trap + Escape nos modais, skip-to-content, alt texts, theme-color, JSON-LD, `<small>` no rodape, passive scroll, schema.sql atualizado | John |
+| Data | O que foi feito |
+|---|---|
+| 2026-08-01 a 08-18 | **Fase de estudo e pesquisa**: levantamento de plataformas similares, comparacao entre ferramentas (Supabase, Firebase, n8n), estudo de RLS, LGPD e boas praticas de seguranca. Base teorica que orientou todas as decisoes seguintes |
+| 2026-08-19 | Prototipo HTML do site publico entregue (layout completo: catalogo, modal, formulario, responsivo) |
+| 2026-08-19 | Divisao formal do trabalho: back-end/banco/integracoes + front-end/painel da ONG |
+| 2026-08-22 | **Infraestrutura base**: projeto Supabase criado, `schema.sql` executado (tabelas `animais`/`adocoes`, bucket `fotos-animais`, RLS ativa), documentacao viva + modelo conceitual, repositorio publico com `REGRAS.md` e Issues #1-#9 |
+| 2026-08-22 | Testes de seguranca via API publica: visitante le catalogo (200), escrita anonima bloqueada (401) |
+| 2026-08-22 | **Migracao 002** (`002_acessos_ong.sql`): lista `perfis_membros` — so e-mails autorizados pela ONG tem poderes administrativos. Defesa contra criacao de contas falsas |
+| 2026-08-22 | **Decisao de arquitetura**: substituicao do n8n por Edge Function do Supabase. Motivo: n8n cobra ~R$150/mes apos o trial; a ONG exige custo zero |
+| 2026-08-22 | **Formulario no ar** (#2): endpoint publico testado ponta a ponta — valida campos, grava em `adocoes`, responde em JSON humanizado |
+| 2026-08-22 | Imagem do modelo conceitual na notacao de Peter Chen (`docs/diagramas/modelo-conceitual.png`, fonte `.dot`) |
+| 2026-08-23 | **Integracao do prototipo ao back-end real**: criado `gerar_frontend.py`; correcao: coluna `criado_em` nao existia, corrigido para `created_at` |
+| 2026-08-23 | **Vulnerabilidade XSS corrigida**: `innerHTML` sem tratamento permitia injecao via cadastro. Solucao: funcao de escape + URLs somente `https://` |
+| 2026-08-23 | **Pacote LGPD** (Issues #13 e #18): migracao 003 adicionou `consentimento_lgpd` e `termo_versao`; formulario com autorizacao obrigatoria; Edge Function recusa sem consentimento (400) |
+| 2026-08-23 | **Banner de cookies** (#15): aviso na primeira visita com Aceitar/Recusar; Google Analytics so carrega apos aceite |
+| 2026-08-23 | **Protecao contra robos e abuso** (#16): migracao 004 criou tabela de controle + funcao atomica `registrar_envio`; limite 5 envios/min por IP, teto global 60/min; honeypot com resposta falsa |
+| 2026-08-23 | **Teto global de rate limit**: IP pode ser forjado na cadeia XFF; o teto global garante protecao mesmo contra esse truque |
+| 2026-08-23 | **Log de seguranca** (#19, migracao 005): tabela `log_seguranca` com evento/IP/detalhe tecnico; limpeza automatica aos 90 dias |
+| 2026-08-23 | **Retencao automatica de dados** (#14): job diario remove solicitacoes com mais de 6 meses — LGPD |
+| 2026-08-23 | **CORS restrito**: Edge Function so responde as origens conhecidas |
+| 2026-08-23 | **Pentest com 12 vetores**: SQL injection (403 WAF), leitura anonima bloqueada (RLS), envio sem consentimento (400), honeypot, rajada (429), JSON malformado, origem desconhecida. 2 falhas reais corrigidas: XSS persistente e rate limit por IP forjado |
+| 2026-08-23 | **Endurecimento da funcao** (F1-F4): IP pelo ultimo da cadeia XFF, limite de payload (413), regex de e-mail, limites server-side espelhando os do navegador |
+| 2026-08-23 | **Limites de digitacao**: nome 80 (padrao PF), telefone 15 (ANATEL), cidade 40, motivo 300 com contador. Aplicados no navegador E no servidor |
+| 2026-08-23 | **SEO basico**: `robots.txt`, titulo, meta description, Open Graph e favicon |
+| 2026-08-23 | **Bateria tecnica 16/16**: carregamento, responsividade, maxlength, modal, consentimento, console e rede limpos |
+| 2026-08-23 | **Auditoria final de seguranca**: RLS ativa nas 5 tabelas, anonimo le lista vazia em dados sensiveis, storage publico restrito as fotos, indices, FK, CHECKs |
+| 2026-08-23 | **Historia real da ONG no site** (#31): secao "Sobre nos" com dados verdadeiros (fundacao 11/06/2018) e canais oficiais — fim dos links placeholder |
+| 2026-08-23 | **Google Analytics 4** (#33): propriedade oficial criada, ID `G-S08M6034SR` — tag com gatilho LGPD |
+| 2026-08-23 | **Politica de Privacidade completa** (#35): modal com linguagem simples, CNPJ, dados, finalidade, base legal, retencao, compartilhamento, cookies, seguranca, direitos (art. 18) |
+| 2026-08-23 | **CI/GitHub endurecido** (#37): CodeQL + gitleaks, dependabot, handoff com contratos de API |
+| 2026-08-28 | **Refatoracao da Edge Function**: `index.ts` dividido em `cors.ts`, `validar.ts` e `seguranca.ts` — separacao de responsabilidades |
+| 2026-08-28 | **Front-end reescrito a mao** (#52/Rota B): HTML limpo (zero inline), CSS em `tema.css` + `estilo.css`, JS em `app.js`, CI com `estrutura-frontend` |
+| 2026-08-28 | **Correcoes de producao** (PR #59): CORS com origem publicada, `login.js` com classes CSS, `Cache-Control: no-store`, header `Allow` no 405, CI varrendo JS do admin |
+| 2026-08-29 | **Melhorias de acessibilidade e qualidade**: focus trap + Escape nos modais, skip-to-content, alt texts, theme-color, JSON-LD, `<small>` no rodape, passive scroll, schema.sql atualizado |
 
 *(proximos registros entram aqui)*
 
