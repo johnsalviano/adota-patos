@@ -6,6 +6,7 @@
     <title>Painel da ONG | Adota Patos</title>
     <meta name="robots" content="noindex, nofollow">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐾</text></svg>">
+    <link rel="stylesheet" href="../css/tema.css">
     <link rel="stylesheet" href="painel.css">
 </head>
 <body>
@@ -15,27 +16,98 @@
     <div id="conteudo-painel" class="oculto">
         <header>
             <div class="logo">🐾 Adota Patos <span>Painel da equipe</span></div>
-            <button type="button" class="sair" id="botao-sair">Sair</button>
+            <div class="header-direita">
+                <span id="email-logado" class="email-badge"></span>
+                <button type="button" class="btn-sair" id="botao-sair">Sair</button>
+            </div>
         </header>
 
+        <nav class="abas">
+            <button class="aba ativa" data-aba="animais">Animais</button>
+            <button class="aba" data-aba="solicitacoes">Solicitações</button>
+        </nav>
+
         <main>
-            <div class="cartao">
-                <h1>Bem-vindo(a) de volta! 🐶</h1>
-                <p class="ola">Você está logado como <strong id="email-logado"></strong>.</p>
+            <!-- ABA: ANIMAIS -->
+            <section id="aba-animais" class="conteudo-aba ativo">
+                <div class="cabecalho-secao">
+                    <h2>Cadastrar animal</h2>
+                </div>
 
-                <p>O painel está em construção. Próximos passos planejados:</p>
+                <form id="form-animal" class="form-animal" enctype="multipart/form-data">
+                    <div class="campos-grid">
+                        <div class="campo">
+                            <label for="animal-nome">Nome *</label>
+                            <input type="text" id="animal-nome" required maxlength="80" placeholder="Ex: Thor">
+                        </div>
+                        <div class="campo">
+                            <label for="animal-idade">Idade *</label>
+                            <input type="text" id="animal-idade" required maxlength="30" placeholder="Ex: 2 anos">
+                        </div>
+                        <div class="campo">
+                            <label for="animal-sexo">Sexo *</label>
+                            <select id="animal-sexo" required>
+                                <option value="">Selecione</option>
+                                <option value="Macho">Macho</option>
+                                <option value="Femea">Fêmea</option>
+                            </select>
+                        </div>
+                        <div class="campo">
+                            <label for="animal-porte">Porte *</label>
+                            <select id="animal-porte" required>
+                                <option value="">Selecione</option>
+                                <option value="Pequeno">Pequeno</option>
+                                <option value="Medio">Médio</option>
+                                <option value="Grande">Grande</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="campo">
+                        <label for="animal-descricao">História / Descrição *</label>
+                        <textarea id="animal-descricao" required maxlength="500" rows="3" placeholder="Conte um pouco sobre este animal..."></textarea>
+                    </div>
+                    <div class="campo">
+                        <label for="animal-foto">Foto</label>
+                        <input type="file" id="animal-foto" accept="image/*">
+                        <span class="dica">Formats aceitos: JPG, PNG, WebP. Max 5MB.</span>
+                    </div>
+                    <div id="form-animal-feedback" class="feedback" aria-live="polite"></div>
+                    <button type="submit" class="btn-salvar" id="btn-salvar-animal">Cadastrar animal</button>
+                </form>
 
-                <ul class="proximos-passos">
-                    <li class="passo"><strong>1. Cadastrar animais</strong> Nome, idade, porte, sexo, história e foto (bucket fotos-animais).</li>
-                    <li class="passo"><strong>2. Ver solicitações</strong> Lista das adoções pedidas pelo site, com contato do adotante.</li>
-                    <li class="passo"><strong>3. Aprovar ou recusar</strong> Muda o status da solicitação e do animal.</li>
-                </ul>
-            </div>
+                <div class="cabecalho-secao secao-extra">
+                    <h2>Animais cadastrados</h2>
+                </div>
+                <div id="lista-animais" class="lista-animais">
+                    <p class="carregando-texto">Carregando...</p>
+                </div>
+            </section>
+
+            <!-- ABA: SOLICITACOES -->
+            <section id="aba-solicitacoes" class="conteudo-aba">
+                <div class="cabecalho-secao">
+                    <h2>Solicitações de adoção</h2>
+                </div>
+                <div id="lista-solicitacoes" class="lista-solicitacoes">
+                    <p class="carregando-texto">Carregando...</p>
+                </div>
+            </section>
         </main>
     </div>
+
+    <!-- MODAL: CONFIRMAR EXCLUSAO -->
+    <dialog id="modal-confirmar" class="modal-dialog">
+        <div class="modal-conteudo">
+            <h3>Excluir animal</h3>
+            <p id="modal-confirmar-texto">Tem certeza que deseja excluir este animal?</p>
+            <div class="modal-botoes">
+                <button type="button" class="btn-cancelar" id="modal-btn-cancelar">Cancelar</button>
+                <button type="button" class="btn-excluir" id="modal-btn-confirmar">Excluir</button>
+            </div>
+        </div>
+    </dialog>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="painel.js"></script>
 </body>
 </html>
-
