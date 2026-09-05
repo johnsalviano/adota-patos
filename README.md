@@ -102,8 +102,7 @@ Pré-requisitos: [Deno](https://deno.com) e conta no Supabase.
 git clone https://github.com/johnsalviano/adota-patos.git
 cd adota-patos
 
-# 2. Configure as variáveis de ambiente (sem valores reais no git!)
-cp .env.example .env
+# 2. Configure as variáveis de ambiente localmente (nunca versionar valores reais)
 
 # 3. Sirva o site publicamente
 cd frontend && python -m http.server 8788
