@@ -122,6 +122,8 @@
             }
         }
 
+        container.textContent = '';
+
         resp.data.forEach(function (item) {
             var card = document.createElement('div');
             card.className = 'solicitacao-card';
@@ -139,16 +141,18 @@
 
             var corpo = document.createElement('div');
             corpo.className = 'solicitacao-corpo';
-            var dados = [
-                ['E-mail', item.email],
-                ['Telefone', item.telefone],
-                ['Cidade', item.cidade],
-                ['Motivo', item.motivo]
-            ];
-            if (item.animal_id) {
-                var nomeAnimal = mapaAnimais[item.animal_id];
-                dados.push(['Animal', nomeAnimal ? nomeAnimal : item.animal_id]);
-            }
+        var dados = [
+            ['E-mail', item.email],
+            ['Telefone', item.telefone],
+            ['Cidade', item.cidade],
+            ['Experiência', item.experiencia],
+            ['Motivo', item.motivo]
+        ];
+        if (item.animal_id) {
+            var nomeAnimal = mapaAnimais[item.animal_id];
+            dados.push(['Animal', nomeAnimal ? nomeAnimal : item.animal_id]);
+        }
+        dados.push(['Solicitada em', item.created_at ? new Date(item.created_at).toLocaleString('pt-BR') : null]);
             dados.forEach(function (par) {
                 var linha = document.createElement('p');
                 var rotulo = document.createElement('strong');
@@ -208,6 +212,28 @@
         var btnSubmit = document.getElementById('btn-salvar-animal');
         var foto = document.getElementById('foto');
 
+        // Campos obrigatorios do produto, na ordem em que aparecem no form.
+        // Espelham o NOT NULL do banco e os atributos required do HTML. Como o
+        // form tem novalidate, esta lista e o unico lugar que bloqueia o envio
+        // de verdade; sem ela o campo vazio chegava direto no insert.
+        var obrigatorios = [
+            ['nome', 'Informe o nome do animal.'],
+            ['especie', 'Selecione a espécie.'],
+            ['idade', 'Informe a idade do animal.'],
+            ['sexo', 'Selecione o sexo.'],
+            ['porte', 'Selecione o porte.'],
+            ['descricao', 'Descreva a história do animal.']
+        ];
+
+        for (var i = 0; i < obrigatorios.length; i++) {
+            var campo = document.getElementById(obrigatorios[i][0]);
+            if (campo.value.trim() === '') {
+                mostrarFeedback(obrigatorios[i][1], true);
+                campo.focus();
+                return;
+            }
+        }
+
         if (!foto.files || foto.files.length === 0) {
             mostrarFeedback('Selecione uma foto para o animal.', true);
             return;
@@ -219,13 +245,28 @@
             return;
         }
 
+        // O tipo real vem do MIME do arquivo, nunca do nome enviado.
+        // Sem isso um "foto.exe" viraria "animais/<uuid>.exe" no bucket.
+        // A regra que barra de verdade e a Migration 007
+        // (allowed_mime_types + file_size_limit no bucket); aqui o
+        // objetivo e dar mensagem clara em vez de erro cru do storage.
+        var EXTENSAO_POR_MIME = {
+            'image/jpeg': 'jpg',
+            'image/png': 'png',
+            'image/webp': 'webp'
+        };
+        if (!EXTENSAO_POR_MIME[arquivoFoto.type]) {
+            mostrarFeedback('Formato não aceito. Use JPG, PNG ou WebP.', true);
+            return;
+        }
+
         var msgStatus = document.getElementById('msg-status');
         btnSubmit.disabled = true;
         btnSubmit.textContent = 'Enviando foto e salvando...';
         mostrarFeedback('', false);
 
         try {
-            var extensao = arquivoFoto.name.split('.').pop() || 'jpg';
+            var extensao = EXTENSAO_POR_MIME[arquivoFoto.type];
             var caminhoFoto = 'animais/' + crypto.randomUUID() + '.' + extensao;
 
             var upload = await cliente.storage
@@ -242,10 +283,10 @@
                 nome: document.getElementById('nome').value.trim(),
                 especie: document.getElementById('especie').value,
                 raca: document.getElementById('raca').value.trim() || null,
-                idade: document.getElementById('idade').value.trim() || null,
+                idade: document.getElementById('idade').value.trim(),
                 sexo: document.getElementById('sexo').value,
                 porte: document.getElementById('porte').value,
-                descricao: document.getElementById('descricao').value.trim() || null,
+                descricao: document.getElementById('descricao').value.trim(),
                 foto_url: urlData.data.publicUrl,
                 status: 'Disponível'
             };
