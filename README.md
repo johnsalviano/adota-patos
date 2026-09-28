@@ -102,16 +102,16 @@ Pré-requisitos: [Deno](https://deno.com) e conta no Supabase.
 git clone https://github.com/johnsalviano/adota-patos.git
 cd adota-patos
 
-# 2. Configure as variáveis de ambiente (sem valores reais no git!)
-cp .env.example .env
-
-# 3. Sirva o site publicamente
+# 2. Sirva o site publicamente
 cd frontend && python -m http.server 8788
 # abra http://localhost:8788
 
-# 4. Rode a função do formulário localmente
+# 3. Rode a função do formulário localmente
 supabase functions serve receber-adocao --env-file ./backend/supabase/.env
 ```
+
+As variáveis de ambiente são configuradas localmente por quem desenvolve e nunca
+são versionadas: o `.gitignore` bloqueia qualquer arquivo desse tipo.
 
 ## Testes
 
