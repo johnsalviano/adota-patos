@@ -95,31 +95,44 @@ adota-patos/
 
 ## Como rodar localmente
 
-Pré-requisitos: [Deno](https://deno.com) e conta no Supabase.
+Pré-requisitos: um servidor estático (Python ou Node) e conta no Supabase.
+O Deno **não** é necessário: a Edge Function já está publicada no projeto do
+Supabase e quem a executa é a infraestrutura deles.
 
 ```bash
 # 1. Clone e entre no projeto
 git clone https://github.com/johnsalviano/adota-patos.git
 cd adota-patos
 
-# 2. Configure as variáveis de ambiente localmente (nunca versionar valores reais)
-
-# 3. Sirva o site publicamente
+# 2. Sirva o site publicamente
 cd frontend && python -m http.server 8788
 # abra http://localhost:8788
 
-# 4. Rode a função do formulário localmente
+# 3. (Opcional) Rodar a função do formulário na sua máquina
+#    Exige Deno + a CLI do Supabase + um .env local com as chaves.
+#    O arquivo .env nunca é versionado por segurança, então este passo
+#    só funciona na sua máquina — e não é necessário para desenvolver o site.
 supabase functions serve receber-adocao --env-file ./backend/supabase/.env
 ```
 
 ## Testes
 
-As baterias de teste automatizam um navegador real (Playwright): fluxo de adoção,
-banner de cookies, modal, limites de digitação, responsividade e tentativas de
-invasão (SQL injection, rajada de envios, leitura por anônimo). A última bateria
-técnica fechou **16/16** verificações e o pentest cobriu **12 vetores**.
+A suíte versionada usa o [Playwright](https://playwright.dev) e roda um
+navegador de verdade contra o site público: `npm run test:e2e`. São **8 testes
+em 2 viewports** (desktop 1280x800 e mobile 375x667), ou seja, **16 execuções**,
+disparadas automaticamente pela CI em todo Pull Request e em todo push na
+`main`.
 
-> O versionamento dos scripts de teste no repositório está em andamento ([#7](https://github.com/johnsalviano/adota-patos/issues/7)).
+**O que ela cobre:** catálogo, modal, campos do formulário, envio com
+confirmação e o banner de cookies (aceitar e recusar).
+
+**O que ela não cobre:** RLS, Edge Function, rate limit, CORS, login, painel da
+ONG e upload de foto. A suíte **simula a rede**, então uma rodada verde
+significa que a camada de apresentação do site não quebrou — não que o sistema
+foi validado por inteiro. Esses fluxos dependem de provas manuais: a conferência
+de 29/09 no projeto Supabase cobriu registros, Edge Function e bucket, e **não**
+revalidou RLS, CORS, rate limit nem honeypot. Detalhes em
+[docs/DOCUMENTACAO.md](docs/DOCUMENTACAO.md) (seções 7.1 e 11).
 
 ## Documentação
 
@@ -131,7 +144,7 @@ cada escolha, comece por lá.
 ## Roadmap
 
 - [ ] Domínio próprio e HTTPS
-- [ ] Painel da ONG: CRUD de animais e aprovação de solicitações
+- [ ] Painel da ONG: edição, exclusão e marcação de animal como "Adotado"
 - [ ] Google Search Console + sitemap.xml
 - [ ] Sentry para monitorar erros em produção
 
