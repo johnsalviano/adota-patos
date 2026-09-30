@@ -48,12 +48,9 @@ Construir e entregar uma plataforma web completa (site + painel) que digitalize 
 1. Exibir publicamente os animais disponíveis, com foto, nome, idade, sexo, porte e descrição;
 2. Receber solicitações de adoção por formulário web, salvando tudo automaticamente no banco de dados;
 3. Dar à ONG um painel protegido por login para cadastrar, editar, excluir e marcar animais como "Adotado";
-   > **Estado em 29/09/2026: parcialmente entregue.** Já existe login com controle
-   > de acesso, listagem de solicitações, aprovação/recusa e cadastro de animais.
-   > Continuam em aberto, dentro deste mesmo requisito: **edição de animal,
-   > exclusão e alteração de status para "Adotado"**. O requisito acima não foi
-   > alterado — a etapa 6 do cronograma fica parcial até esses três pontos
-   > existirem.
+   > **Estado atualizado: concluído.** Painel com login (`eh_membro_ong()`),
+   > listagem de solicitações, aprovação/recusa, cadastro, **edição**,
+   > **exclusão** e **marcação como "Adotado"** implementados no `frontend/admin/`.
 4. Centralizar as solicitações de adoção para a ONG visualizar e avaliar;
 5. Usar apenas ferramentas com plano gratuito (Supabase e seus recursos incluídos), tornando o projeto **sustentável sem custo fixo**;
 6. Documentar tudo em linguagem acessível, para que qualquer pessoa da ONG (ou outro aluno) consiga entender e dar manutenção.
@@ -256,6 +253,7 @@ Um animal pode receber **várias** solicitações; cada solicitação aponta par
 | 2026-09-28 | **Migracao 007** (`007_protecao_storage.sql`): o bucket `fotos-animais` passou a aceitar apenas JPEG, PNG e WebP e a limitar o upload a 5 MB — os mesmos formatos e o mesmo tamanho que a interface promete. Sem isso, qualquer um chamando a API direto burla a validacao do navegador |
 | 2026-09-29 | **Suite E2E versionada e verde**: `npx playwright test` — **16/16 passaram** (8 testes x 2 viewports, 18,2 s), 0 falhas, 0 ignorados. Cobre o site publico com rede simulada; **nao** cobre RLS, Edge Function, login, painel nem upload (ver secao 7.1) |
 | 2026-09-29 | **Conferencia direta no projeto Supabase**: 3 registros em `animais`, 1 em `adocoes` e 2 em `perfis_membros`; Edge Function `receber-adocao` **ACTIVE** (versao 11); bucket `fotos-animais` com `allowed_mime_types` = JPEG, PNG e WebP e `file_size_limit` = 5 MB, confirmando a Migracao 007 aplicada. Esses numeros provam que os fluxos gravaram dados, **nao** que hubo adocao por visitante real. Esta conferencia **nao** revalidou RLS, CORS, rate limit nem honeypot |
+| 2026-09-30 | **Painel da ONG concluído**: edição, exclusão e marcação como "Adotado" implementados (`painel.html` + `painel.js`); nenhuma alteração no banco; testes E2E 16/16 passando |
 | 2026-09-29 | **Fim do handoff com a equipe de front-end** (documento `HANDOFF-MATHEUS.md` removido): o trabalho de tela ja foi concluido e integrado. As informacoes que ainda valem foram absorvidas aqui e no README |
 
 > **Sobre as duas "16/16".** A de **23/08/2026** e uma bateria manual, anterior a
