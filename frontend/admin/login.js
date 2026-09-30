@@ -1,12 +1,13 @@
 // Mesmas credenciais publicas do site: seguranca real vem da RLS e do Supabase Auth
-const cliente = window.supabase.createClient(
-    'https://fnlqruzbgwffhrqmpfvi.supabase.co',
-    'sb_publishable_jLvZpI_9Kg97Yqg6sdOzrQ_9gvAmRIR'
-);
-
 const form = document.getElementById('formulario-login');
 const erro = document.getElementById('mensagem-erro');
 const botao = document.getElementById('botao-entrar');
+const lembrarMe = document.getElementById('lembrar-me');
+
+// O cliente nasce no envio, e nao no carregamento da pagina: o storage que
+// define a persistencia so pode ser escolhido depois que a pessoa decidiu o
+// que quer com o "Lembrar-me". Ver sessao.js.
+let cliente = null;
 
 function mostrarErro(texto) {
     erro.textContent = texto;
@@ -24,6 +25,12 @@ form.addEventListener('submit', async (evento) => {
     botao.textContent = 'Verificando...';
 
     try {
+        // 0. Persistencia conforme a escolha: marcado guarda a sessao no
+        // localStorage (sobrevive ao navegador fechado), desmarcado guarda no
+        // sessionStorage (some ao fechar a aba). A senha nunca e guardada e o
+        // storage e uma opcao oficial do Supabase Auth, nao um token nosso.
+        cliente = window.SessaoPatos.criarCliente(lembrarMe.checked);
+
         // 1. Login via Edge Function (preserva Supabase Auth, nao expoe email)
         const resposta = await fetch(
             'https://fnlqruzbgwffhrqmpfvi.supabase.co/functions/v1/login-username',
@@ -42,6 +49,7 @@ form.addEventListener('submit', async (evento) => {
         }
 
         // 2. Configura sessao com tokens retornados pela Edge Function
+        // (o destino do storage ja foi definido no passo 0)
         const { error: erroSessao } = await cliente.auth.setSession({
             access_token: resultado.access_token,
             refresh_token: resultado.refresh_token,
