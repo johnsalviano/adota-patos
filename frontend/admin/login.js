@@ -1,4 +1,4 @@
-// Mesmas credenciais publicas do site: seguranca real vem da RLS
+// Mesmas credenciais publicas do site: seguranca real vem da RLS e do Supabase Auth
 const cliente = window.supabase.createClient(
     'https://fnlqruzbgwffhrqmpfvi.supabase.co',
     'sb_publishable_jLvZpI_9Kg97Yqg6sdOzrQ_9gvAmRIR'
@@ -17,41 +17,55 @@ form.addEventListener('submit', async (evento) => {
     evento.preventDefault();
     erro.classList.remove('visivel');
 
-    const email = document.getElementById('email').value.trim();
+    const username = document.getElementById('username').value.trim();
     const senha = document.getElementById('senha').value;
 
     botao.disabled = true;
     botao.textContent = 'Verificando...';
 
     try {
-        // 1. Autentica com e-mail e senha
-        const { data, error } = await cliente.auth.signInWithPassword({
-            email: email,
-            password: senha
+        // 1. Login via Edge Function (preserva Supabase Auth, nao expoe email)
+        const resposta = await fetch(
+            'https://fnlqruzbgwffhrqmpfvi.supabase.co/functions/v1/login-username',
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: username, password: senha }),
+            }
+        );
+
+        const resultado = await resposta.json();
+
+        if (!resultado.ok) {
+            mostrarErro(resultado.mensagem || 'Login ou senha incorretos. Confira e tente novamente.');
+            return;
+        }
+
+        // 2. Configura sessao com tokens retornados pela Edge Function
+        const { error: erroSessao } = await cliente.auth.setSession({
+            access_token: resultado.access_token,
+            refresh_token: resultado.refresh_token,
         });
 
-        if (error) {
-            mostrarErro('E-mail ou senha incorretos. Confira e tente novamente.');
+        if (erroSessao) {
+            mostrarErro('Nao foi possivel configurar a sessao. Tente novamente.');
             return;
         }
 
-        // 2. So entra quem esta na lista autorizada da ONG
-        const { data: membro, error: erroMembro } = await cliente
-            .rpc('eh_membro_ong');
+        // 3. Verifica se o usuario esta autorizado pela ONG (RLS)
+        const { data: membro, error: erroMembro } = await cliente.rpc('eh_membro_ong');
 
         if (erroMembro || !membro) {
-            // Conta existe, mas nao foi autorizada pela ONG:
-            // encerra a sessao imediatamente.
             await cliente.auth.signOut();
-            mostrarErro('Esta conta não tem permissão de acesso à equipe.');
+            mostrarErro('Esta conta nao tem permissao de acesso a equipe.');
             return;
         }
 
-        // 3. Membro confirmado: segue para o painel
+        // 4. Membro confirmado: segue para o painel
         window.location.href = 'painel.html';
 
     } catch (falha) {
-        mostrarErro('Não foi possível conectar agora. Tente novamente em instantes.');
+        mostrarErro('Nao foi possivel conectar agora. Tente novamente em instantes.');
     } finally {
         botao.disabled = false;
         botao.textContent = 'Entrar';
