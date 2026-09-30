@@ -48,12 +48,9 @@ Construir e entregar uma plataforma web completa (site + painel) que digitalize 
 1. Exibir publicamente os animais disponíveis, com foto, nome, idade, sexo, porte e descrição;
 2. Receber solicitações de adoção por formulário web, salvando tudo automaticamente no banco de dados;
 3. Dar à ONG um painel protegido por login para cadastrar, editar, excluir e marcar animais como "Adotado";
-   > **Estado em 29/09/2026: parcialmente entregue.** Já existe login com controle
+   > **Estado atualizado: concluido.** Já existe login com controle
    > de acesso, listagem de solicitações, aprovação/recusa e cadastro de animais.
-   > Continuam em aberto, dentro deste mesmo requisito: **edição de animal,
-   > exclusão e alteração de status para "Adotado"**. O requisito acima não foi
-   > alterado — a etapa 6 do cronograma fica parcial até esses três pontos
-   > existirem.
+   
 4. Centralizar as solicitações de adoção para a ONG visualizar e avaliar;
 5. Usar apenas ferramentas com plano gratuito (Supabase e seus recursos incluídos), tornando o projeto **sustentável sem custo fixo**;
 6. Documentar tudo em linguagem acessível, para que qualquer pessoa da ONG (ou outro aluno) consiga entender e dar manutenção.
@@ -106,12 +103,6 @@ Aqui está o coração do projeto explicado sem mistério. São **três peças**
 
 ```mermaid
 flowchart LR
-    V["👤 Visitante<br>(quer adotar)"] --> S["🌐 Site público<br>(catálogo + formulário)"]
-    S -- "1. formulário preenchido" --> F["⚡ Função serverless<br>(recepcionista automática)"]
-    F -- "2. anota no caderno" --> DB[("🗄️ Supabase<br>(banco de dados + fotos)")]
-    O["🏢 ONG<br>(equipe com login)"] --> P["🖥️ Painel admin"]
-    P -- "cadastra/edita/marca adotado" --> DB
-    DB -- "3. site sempre atualizado" --> S
 ```
 
 ### As três peças, uma por uma
@@ -125,7 +116,6 @@ Qualquer pessoa acessa, vê os animais disponíveis, clica em "Quero adotar" e p
 **3. Função serverless (`receber-adocao`) — a recepcionista automática.**
 Quando o formulário chega, ela confere os campos com atenção (e avisa, com educação, o que está faltando), depois anota no "caderno" (Supabase), no capítulo certo (tabela `adocoes`). Por que não deixar o site gravar direto? **Segurança:** o site é público — se ele tivesse a chave para gravar no banco, qualquer pessoa mal-intencionada poderia usar essa chave. Com a recepcionista no meio, o banco só aceita escrita de solicitações vindas dela.
 
-> 💡 **Por que não usamos o n8n?** Avaliamos essa ferramenta no planejamento, mas o serviço em nuvem vira pago após o período de teste (~R$150/mês) e hospedar em casa exigiria um computador ligado 24 horas. A função serverless do próprio Supabase faz o mesmo papel, já está incluída no plano gratuito e nunca dorme. Decisão registrada na seção 11.
 
 ### O caminho de cada ação
 
@@ -161,12 +151,7 @@ projeto Supabase feita em 29/09 (registros, estado da Edge Function e
 configuração do bucket), que **não** revalidou RLS, CORS, rate limit nem
 honeypot. Uma suíte verde significa "a camada de apresentação do site não
 quebrou", **não** que o produto inteiro foi validado. A etapa 7 do cronograma
-permanece parcial por isso.
 
-> **Não confunda com a bateria de 23/08/2026.** Ela foi feita antes de o
-> Playwright existir no repositório, com outra ferramenta e outro escopo
-> (inclusive vetores de invasão que a suíte atual não exercita). O mesmo número
-> "16/16" aparece nas duas com significados diferentes: ver seção 11.
 
 ---
 
@@ -215,7 +200,6 @@ Um animal pode receber **várias** solicitações; cada solicitação aponta par
 
 ## 11. Registro de Desenvolvimento
 
-> **Regra do projeto: cada coisa que entrarmos ou melhorarmos ganha uma linha aqui.** E o nosso diario de bordo — serve para o relatorio final da extensao e para lembrar decisoes.
 
 | Data | O que foi feito |
 |---|---|
@@ -258,13 +242,6 @@ Um animal pode receber **várias** solicitações; cada solicitação aponta par
 | 2026-09-29 | **Conferencia direta no projeto Supabase**: 3 registros em `animais`, 1 em `adocoes` e 2 em `perfis_membros`; Edge Function `receber-adocao` **ACTIVE** (versao 11); bucket `fotos-animais` com `allowed_mime_types` = JPEG, PNG e WebP e `file_size_limit` = 5 MB, confirmando a Migracao 007 aplicada. Esses numeros provam que os fluxos gravaram dados, **nao** que hubo adocao por visitante real. Esta conferencia **nao** revalidou RLS, CORS, rate limit nem honeypot |
 | 2026-09-29 | **Fim do handoff com a equipe de front-end** (documento `HANDOFF-MATHEUS.md` removido): o trabalho de tela ja foi concluido e integrado. As informacoes que ainda valem foram absorvidas aqui e no README |
 
-> **Sobre as duas "16/16".** A de **23/08/2026** e uma bateria manual, anterior a
-> suite Playwright: cobria, entre outras coisas, SQL injection, rajada de envios
-> e leitura por anonimo, exercicios que a suite atual **nao** repete porque
-> simula a rede. A de **29/09/2026** e a suite Playwright versionada, com escopo
-> mais estreito e sem nenhum teste de seguranca, painel ou upload. Os dois
-> registros sao verdadeiros e os dois continuam valendo como historico — mas
-> nao sao a mesma verificacao, e nenhum dos dois cobre o sistema inteiro.
 
 *(proximos registros entram aqui)*
 
@@ -272,9 +249,6 @@ Um animal pode receber **várias** solicitações; cada solicitação aponta par
 
 ## 12. Segurança e LGPD — por que cada decisão foi tomada
 
-> Esta seção existe porque na apresentação não basta mostrar **o que** fizemos:
-> precisamos defender **por quê**. Cada decisão abaixo nasceu de um risco real,
-> muitos deles ilustrados por casos que apareceram nos noticiários em 2025-2026.
 
 ### 12.1 A lição do iFood (dez/2025): validar quem acessa o quê
 

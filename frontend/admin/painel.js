@@ -41,11 +41,19 @@
         if (aba === 'solicitacoes') {
             btns[0].classList.add('ativa');
             document.getElementById('secao-solicitacoes').classList.remove('oculto');
+            document.getElementById('secao-animais').classList.add('oculto');
             document.getElementById('secao-cadastrar').classList.add('oculto');
             carregarSolicitacoes();
-        } else {
+        } else if (aba === 'animais') {
             btns[1].classList.add('ativa');
             document.getElementById('secao-solicitacoes').classList.add('oculto');
+            document.getElementById('secao-animais').classList.remove('oculto');
+            document.getElementById('secao-cadastrar').classList.add('oculto');
+            carregarAnimais();
+        } else {
+            btns[2].classList.add('ativa');
+            document.getElementById('secao-solicitacoes').classList.add('oculto');
+            document.getElementById('secao-animais').classList.add('oculto');
             document.getElementById('secao-cadastrar').classList.remove('oculto');
         }
     }
@@ -321,9 +329,193 @@
         mudarAba('solicitacoes');
     });
 
+    document.getElementById('aba-animais').addEventListener('click', function () {
+        mudarAba('animais');
+    });
+
     document.getElementById('aba-cadastrar').addEventListener('click', function () {
         mudarAba('cadastrar');
     });
+
+
+    // ---------------- Animais ----------------
+    async function carregarAnimais() {
+        var container = document.getElementById('lista-animais');
+        container.textContent = '';
+        var p = document.createElement('p');
+        p.className = 'carregando';
+        p.textContent = 'Carregando animais...';
+        container.appendChild(p);
+
+        var resp = await cliente
+            .from('animais')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (resp.error) {
+            container.textContent = '';
+            var msg = document.createElement('p');
+            msg.textContent = 'Erro ao carregar animais: ' + resp.error.message;
+            container.appendChild(msg);
+            return;
+        }
+
+        if (!resp.data || resp.data.length === 0) {
+            container.textContent = '';
+            var vazio = document.createElement('p');
+            vazio.className = 'vazio';
+            vazio.textContent = 'Nenhum animal cadastrado.';
+            container.appendChild(vazio);
+            return;
+        }
+
+        container.textContent = '';
+        resp.data.forEach(function (animal) {
+            var card = document.createElement('div');
+            card.className = 'animal-card';
+
+            var header = document.createElement('div');
+            header.className = 'animal-header';
+            var nome = document.createElement('strong');
+            nome.textContent = animal.nome;
+            var badge = document.createElement('span');
+            badge.className = 'badge-status badge-' + (animal.status === 'Adotado' ? 'Aprovada' : 'Pendente');
+            badge.textContent = animal.status || 'Disponível';
+            header.appendChild(nome);
+            header.appendChild(badge);
+            card.appendChild(header);
+
+            var corpo = document.createElement('div');
+            corpo.className = 'solicitacao-corpo';
+            var dados = [
+                ['Espécie', animal.especie],
+                ['Raça', animal.raca || 'Não informado'],
+                ['Idade', animal.idade],
+                ['Sexo', animal.sexo],
+                ['Porte', animal.porte],
+                ['Descrição', animal.descricao],
+                ['Status', animal.status]
+            ];
+            dados.forEach(function (par) {
+                var linha = document.createElement('p');
+                var rotulo = document.createElement('strong');
+                rotulo.textContent = par[0] + ': ';
+                linha.appendChild(rotulo);
+                linha.appendChild(document.createTextNode(par[1] || 'Não informado'));
+                corpo.appendChild(linha);
+            });
+            card.appendChild(corpo);
+
+            var acoes = document.createElement('div');
+            acoes.className = 'solicitacao-acoes';
+
+            var btnEditar = document.createElement('button');
+            btnEditar.type = 'button';
+            btnEditar.className = 'btn-editar';
+            btnEditar.textContent = 'Editar';
+            btnEditar.addEventListener('click', function () {
+                editarAnimal(animal.id);
+            });
+
+            var btnExcluir = document.createElement('button');
+            btnExcluir.type = 'button';
+            btnExcluir.className = 'btn-recusar';
+            btnExcluir.textContent = 'Excluir';
+            btnExcluir.addEventListener('click', function () {
+                if (confirm('Tem certeza que deseja excluir o animal ' + animal.nome + '?')) {
+                    excluirAnimal(animal.id);
+                }
+            });
+
+            var btnAdotado = document.createElement('button');
+            btnAdotado.type = 'button';
+            btnAdotado.className = 'btn-aprovar';
+            btnAdotado.textContent = 'Marcar como Adotado';
+            btnAdotado.addEventListener('click', function () {
+                if (animal.status === 'Disponível') {
+                    marcarAdotado(animal.id);
+                } else {
+                    window.alert('Este animal já está marcado como Adotado.');
+                }
+            });
+
+            acoes.appendChild(btnEditar);
+            acoes.appendChild(btnExcluir);
+            acoes.appendChild(btnAdotado);
+            card.appendChild(acoes);
+
+            container.appendChild(card);
+        });
+    }
+
+    async function editarAnimal(id) {
+        var resp = await cliente
+            .from('animais')
+            .select('nome, especie, idade, porte, descricao, status')
+            .eq('id', id)
+            .single();
+        if (resp.error || !resp.data) {
+            window.alert('Erro ao carregar animal: ' + (resp.error ? resp.error.message : 'não encontrado'));
+            return;
+        }
+        var animal = resp.data;
+        var novoNome = prompt('Novo nome do animal:', animal.nome);
+        if (novoNome === null || novoNome.trim() === '') return;
+        var novaEspecie = prompt('Nova espécie (' + animal.especie + '):', animal.especie);
+        if (novaEspecie === null) return;
+        var novaIdade = prompt('Nova idade (' + animal.idade + '):', animal.idade);
+        if (novaIdade === null) return;
+        var novoPorte = prompt('Novo porte (' + animal.porte + '):', animal.porte);
+        if (novoPorte === null) return;
+        var novaDescricao = prompt('Nova descrição:', animal.descricao);
+        if (novaDescricao === null) return;
+        var novoStatus = prompt('Novo status (Disponível / Adotado):', animal.status);
+        if (novoStatus === null) return;
+        if (novoStatus !== 'Disponível' && novoStatus !== 'Adotado') {
+            window.alert('Status inválido. Use Disponível ou Adotado.');
+            return;
+        }
+        var updateResp = await cliente
+            .from('animais')
+            .update({
+                nome: novoNome.trim(),
+                especie: novaEspecie.trim(),
+                idade: novaIdade.trim(),
+                porte: novoPorte.trim(),
+                descricao: novaDescricao.trim(),
+                status: novoStatus
+            })
+            .eq('id', id);
+        if (updateResp.error) {
+            window.alert('Erro ao editar animal: ' + updateResp.error.message);
+        } else {
+            carregarAnimais();
+        }
+    }
+
+    async function excluirAnimal(id) {
+        var resp = await cliente
+            .from('animais')
+            .delete()
+            .eq('id', id);
+        if (resp.error) {
+            window.alert('Erro ao excluir animal: ' + resp.error.message);
+        } else {
+            carregarAnimais();
+        }
+    }
+
+    async function marcarAdotado(id) {
+        var resp = await cliente
+            .from('animais')
+            .update({ status: 'Adotado' })
+            .eq('id', id);
+        if (resp.error) {
+            window.alert('Erro ao marcar animal como Adotado: ' + resp.error.message);
+        } else {
+            carregarAnimais();
+        }
+    }
 
     verificarAcesso();
 })();

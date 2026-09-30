@@ -37,6 +37,7 @@
 
                 <div class="abas" role="tablist" aria-label="Navegação do painel">
                     <button type="button" class="aba-btn ativa" id="aba-solicitacoes" role="tab" aria-selected="true">Solicitações de Adoção</button>
+                    <button type="button" class="aba-btn" id="aba-animais" role="tab" aria-selected="false">Animais</button>
                     <button type="button" class="aba-btn" id="aba-cadastrar" role="tab" aria-selected="false">Cadastrar Animal</button>
                 </div>
             </div>
@@ -110,6 +111,13 @@
                         <div id="msg-status" class="mensagem-status" aria-live="polite"></div>
                     </div>
                 </form>
+            </section>
+
+            <section id="secao-animais" class="cartao oculto" aria-labelledby="titulo-animais">
+                <h2 id="titulo-animais">Animais Cadastrados 🐾</h2>
+                <div id="lista-animais" class="lista-animais" aria-live="polite">
+                    <p class="carregando">Carregando animais...</p>
+                </div>
             </section>
         </main>
     </div>
