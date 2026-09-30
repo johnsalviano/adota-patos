@@ -77,7 +77,15 @@
             return;
         }
 
-        document.getElementById('email-logado').textContent = session.user.email || '';
+        // O texto de identificacao vem da funcao meu_username(), que le o
+        // username do proprio perfil a partir do id da sessao (auth.uid()).
+        // Nao usamos session.user.email: ele traria o identificador interno
+        // do Auth em vez do nome de login. E nao usamos o campo do formulario:
+        // quem escreve ali e o usuario, nao o servidor.
+        var usernameResp = await cliente.rpc('meu_username');
+        var username = usernameResp.data || '';
+
+        document.getElementById('usuario-logado').textContent = username;
         document.getElementById('tela-carregando').classList.add('oculto');
         document.getElementById('conteudo-painel').classList.remove('oculto');
 
