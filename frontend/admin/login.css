@@ -47,8 +47,12 @@ label {
     font-size: 0.92rem;
 }
 
-input[type="email"],
-input[type="password"] {
+/* Aplica o mesmo padrao a qualquer campo de preenchimento, e nao a um
+   type por vez: atrelar o visual ao atributo type fez o login (type="text")
+   ficar de fora e receber o estilo nativo do navegador, enquanto a senha
+   (type="password") saia correta. O checkbox fica de fora de proposito,
+   porque e opcao e tem regra propria em .opcao-lembrar. */
+input:not([type="checkbox"]) {
     width: 100%;
     padding: 13px 16px;
     border: 2px solid #e2ece9;
