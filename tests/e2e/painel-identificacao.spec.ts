@@ -122,7 +122,7 @@ test.describe(`Identificacao do membro no painel`, () => {
 
       await expect(page.locator(`#usuario-logado`)).toHaveText(username);
       await expect(page.locator(`.ola`)).toHaveText(
-        `Você está logado como ${username}.`
+        `Você está logado como ${username}`
       );
     });
   }
@@ -133,7 +133,7 @@ test.describe(`Identificacao do membro no painel`, () => {
     await entrarNoPainel(page, CONTAS[0]);
 
     const tela = await page.locator(`.ola`).innerText();
-    expect(tela).toBe(`Você está logado como ${CONTAS[0]}.`);
+    expect(tela).toBe(`Você está logado como ${CONTAS[0]}`);
     expect(tela).not.toMatch(/@/);
     expect(tela).not.toMatch(/[0-9a-f]{8}-[0-9a-f]{4}/i);
     expect(tela).not.toContain(INTERNO);
