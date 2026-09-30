@@ -144,7 +144,7 @@ cada escolha, comece por lá.
 ## Roadmap
 
 - [ ] Domínio próprio e HTTPS
-- [ ] Painel da ONG: edição, exclusão e marcação de animal como "Adotado"
+- [x] Painel da ONG: edição, exclusão e marcação de animal como "Adotado" (concluído em 2026-09-30)
 - [ ] Google Search Console + sitemap.xml
 - [ ] Sentry para monitorar erros em produção
 
