@@ -52,8 +52,8 @@ Notas honestas sobre escopo:
 2. **Idioma**: português brasileiro em tudo (código pode manter termos técnicos em inglês).
 3. **Documento vivo**: qualquer coisa inserida, alterada ou melhorada no projeto deve ser registrada na seção 11 (*Registro de Desenvolvimento*) de `docs/DOCUMENTACAO.md`, com data e responsável.
 4. **Zero segredos**: nenhuma chave de acesso, segredo ou token no repositório. Nunca. Use variáveis de ambiente / `.env` listado no `.gitignore`. **Única exceção possível: a chave publicável** (`sb_publishable_...`), e somente porque (a) não concede nenhum poder administrativo — garantido pelas policies RLS, testadas a cada auditoria — e (b) vive apenas nos arquivos de front-end (`frontend/`). Se qualquer mudança futura der à publishable acesso além do catálogo/formulário/login, a exceção cai. Chaves administrativas (`sb_secret_...`) e access token pessoal (`sbp_...`, conta Supabase) nunca entram em código, documento ou conversa versionada — girá-las após eventos relevantes (ex.: aprovação do projeto).
-5. **Zero rastros**: nada no repositório ajuda alguém a perseguir credenciais — nem valores reais, nem placeholders parecidos com valores, nem comentários, logs ou documentos indicando onde segredos vivem ou como obtê-los. Placeholders do `.env.example` permanecem genéricos (ex.: `sb_secret_xxxx`). Precedente que guia essa regra: caso Moltbook (2026) — chave pública explorada porque o banco confiava nela demais.
-5. **Documentação atualizada junto com o código**: PR que muda comportamento e não atualiza a documentação correspondente não deve ser aprovado.
+5. **Zero rastros**: nada no repositório ajuda alguém a perseguir credenciais — nem valores reais, nem placeholders parecidos com valores, nem comentários, logs ou documentos indicando onde segredos vivem ou como obtê-los. Precedente que guia essa regra: caso Moltbook (2026) — chave pública explorada porque o banco confiava nela demais.
+6. **Documentação atualizada junto com o código**: PR que muda comportamento e não atualiza a documentação correspondente não deve ser aprovado.
 
 ---
 
