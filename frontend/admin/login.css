@@ -81,6 +81,34 @@ button:hover { background: var(--primary-light); }
 button:active { transform: scale(0.98); }
 button:disabled { opacity: 0.6; cursor: wait; }
 
+/* "Lembrar-me" fica ao lado do rotulo, nao como mais um campo empilhado
+   igual aos outros, porque e uma opcao e nao um dado a preencher. */
+.opcao-lembrar {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-top: -6px;
+    margin-bottom: 24px;
+}
+
+.opcao-lembrar input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    margin: 0;
+    accent-color: var(--primary);
+    cursor: pointer;
+    flex: 0 0 auto;
+}
+
+.opcao-lembrar label {
+    margin: 0;
+    font-weight: 400;
+    font-size: 0.9rem;
+    color: var(--text);
+    cursor: pointer;
+    user-select: none;
+}
+
 .mensagem-erro {
     display: none;
     background: #fde8e8;

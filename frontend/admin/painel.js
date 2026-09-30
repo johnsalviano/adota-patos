@@ -1,9 +1,11 @@
 (function () {
     'use strict';
 
-    var SUPABASE_URL = 'https://fnlqruzbgwffhrqmpfvi.supabase.co';
-    var SUPABASE_KEY = 'sb_publishable_jLvZpI_9Kg97Yqg6sdOzrQ_9gvAmRIR';
-    var cliente = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    // Le a preferencia de "Lembrar-me" deixada no login: assim uma sessao
+    // temporaria continua valendo no painel.html (que e outra pagina) e nao
+    // e promovida a persistente. Sem preferencia registrada, o padrao e
+    // persistir, como sempre foi.
+    var cliente = window.SessaoPatos.criarCliente();
 
     var TAMANHO_MAX_FOTO = 5 * 1024 * 1024;
 
