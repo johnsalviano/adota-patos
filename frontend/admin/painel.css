@@ -1,70 +1,369 @@
-@import url('../css/tema.css');
+/* ============================================================
+   ADOTA PATOS — Painel administrativo
+   Visual baseado no design do Matheus, integrado ao tema do site.
+   ============================================================ */
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: var(--gray);
-    color: var(--dark);
+    font-family: var(--font-body, 'Segoe UI', Arial, sans-serif);
+    background: var(--gray, #fbfbea);
+    color: var(--dark, #16332e);
     min-height: 100vh;
 }
 
-header {
-    background: var(--white);
-    padding: 18px 32px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 12px rgba(22, 51, 46, 0.08);
-}
-
-.logo { font-size: 1.3rem; font-weight: bold; color: var(--primary-dark); }
-.logo span { color: var(--text); font-weight: normal; font-size: 0.9rem; margin-left: 8px; }
-
-button.sair {
-    background: transparent;
-    border: 2px solid var(--primary);
-    color: var(--dark);
-    border-radius: var(--radius-md);
-    padding: 8px 20px;
-    font-weight: 600;
-    cursor: pointer;
-}
-button.sair:hover { background: var(--primary-light); }
-
-main { max-width: 1000px; margin: 40px auto; padding: 0 24px; }
-
-.cartao {
-    background: var(--white);
-    border-radius: var(--radius-lg);
-    padding: 40px;
-    box-shadow: 0 8px 28px rgba(22, 51, 46, 0.08);
-}
-
-h1 { font-size: 1.5rem; margin-bottom: 10px; }
-
-.ola { color: var(--text); margin-bottom: 30px; }
-
-.proximos-passos {
-    list-style: none;
-    display: grid;
-    gap: 14px;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    margin-top: 24px;
-}
-
-.passo {
-    background: var(--secondary);
-    border-radius: var(--radius-md);
-    padding: 20px;
-    font-size: 0.92rem;
-}
-.passo strong { display: block; margin-bottom: 6px; color: var(--dark); }
+/* ---------- Estado inicial ---------- */
 
 .carregando {
     text-align: center;
     padding: 80px 0;
-    color: var(--text);
+    color: var(--text, #55655f);
 }
 
-.oculto { display: none; }
+.oculto { display: none !important; }
+
+/* ---------- Cabeçalho ---------- */
+
+.cabecalho {
+    background: var(--white);
+    padding: 14px 24px;
+    box-shadow: 0 2px 12px rgba(22, 51, 46, 0.08);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.cabecalho-conteudo {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.logo img {
+    height: 42px;
+    width: auto;
+    display: block;
+}
+
+.logo-nome {
+    font-family: var(--font-display, 'Baloo 2', cursive);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary-dark, #29a794);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo-legenda {
+    color: var(--text, #55655f);
+    font-weight: 400;
+    font-size: 0.85rem;
+}
+
+button.sair {
+    margin-left: auto;
+    background: transparent;
+    border: 2px solid var(--primary, #57d8c3);
+    color: var(--dark, #16332e);
+    border-radius: var(--radius-md, 18px);
+    padding: 8px 20px;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+button.sair:hover {
+    background: var(--primary-light, #a9eee1);
+}
+
+/* ---------- Layout principal ---------- */
+
+.principal {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 24px;
+}
+
+.cartao {
+    background: var(--white);
+    border-radius: var(--radius-lg, 28px);
+    padding: 32px;
+    box-shadow: 0 8px 28px rgba(22, 51, 46, 0.08);
+    margin-bottom: 30px;
+}
+
+h1, h2 {
+    font-family: var(--font-display, 'Baloo 2', cursive);
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--dark, #16332e);
+}
+
+.ola {
+    color: var(--text, #55655f);
+    margin-bottom: 20px;
+}
+
+/* ---------- Abas de Navegação ---------- */
+
+.abas {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+    border-bottom: 2px solid #eaeaea;
+    padding-bottom: 8px;
+}
+
+.aba-btn {
+    background: none;
+    border: none;
+    padding: 10px 18px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text, #55655f);
+    cursor: pointer;
+    border-radius: var(--radius-md, 18px);
+    transition: background 0.2s, color 0.2s;
+}
+
+.aba-btn:hover {
+    background: var(--primary-light, #a9eee1);
+    color: var(--primary-dark, #29a794);
+}
+
+.aba-btn.ativa {
+    background: var(--primary-light, #a9eee1);
+    color: var(--primary-dark, #29a794);
+}
+
+/* ---------- Formulário de Cadastro ---------- */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.form-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-grupo.full-width { grid-column: 1 / -1; }
+
+label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--dark, #16332e);
+}
+
+input, select, textarea {
+    padding: 12px 16px;
+    border: 1px solid #dcdcd0;
+    border-radius: var(--radius-md, 18px);
+    font-family: inherit;
+    font-size: 0.95rem;
+    background: var(--gray, #fbfbea);
+    outline: none;
+    width: 100%;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--primary-dark, #29a794);
+    background: var(--white);
+}
+
+input:invalid, select:invalid {
+    border-color: #f0b4ae;
+}
+
+.dica {
+    font-size: 0.78rem;
+    color: var(--text, #55655f);
+}
+
+.form-rodape {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.btn-principal {
+    background: var(--primary, #57d8c3);
+    color: var(--dark, #16332e);
+    border: none;
+    border-radius: var(--radius-md, 18px);
+    padding: 12px 24px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.btn-principal:hover {
+    background: var(--primary-dark, #29a794);
+    color: var(--white);
+}
+
+.btn-principal:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.mensagem-status {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: var(--radius-md, 18px);
+    font-size: 0.9rem;
+    display: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.mensagem-status.sucesso {
+    background: var(--primary-light, #a9eee1);
+    color: var(--dark, #16332e);
+    display: block;
+}
+
+.mensagem-status.erro {
+    background: #ffd8d8;
+    color: #8a1f1f;
+    display: block;
+}
+
+/* ---------- Lista de Solicitações ---------- */
+
+.solicitacao-card {
+    border: 1px solid #e2e8f0;
+    border-radius: var(--radius-md, 18px);
+    padding: 20px;
+    margin-bottom: 16px;
+    background: var(--white);
+}
+
+.solicitacao-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed #e2e8f0;
+}
+
+.solicitacao-header strong {
+    color: var(--dark, #16332e);
+}
+
+.badge-status {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.badge-Pendente      { background: #fff3cd; color: #856404; }
+.badge-Em-analise    { background: #cce5ff; color: #004085; }
+.badge-Aprovada      { background: #d4edda; color: #155724; }
+.badge-Recusada      { background: #f8d7da; color: #721c24; }
+
+.solicitacao-corpo p {
+    margin-bottom: 6px;
+    font-size: 0.92rem;
+    color: var(--text, #55655f);
+}
+
+.solicitacao-corpo strong {
+    color: var(--dark, #16332e);
+}
+
+.solicitacao-acoes {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.btn-aprovar, .btn-recusar {
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--radius-md, 18px);
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: filter 0.2s, opacity 0.2s;
+}
+
+.btn-aprovar {
+    background: var(--success, #2ec4b6);
+    color: #ffffff;
+}
+
+.btn-recusar {
+    background: var(--danger, #e74c3c);
+    color: #ffffff;
+}
+
+.btn-aprovar:hover, .btn-recusar:hover {
+    filter: brightness(0.92);
+}
+
+.vazio {
+    padding: 20px 0;
+    color: var(--text, #55655f);
+}
+
+/* ---------- Responsivo ---------- */
+
+@media (max-width: 640px) {
+    .cabecalho-conteudo {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .logo-nome {
+        font-size: 1.1rem;
+    }
+
+    .logo-legenda {
+        display: none;
+    }
+
+    .principal {
+        margin: 24px auto;
+        padding: 0 14px;
+    }
+
+    .cartao {
+        padding: 22px;
+    }
+
+    .abas {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .aba-btn {
+        text-align: left;
+    }
+
+    .solicitacao-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

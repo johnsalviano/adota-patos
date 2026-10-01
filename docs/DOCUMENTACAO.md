@@ -48,6 +48,9 @@ Construir e entregar uma plataforma web completa (site + painel) que digitalize 
 1. Exibir publicamente os animais disponíveis, com foto, nome, idade, sexo, porte e descrição;
 2. Receber solicitações de adoção por formulário web, salvando tudo automaticamente no banco de dados;
 3. Dar à ONG um painel protegido por login para cadastrar, editar, excluir e marcar animais como "Adotado";
+   > **Estado atualizado: concluído.** Painel com login (`eh_membro_ong()`),
+   > listagem de solicitações, aprovação/recusa, cadastro, **edição**,
+   > **exclusão** e **marcação como "Adotado"** implementados no `frontend/admin/`.
 4. Centralizar as solicitações de adoção para a ONG visualizar e avaliar;
 5. Usar apenas ferramentas com plano gratuito (Supabase e seus recursos incluídos), tornando o projeto **sustentável sem custo fixo**;
 6. Documentar tudo em linguagem acessível, para que qualquer pessoa da ONG (ou outro aluno) consiga entender e dar manutenção.
@@ -130,6 +133,38 @@ Quando o formulário chega, ela confere os campos com atenção (e avisa, com ed
 | Visitante se candidata | Site → função `receber-adocao` → tabela `adocoes` → ONG vê no painel |
 | Visitante vê animal | Site lê tabela `animais` (só os Disponíveis) |
 
+### 7.1 O que os testes automatizados cobrem — e o que não cobrem
+
+A suíte versionada é o Playwright, em `tests/e2e/`, e é executada pela CI em
+todo Pull Request e em todo push na `main` (`.github/workflows/e2e.yml`).
+São **8 testes rodados em 2 projetos** (desktop 1280x800 e mobile 375x667),
+totalizando **16 execuções**.
+
+**O que ela cobre:** o site público, com a rede **simulada** — o catálogo
+carrega e mostra os animais, o modal abre e fecha, o formulário exibe os campos
+obrigatórios, o envio completo chega ao feedback de sucesso e o banner de
+cookies respeita a escolha do visitante (aceitar ou recusar) e só carrega o
+Analytics depois do aceite.
+
+**O que ela NÃO cobre — e não deve ser lido como validado:**
+
+- RLS, Edge Function `receber-adocao`, rate limit, honeypot e CORS;
+- login, `eh_membro_ong()` e o painel da ONG (que **não tem nenhum teste**);
+- upload de foto e as regras do bucket `fotos-animais`.
+
+Esses fluxos não são verificados pela suíte. O que existe de prova são as
+verificações manuais de API registradas na seção 11 e a conferência direta no
+projeto Supabase feita em 29/09 (registros, estado da Edge Function e
+configuração do bucket), que **não** revalidou RLS, CORS, rate limit nem
+honeypot. Uma suíte verde significa "a camada de apresentação do site não
+quebrou", **não** que o produto inteiro foi validado. A etapa 7 do cronograma
+permanece parcial por isso.
+
+> **Não confunda com a bateria de 23/08/2026.** Ela foi feita antes de o
+> Playwright existir no repositório, com outra ferramenta e outro escopo
+> (inclusive vetores de invasão que a suíte atual não exercita). O mesmo número
+> "16/16" aparece nas duas com significados diferentes: ver seção 11.
+
 ---
 
 ## 8. Modelagem de Dados (resumo)
@@ -167,9 +202,9 @@ Um animal pode receber **várias** solicitações; cada solicitação aponta par
 | 2. Protótipo do site | Matheus monta o layout do site público | ✅ Concluída |
 | 3. Banco de dados | Criação do projeto Supabase, tabelas e storage | ✅ Concluída |
 | 4. Receptor do formulário | Endpoint serverless (`receber-adocao` → Supabase) | ✅ Concluída |
-| 5. Integração do site | Formulário enviando ao webhook; catálogo lendo o banco | ⏳ Pendente |
-| 6. Painel da ONG | Login, CRUD de animais, lista de solicitações | ⏳ Pendente |
-| 7. Testes completos | Fluxo inteiro ponta a ponta | ⏳ Pendente |
+| 5. Integração do site | Formulário enviando ao webhook; catálogo lendo o banco | ✅ Concluída |
+| 6. Painel da ONG | Login com controle de acesso, listagem e aprovação/recusa de solicitações, cadastro de animais | 🟡 Parcial — falta edicao, exclusao e marcacao como "Adotado" (ver objetivo especifico 3) |
+| 7. Testes completos | Fluxo inteiro ponta a ponta | 🟡 Parcial — ver seção 7.1 |
 | 8. Implantação e treinamento | Colocar no ar e treinar a equipe da ONG | ⏳ Pendente |
 | 9. Relatório final | Fechamento da documentação para entrega | ⏳ Pendente |
 
@@ -203,7 +238,7 @@ Um animal pode receber **várias** solicitações; cada solicitação aponta par
 | 2026-08-23 | **Endurecimento da funcao** (F1-F4): IP pelo ultimo da cadeia XFF, limite de payload (413), regex de e-mail, limites server-side espelhando os do navegador |
 | 2026-08-23 | **Limites de digitacao**: nome 80 (padrao PF), telefone 15 (ANATEL), cidade 40, motivo 300 com contador. Aplicados no navegador E no servidor |
 | 2026-08-23 | **SEO basico**: `robots.txt`, titulo, meta description, Open Graph e favicon |
-| 2026-08-23 | **Bateria tecnica 16/16**: carregamento, responsividade, maxlength, modal, consentimento, console e rede limpos |
+| 2026-08-23 | **Bateria tecnica 16/16** (manual, anterior a suite Playwright): carregamento, responsividade, maxlength, modal, consentimento, console e rede limpos. Registro historico — ver nota abaixo |
 | 2026-08-23 | **Auditoria final de seguranca**: RLS ativa nas 5 tabelas, anonimo le lista vazia em dados sensiveis, storage publico restrito as fotos, indices, FK, CHECKs |
 | 2026-08-23 | **Historia real da ONG no site** (#31): secao "Sobre nos" com dados verdadeiros (fundacao 11/06/2018) e canais oficiais — fim dos links placeholder |
 | 2026-08-23 | **Google Analytics 4** (#33): propriedade oficial criada, ID `G-S08M6034SR` — tag com gatilho LGPD |
@@ -213,6 +248,21 @@ Um animal pode receber **várias** solicitações; cada solicitação aponta par
 | 2026-08-28 | **Front-end reescrito a mao** (#52/Rota B): HTML limpo (zero inline), CSS em `tema.css` + `estilo.css`, JS em `app.js`, CI com `estrutura-frontend` |
 | 2026-08-28 | **Correcoes de producao** (PR #59): CORS com origem publicada, `login.js` com classes CSS, `Cache-Control: no-store`, header `Allow` no 405, CI varrendo JS do admin |
 | 2026-08-29 | **Melhorias de acessibilidade e qualidade**: focus trap + Escape nos modais, skip-to-content, alt texts, theme-color, JSON-LD, `<small>` no rodape, passive scroll, schema.sql atualizado |
+| 2026-08-29 | **Painel da ONG entregue**: login com guarda de sessao e RPC `eh_membro_ong()`, listagem de solicitacoes com aprovar/recusar, e cadastro de animal com upload de foto para o bucket. O design das telas foi fornecido pelo Matheus. **Escopo entregue: cadastro de animais. Edicao, exclusao e marcacao como "Adotado" continuam em aberto** (ver objetivo especifico 3) |
+| 2026-09-28 | **Validacao do formulario de cadastro de animal**: os obrigatorios passaram a ser checados no envio, a solicitacao ficou vinculada ao animal (`animal_id`) e a protecao do bucket foi versionada |
+| 2026-09-28 | **Migracao 007** (`007_protecao_storage.sql`): o bucket `fotos-animais` passou a aceitar apenas JPEG, PNG e WebP e a limitar o upload a 5 MB — os mesmos formatos e o mesmo tamanho que a interface promete. Sem isso, qualquer um chamando a API direto burla a validacao do navegador |
+| 2026-09-29 | **Suite E2E versionada e verde**: `npx playwright test` — **16/16 passaram** (8 testes x 2 viewports, 18,2 s), 0 falhas, 0 ignorados. Cobre o site publico com rede simulada; **nao** cobre RLS, Edge Function, login, painel nem upload (ver secao 7.1) |
+| 2026-09-29 | **Conferencia direta no projeto Supabase**: 3 registros em `animais`, 1 em `adocoes` e 2 em `perfis_membros`; Edge Function `receber-adocao` **ACTIVE** (versao 11); bucket `fotos-animais` com `allowed_mime_types` = JPEG, PNG e WebP e `file_size_limit` = 5 MB, confirmando a Migracao 007 aplicada. Esses numeros provam que os fluxos gravaram dados, **nao** que hubo adocao por visitante real. Esta conferencia **nao** revalidou RLS, CORS, rate limit nem honeypot |
+| 2026-09-30 | **Painel da ONG concluído**: edição, exclusão e marcação como "Adotado" implementados (`painel.html` + `painel.js`); nenhuma alteração no banco; testes E2E 16/16 passando |
+| 2026-09-29 | **Fim do handoff com a equipe de front-end** (documento `HANDOFF-MATHEUS.md` removido): o trabalho de tela ja foi concluido e integrado. As informacoes que ainda valem foram absorvidas aqui e no README |
+
+> **Sobre as duas "16/16".** A de **23/08/2026** e uma bateria manual, anterior a
+> suite Playwright: cobria, entre outras coisas, SQL injection, rajada de envios
+> e leitura por anonimo, exercicios que a suite atual **nao** repete porque
+> simula a rede. A de **29/09/2026** e a suite Playwright versionada, com escopo
+> mais estreito e sem nenhum teste de seguranca, painel ou upload. Os dois
+> registros sao verdadeiros e os dois continuam valendo como historico — mas
+> nao sao a mesma verificacao, e nenhum dos dois cobre o sistema inteiro.
 
 *(proximos registros entram aqui)*
 
