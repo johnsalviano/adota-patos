@@ -5,7 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel da ONG | Adota Patos</title>
     <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#57d8c3">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐾</text></svg>">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../css/tema.css">
     <link rel="stylesheet" href="painel.css">
 </head>
 <body>
@@ -13,29 +20,110 @@
     <div id="tela-carregando" class="carregando">Verificando seu acesso...</div>
 
     <div id="conteudo-painel" class="oculto">
-        <header>
-            <div class="logo">🐾 Adota Patos <span>Painel da equipe</span></div>
-            <button type="button" class="sair" id="botao-sair">Sair</button>
+        <header class="cabecalho">
+            <div class="cabecalho-conteudo">
+                <div class="logo" aria-hidden="true">
+                    <img src="../img/logo.webp" alt="">
+                </div>
+                <span class="logo-nome">🐾 Adota Patos <span class="logo-legenda">Painel da equipe</span></span>
+                <button type="button" class="sair" id="botao-sair">Sair</button>
+            </div>
         </header>
 
-        <main>
+        <main class="principal">
             <div class="cartao">
-                <h1>Bem-vindo(a) de volta! 🐶</h1>
-                <p class="ola">Você está logado como <strong id="email-logado"></strong>.</p>
+                <h1>Painel Administrativo 🐶</h1>
+                <p class="ola">Você está logado como <strong id="usuario-logado"></strong></p>
 
-                <p>O painel está em construção. Próximos passos planejados:</p>
-
-                <ul class="proximos-passos">
-                    <li class="passo"><strong>1. Cadastrar animais</strong> Nome, idade, porte, sexo, história e foto (bucket fotos-animais).</li>
-                    <li class="passo"><strong>2. Ver solicitações</strong> Lista das adoções pedidas pelo site, com contato do adotante.</li>
-                    <li class="passo"><strong>3. Aprovar ou recusar</strong> Muda o status da solicitação e do animal.</li>
-                </ul>
+                <div class="abas" role="tablist" aria-label="Navegação do painel">
+                    <button type="button" class="aba-btn ativa" id="aba-solicitacoes" role="tab" aria-selected="true">Solicitações de Adoção</button>
+                    <button type="button" class="aba-btn" id="aba-animais" role="tab" aria-selected="false">Animais</button>
+                    <button type="button" class="aba-btn" id="aba-cadastrar" role="tab" aria-selected="false">Cadastrar Animal</button>
+                </div>
             </div>
+
+            <section id="secao-solicitacoes" class="cartao" aria-labelledby="titulo-solicitacoes">
+                <h2 id="titulo-solicitacoes">Solicitações de Adoção</h2>
+                <div id="lista-solicitacoes" class="lista-solicitacoes" aria-live="polite">
+                    <p class="carregando">Carregando solicitações...</p>
+                </div>
+            </section>
+
+            <section id="secao-cadastrar" class="cartao oculto" aria-labelledby="titulo-cadastrar">
+                <h2 id="titulo-cadastrar">Cadastrar Novo Animal 🐾</h2>
+                <form id="form-cadastrar-animal" novalidate>
+                    <div class="form-grid">
+                        <div class="form-grupo">
+                            <label for="nome">Nome do Animal *</label>
+                            <input type="text" id="nome" maxlength="80" required placeholder="Ex: Thor">
+                        </div>
+
+                        <div class="form-grupo">
+                            <label for="especie">Espécie *</label>
+                            <select id="especie" required>
+                                <option value="Cão">Cão</option>
+                                <option value="Gato">Gato</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+                        </div>
+
+                        <div class="form-grupo">
+                            <label for="raca">Raça</label>
+                            <input type="text" id="raca" maxlength="80" placeholder="Ex: Vira-lata (SRD)">
+                        </div>
+
+                        <div class="form-grupo">
+                            <label for="idade">Idade *</label>
+                            <input type="text" id="idade" maxlength="40" required placeholder="Ex: 2 anos / 5 meses">
+                        </div>
+
+                        <div class="form-grupo">
+                            <label for="sexo">Sexo *</label>
+                            <select id="sexo" required>
+                                <option value="Macho">Macho</option>
+                                <option value="Fêmea">Fêmea</option>
+                            </select>
+                        </div>
+
+                        <div class="form-grupo">
+                            <label for="porte">Porte *</label>
+                            <select id="porte" required>
+                                <option value="Pequeno">Pequeno</option>
+                                <option value="Médio">Médio</option>
+                                <option value="Grande">Grande</option>
+                            </select>
+                        </div>
+
+                        <div class="form-grupo full-width">
+                            <label for="foto">Foto do Animal *</label>
+                            <input type="file" id="foto" accept="image/jpeg,image/png,image/webp" required>
+                            <span class="dica">Formatos aceitos: JPG, PNG, WebP. Máximo 5MB.</span>
+                        </div>
+
+                        <div class="form-grupo full-width">
+                            <label for="descricao">História / Descrição *</label>
+                            <textarea id="descricao" rows="3" maxlength="300" required placeholder="Conte um pouco sobre o temperamento do animal..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-rodape">
+                        <button type="submit" class="btn-principal" id="btn-salvar-animal">Salvar Animal</button>
+                        <div id="msg-status" class="mensagem-status" aria-live="polite"></div>
+                    </div>
+                </form>
+            </section>
+
+            <section id="secao-animais" class="cartao oculto" aria-labelledby="titulo-animais">
+                <h2 id="titulo-animais">Animais Cadastrados 🐾</h2>
+                <div id="lista-animais" class="lista-animais" aria-live="polite">
+                    <p class="carregando">Carregando animais...</p>
+                </div>
+            </section>
         </main>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="sessao.js"></script>
     <script src="painel.js"></script>
 </body>
 </html>
-

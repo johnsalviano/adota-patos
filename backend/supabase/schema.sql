@@ -21,6 +21,9 @@
 CREATE TABLE animais (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     nome        TEXT NOT NULL,
+    especie     TEXT NOT NULL DEFAULT 'Cão'
+                CHECK (especie IN ('Cão', 'Gato', 'Outro')),
+    raca        TEXT,
     idade       TEXT NOT NULL,
     sexo        TEXT NOT NULL CHECK (sexo IN ('Macho', 'Fêmea')),
     porte       TEXT NOT NULL CHECK (porte IN ('Pequeno', 'Médio', 'Grande')),
@@ -52,7 +55,7 @@ CREATE TABLE adocoes (
     consentimento_lgpd BOOLEAN NOT NULL DEFAULT false,
     termo_versao     TEXT,
     status           TEXT NOT NULL DEFAULT 'Pendente'
-                     CHECK (status IN ('Pendente', 'Aprovada', 'Rejeitada')),
+                     CHECK (status IN ('Pendente', 'Em análise', 'Aprovada', 'Recusada')),
     created_at       TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 

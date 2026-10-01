@@ -18,6 +18,12 @@ const modalSize = document.getElementById("modalSize");
 const modalDescription = document.getElementById("modalDescription");
 const closeModal = document.getElementById("closeModal");
 
+// Animal cujo modal esta aberto agora, e animal que o usuario confirmou
+// querer adotar. Sao separados de proposito: abrir um modal nao significa
+// que a solicitacao passa a ser para aquele animal.
+let animalAtualId = null;
+let animalSelecionadoId = null;
+
 document.addEventListener("click", (event) => {
     const botao = event.target.closest(".btn-details");
     if (!botao) return;
@@ -29,6 +35,7 @@ document.addEventListener("click", (event) => {
     modalSex.textContent = botao.dataset.sex;
     modalSize.textContent = botao.dataset.size;
     modalDescription.textContent = botao.dataset.description;
+    animalAtualId = botao.dataset.id || null;
     focoAnterior = botao;
     modal.classList.add("active");
     const primeiro = focoDentro(modal);
@@ -46,6 +53,7 @@ modal.addEventListener("click", (event) => {
 });
 
 document.getElementById("adoptButton").addEventListener("click", () => {
+    animalSelecionadoId = animalAtualId;
     fecharModal(modal);
 });
 
@@ -126,6 +134,7 @@ adoptionForm.addEventListener("submit", async (event) => {
     }
 
     const dados = {
+        animal_id: animalSelecionadoId,
         nome: document.getElementById("name").value.trim(),
         telefone: document.getElementById("phone").value.trim(),
         email: document.getElementById("email").value.trim(),
@@ -147,7 +156,10 @@ adoptionForm.addEventListener("submit", async (event) => {
             resultado.ok ? "sucesso" : "erro",
             resultado.mensagem + (resultado.erros ? " " + resultado.erros.join(" ") : "")
         );
-        if (resultado.ok) adoptionForm.reset();
+        if (resultado.ok) {
+            adoptionForm.reset();
+            animalSelecionadoId = null;
+        }
         if (contadorMotivo) contadorMotivo.textContent = "0/300";
     } catch (e) {
         mostrarFeedback("erro", "Não conseguimos enviar agora. Verifique sua internet e tente novamente.");
@@ -286,15 +298,29 @@ if (escolhaSalva === "aceito") {
 const SUPABASE_URL = "https://fnlqruzbgwffhrqmpfvi.supabase.co";
 const SUPABASE_KEY = "sb_publishable_jLvZpI_9Kg97Yqg6sdOzrQ_9gvAmRIR";
 
-function mensagemCatalogo(texto, erro = false) {
+function mensagemCatalogo(texto, erro = false, tentarNovamente = null) {
     const p = document.createElement("p");
     p.className = "catalogo-status" + (erro ? " erro" : "");
     p.textContent = texto;
+    if (tentarNovamente) {
+        const botao = document.createElement("button");
+        botao.type = "button";
+        botao.className = "btn";
+        botao.textContent = "Tentar novamente";
+        botao.addEventListener("click", tentarNovamente);
+        p.appendChild(document.createElement("br"));
+        p.appendChild(botao);
+    }
     return p;
 }
 
 async function carregarAnimais() {
     const container = document.getElementById("catalogo-animais");
+    // Limpa o estado anterior (cards, vazio ou erro) e volta para o carregamento.
+    // Isso mantem o estado unico mesmo quando a funcao roda de novo pelo botao
+    // "Tentar novamente".
+    container.innerHTML = "";
+    container.appendChild(mensagemCatalogo("Carregando animais... 🐾"));
     try {
         const resposta = await fetch(SUPABASE_URL + "/rest/v1/animais?status=eq.Dispon%C3%ADvel&select=id,nome,idade,sexo,porte,descricao,foto_url&order=created_at.desc", {
             headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + SUPABASE_KEY }
@@ -319,6 +345,7 @@ async function carregarAnimais() {
         }
 
         if (!animais.length) {
+            container.innerHTML = "";
             container.appendChild(
                 mensagemCatalogo("🐕 No momento todos os nossos amiguinhos já encontraram uma família — volte logo, novos resgates chegam toda semana!")
             );
@@ -343,14 +370,18 @@ async function carregarAnimais() {
                         data-name="${escaparHtml(animal.nome)}" data-age="${escaparHtml(animal.idade)}"
                         data-sex="${escaparHtml(animal.sexo)}" data-size="${escaparHtml(animal.porte)}"
                         data-description="${escaparHtml(animal.descricao || "")}"
-                        data-image="${urlDeFotoSegura(animal.foto_url)}">
+                        data-image="${urlDeFotoSegura(animal.foto_url)}"
+                        data-id="${escaparHtml(animal.id)}">
                         Conhecer ${escaparHtml(animal.nome.split(" ")[0])}
                     </button>
                 </div>
             </article>`).join("");
     } catch (erro) {
+        // Troca o loading pela mensagem de erro. Sem esta limpeza os dois
+        // textos ficariam na tela ao mesmo tempo.
+        container.innerHTML = "";
         container.appendChild(
-            mensagemCatalogo("Não conseguimos carregar os animais agora. Recarregue a página em instantes. 🐾", true)
+            mensagemCatalogo("Não conseguimos carregar os animais agora. 🐾", true, carregarAnimais)
         );
     }
 }

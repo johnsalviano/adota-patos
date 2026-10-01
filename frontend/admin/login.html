@@ -18,11 +18,11 @@
 
         <form id="formulario-login" autocomplete="on">
             <div class="form-group">
-                <label for="email">E-mail cadastrado</label>
-                <input type="email" id="email" required
-                       autocomplete="email"
+                <label for="username">Login</label>
+                <input type="text" id="username" required
+                       autocomplete="username"
                        maxlength="100"
-                       placeholder="voce@adotapatos.org">
+                       placeholder="Seu nome de usuário">
             </div>
 
             <div class="form-group">
@@ -31,6 +31,13 @@
                        autocomplete="current-password"
                        maxlength="80"
                        placeholder="Sua senha de acesso">
+            </div>
+
+            <div class="form-group opcao-lembrar">
+                <input type="checkbox" id="lembrar-me"
+                       name="lembrar-me"
+                       autocomplete="off">
+                <label for="lembrar-me">Lembrar-me</label>
             </div>
 
             <button type="submit" id="botao-entrar">Entrar</button>
@@ -47,6 +54,7 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="sessao.js"></script>
     <script src="login.js"></script>
 </body>
 </html>
