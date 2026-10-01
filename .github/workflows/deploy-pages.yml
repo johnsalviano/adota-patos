@@ -28,7 +28,7 @@ jobs:
         with:
           path: frontend
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
       - name: Smoke test pos-deploy
         run: |
           curl -sSf -o /dev/null -w "HTTP %{http_code}\n" "${{ steps.deployment.outputs.page_url }}"
