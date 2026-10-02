@@ -1,4 +1,10 @@
-import { test, expect, type Page, type Browser } from "@playwright/test";
+import {
+  type Browser,
+  type BrowserContextOptions,
+  expect,
+  type Page,
+  test,
+} from "@playwright/test";
 
 // Os testes de sessao nao usam conta nem senha reais: a autenticacao e
 // interceptada e o login pertence ao dominio reservado .invalid, que nunca
@@ -89,7 +95,10 @@ async function mockAuth(
 }
 
 /** Reabre o navegador levando so o que persiste no perfil (cookies e localStorage). */
-function reabrirNavegador(browser: Browser, storageState: any) {
+function reabrirNavegador(
+  browser: Browser,
+  storageState: BrowserContextOptions["storageState"],
+) {
   return browser.newContext({ storageState });
 }
 

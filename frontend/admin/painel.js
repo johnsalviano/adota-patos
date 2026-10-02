@@ -1,6 +1,12 @@
 (function () {
     'use strict';
 
+    // Monitoramento de erros. Sem DSN no projeto Sentry, esta chamada
+    // resolve false e nada acontece. Ver frontend/js/erros.js.
+    if (window.AdotaPatosErros) {
+        window.AdotaPatosErros.iniciar();
+    }
+
     // Le a preferencia de "Lembrar-me" deixada no login: assim uma sessao
     // temporaria continua valendo no painel.html (que e outra pagina) e nao
     // e promovida a persistente. Sem preferencia registrada, o padrao e
