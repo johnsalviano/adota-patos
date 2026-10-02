@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
 
 // Este arquivo cobre o texto de identificacao do painel: o que aparece logo
 // abaixo do cabecalho depois do login.

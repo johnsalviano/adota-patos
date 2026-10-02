@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
 
 // Este arquivo mede o visual da tela de login. Nao ha login, senha nem
 // credencial aqui: a pagina e so aberta e os campos sao medidos.

@@ -1,0 +1,33 @@
+name: Lint
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  # O Biome cuida do lint de JS, CSS, JSON e HTML.
+  #
+  # O formatador NAO e exigido no CI de proposito: o repositorio usa
+  # estilos diferentes entre si (2 e 4 espacos, aspas simples e duplas)
+  # e ativa-lo exigiria reescrever 16 arquivos prontos. Exigir formatacao
+  # aqui transformaria todo PR em gigante diff de estilo. Ver o campo
+  # "formatter.reason" em biome.json.
+  biome:
+    name: biome (lint)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint com o Biome
+        run: npm run lint

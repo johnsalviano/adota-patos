@@ -5,6 +5,13 @@
 // definidas no CSS. Nenhum estilo inline aqui.
 // ============================================
 
+// Monitoramento de erros. Sem DSN no projeto Sentry, esta
+// chamada resolve false e nada acontece: nenhuma requisicao
+// extra e nenhum erro no console. Ver frontend/js/erros.js.
+if (window.AdotaPatosErros) {
+    window.AdotaPatosErros.iniciar();
+}
+
 // =========================
 // MODAL DOS ANIMAIS
 // =========================
@@ -229,7 +236,9 @@ const revealObserver = new IntersectionObserver(
     { threshold: 0.15 }
 );
 
-document.querySelectorAll(".reveal").forEach((el) => revealObserver.observe(el));
+document.querySelectorAll(".reveal").forEach((el) => {
+  revealObserver.observe(el);
+});
 
 // =========================
 // COOKIES (LGPD): o Google Analytics é estatística de visitas.

@@ -1,3 +1,9 @@
+// Monitoramento de erros. Sem DSN no projeto Sentry, esta chamada
+// resolve false e nada acontece. Ver frontend/js/erros.js.
+if (window.AdotaPatosErros) {
+    window.AdotaPatosErros.iniciar();
+}
+
 // Mesmas credenciais publicas do site: seguranca real vem da RLS e do Supabase Auth
 const form = document.getElementById('formulario-login');
 const erro = document.getElementById('mensagem-erro');
