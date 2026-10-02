@@ -59,9 +59,12 @@ test.describe("Monitoramento de erros", () => {
     test("site funciona e nao requisita o Sentry sem DSN configurado", async ({ page }) => {
         const requisicoesSentry: string[] = [];
         page.on("request", (req) => {
-            const url = req.url();
-            if (url.includes("sentry-cdn.com") || url.includes("ingest.sentry.io")) {
-                requisicoesSentry.push(url);
+            // Compara o HOST, e nao a URL inteira: casar o trecho do
+            // dominio aceitaria tambem um site falso como
+            // "sentry-cdn.com.meudominio.com", que nao tem nada a ver.
+            const host = new URL(req.url()).host;
+            if (host === "browser.sentry-cdn.com" || host.endsWith(".ingest.sentry.io")) {
+                requisicoesSentry.push(req.url());
             }
         });
         const errosDaPagina: string[] = [];
