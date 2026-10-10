@@ -22,7 +22,7 @@
         if (heroImg) {
             heroImg.src = selected.src;
             heroImg.alt = selected.alt;
-            heroImg.style.display = '';
+            heroImg.classList.remove('hero-img-hidden');
         }
     }
 
