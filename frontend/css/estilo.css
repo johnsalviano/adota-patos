@@ -136,7 +136,7 @@ section {
     color: #123430;
     padding: 16px 30px;
     border-radius: var(--radius-pill);
-    border: none;
+    border: 2px solid transparent;
     cursor: pointer;
     font-family: var(--font-body);
     font-size: 1rem;
@@ -1031,6 +1031,14 @@ footer .abrir-politica {
         top: 90px;
     }
 
+    .header-cta {
+        display: none;
+    }
+
+    .header-ong {
+        display: none;
+    }
+
     .animals-grid,
     #catalogo-animais {
         grid-template-columns: 1fr;
@@ -1083,4 +1091,65 @@ footer .abrir-politica {
         animation: none;
         transition: none;
     }
+}
+/* Header CTA gap */
+.header-cta { display: flex; gap: 12px; align-items: center; }
+
+/* Header links - aparência simples como nav links */
+.header-link {
+    color: var(--dark);
+    font-weight: 600;
+    padding: 10px 16px;
+    border-radius: var(--radius-pill);
+    transition: 0.25s;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.header-link:hover {
+    color: var(--primary-dark);
+    background: rgba(87, 216, 195, 0.15);
+}
+
+/* Área da ONG no extremo direito */
+.header-ong {
+    color: var(--dark);
+    font-weight: 600;
+    padding: 10px 16px;
+    border-radius: var(--radius-pill);
+    transition: 0.25s;
+    text-decoration: none;
+    margin-left: 12px;
+    white-space: nowrap;
+}
+
+.header-ong:hover {
+    color: var(--primary-dark);
+    background: rgba(87, 216, 195, 0.15);
+}
+
+/* Ajustes para declarações de afiliação */
+.consentimento-lgpd {
+    gap: 16px;
+}
+.form-group fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Scroll margin para não encobrir títulos com header fixo */
+section[id] {
+    scroll-margin-top: 150px;
+}
+
+@media (max-width: 650px) {
+    section[id] {
+        scroll-margin-top: 100px;
+    }
+}
+
+/* Hero image hidden until JS loads - avoids flash */
+.hero-img-hidden {
+    display: none;
 }

@@ -64,9 +64,15 @@
                     <li><a href="#adocao">Adoção</a></li>
                     <li><a href="#sobre">Sobre</a></li>
                     <li><a href="#contato">Contato</a></li>
-                    <li><a href="admin/login.html">Área da ONG</a></li>
                 </ul>
             </nav>
+
+            <div class="header-cta">
+                <a href="doacao.html" class="header-link">Seja um Doador</a>
+                <a href="afiliacao.html" class="header-link">Afilie-se</a>
+            </div>
+
+            <a href="admin/login.html" class="header-ong">Área da ONG</a>
 
             <button class="menu-mobile" type="button" aria-label="Abrir menu">☰</button>
         </div>
@@ -98,10 +104,13 @@
                     </div>
                 </div>
 
-                <div class="hero-image">
+                <div class="hero-image" id="hero-image">
                     <img
-                        src="https://images.unsplash.com/photo-1558788353-f76d92427f16?auto=format&fit=crop&w=900&q=80"
-                        alt="Cachorro caramelo deitado no chão, olhando para a câmera"
+                        id="hero-img"
+                        src=""
+                        data-src="img/hero_candidate_dog_cat_sunlight.webp"
+                        alt="Cachorro e gato vira-latas sentados juntos ao ar livre sob luz solar natural, representando os animais resgatados pela Adota Patos"
+                        class="hero-img-hidden"
                     >
                 </div>
             </div>
@@ -339,7 +348,7 @@
                        target="_blank" rel="noopener noreferrer">
                         📘 Facebook
                     </a>
-                    <a href="mailto:adotapatospbong@gmail.com">
+                    <a href="mailto:contatoadotapatos@gmail.com">
                         ✉️ E-mail
                     </a>
                 </div>
@@ -431,7 +440,7 @@
             <h4>Seus direitos (art. 18 da LGPD)</h4>
             <p>Você pode confirmar que tratamos seus dados, acessá-los, corrigi-los, pedir anonimização, bloqueio ou exclusão, solicitar portabilidade, saber com quem foram compartilhados e revogar o consentimento a qualquer momento. É só falar com a gente:</p>
             <ul>
-                <li>E-mail: adotapatospbong@gmail.com</li>
+                <li>E-mail: contatoadotapatos@gmail.com</li>
                 <li>WhatsApp: (83) 98156-7801</li>
             </ul>
             <p>Pedidos são respondidos em até 15 dias.</p>
@@ -443,5 +452,6 @@
 
     <script src="js/erros.js"></script>
     <script src="js/app.js"></script>
+    <script src="js/hero-rotation.js"></script>
 </body>
 </html>
