@@ -1148,3 +1148,8 @@ section[id] {
         scroll-margin-top: 100px;
     }
 }
+
+/* Hero image hidden until JS loads - avoids flash */
+.hero-img-hidden {
+    display: none;
+}
