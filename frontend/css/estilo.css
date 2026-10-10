@@ -205,6 +205,7 @@ header.scrolled {
 .logo img {
     height: 130px;
     width: auto;
+    flex-shrink: 0;
     transition: transform 0.35s ease;
 }
 
@@ -1013,6 +1014,8 @@ footer .abrir-politica {
 
     .logo img {
         height: 70px;
+        width: auto;
+        flex-shrink: 0;
     }
 
     .navbar {
@@ -1152,4 +1155,142 @@ section[id] {
 /* Hero image hidden until JS loads - avoids flash */
 .hero-img-hidden {
     display: none;
+}
+
+/* -------------------------
+   DOAÇÕES (doacao.html)
+   ------------------------- */
+
+.doacao-section {
+    padding: 100px 0;
+}
+
+.doacao-section .section-header {
+    margin-bottom: 40px;
+}
+
+.doacao-pix-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: start;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.pix-info {
+    background: white;
+    padding: 32px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(87, 216, 195, 0.18);
+}
+
+.pix-info h3 {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    color: var(--dark);
+    margin-bottom: 16px;
+}
+
+.pix-key-wrapper {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.pix-key {
+    flex: 1;
+    min-width: 200px;
+    padding: 16px 20px;
+    border: 2px solid #eef0e0;
+    background: #fcfcf3;
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--dark);
+    outline: none;
+    transition: 0.25s;
+}
+
+.pix-key:focus {
+    border-color: var(--primary);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(87, 216, 195, 0.15);
+}
+
+.pix-info .btn {
+    padding: 16px 28px;
+    font-size: 1rem;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.pix-qr {
+    background: white;
+    padding: 32px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(87, 216, 195, 0.18);
+    text-align: center;
+}
+
+.pix-qr h3 {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    color: var(--dark);
+    margin-bottom: 20px;
+}
+
+.pix-qr #qr-code {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 180px;
+}
+
+.pix-qr #qr-code img {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #eef0e0;
+    border-radius: var(--radius-md);
+    background: white;
+}
+
+.pix-qr p {
+    margin-top: 16px;
+    color: var(--text);
+    font-size: 0.95rem;
+}
+
+.pix-instrucoes {
+    margin-top: 24px;
+    padding: 20px;
+    background: rgba(87, 216, 195, 0.1);
+    border-radius: var(--radius-md);
+    text-align: center;
+    color: var(--dark);
+}
+
+.pix-instrucoes strong {
+    color: var(--primary-dark);
+}
+
+@media (max-width: 768px) {
+    .doacao-pix-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .pix-key-wrapper {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .pix-info .btn {
+        width: 100%;
+        justify-content: center;
+    }
 }

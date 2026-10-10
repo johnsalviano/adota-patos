@@ -222,6 +222,24 @@ input:invalid, select:invalid {
     cursor: not-allowed;
 }
 
+.btn-secundario {
+    background: transparent;
+    color: var(--dark, #16332e);
+    border: 2px solid var(--dark, #16332e);
+    border-radius: var(--radius-md, 18px);
+    padding: 12px 24px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.btn-secundario:hover {
+    background: var(--dark, #16332e);
+    color: var(--white);
+}
+
 .mensagem-status {
     margin-top: 15px;
     padding: 12px;
@@ -266,6 +284,42 @@ input:invalid, select:invalid {
 
 .solicitacao-header strong {
     color: var(--dark, #16332e);
+}
+
+.animal-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed #e2e8f0;
+}
+
+.animal-header strong {
+    color: var(--dark, #16332e);
+}
+
+/* Miniaturas de animais */
+.animal-thumb {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.editar-foto-atual {
+    max-width: 150px;
+    max-height: 150px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    object-fit: cover;
+}
+
+/* Body com modal aberto */
+body.modal-open {
+    overflow: hidden;
 }
 
 .badge-status {

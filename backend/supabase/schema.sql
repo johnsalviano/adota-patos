@@ -27,6 +27,7 @@ CREATE TABLE animais (
     idade       TEXT NOT NULL,
     sexo        TEXT NOT NULL CHECK (sexo IN ('Macho', 'Fêmea')),
     porte       TEXT NOT NULL CHECK (porte IN ('Pequeno', 'Médio', 'Grande')),
+    pelagem     TEXT CHECK (pelagem IN ('Curta', 'Média', 'Longa', 'Sem pelo', 'Enrolada')),
     descricao   TEXT NOT NULL,
     foto_url    TEXT,
     status      TEXT NOT NULL DEFAULT 'Disponível'

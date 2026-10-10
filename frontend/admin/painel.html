@@ -76,6 +76,17 @@
                             <label for="idade">Idade *</label>
                             <input type="text" id="idade" maxlength="40" required placeholder="Ex: 2 anos / 5 meses">
                         </div>
+                        <div class="form-grupo">
+                            <label for="pelagem">Pelagem *</label>
+                            <select id="pelagem" required>
+                                <option value="">Selecione</option>
+                                <option value="Curta">Curta</option>
+                                <option value="Média">Média</option>
+                                <option value="Longa">Longa</option>
+                                <option value="Sem pelo">Sem pelo</option>
+                                <option value="Enrolada">Enrolada</option>
+                            </select>
+                        </div>
 
                         <div class="form-grupo">
                             <label for="sexo">Sexo *</label>
@@ -120,6 +131,96 @@
                 </div>
             </section>
         </main>
+    </div>
+
+    <!-- Modal de edição de animal -->
+    <div class="modal" id="editarAnimalModal" role="dialog" aria-modal="true" aria-labelledby="editarAnimalTitulo">
+        <div class="modal-content">
+            <button class="close-modal" id="fecharEditarAnimal" type="button" aria-label="Fechar">&times;</button>
+            <h3 id="editarAnimalTitulo">Editar Animal 🐾</h3>
+            <form id="form-editar-animal" novalidate>
+                <input type="hidden" id="editar-animal-id">
+                <div class="form-grid">
+                    <div class="form-grupo">
+                        <label for="editar-nome">Nome do Animal *</label>
+                        <input type="text" id="editar-nome" maxlength="80" required placeholder="Ex: Thor">
+                    </div>
+
+                    <div class="form-grupo">
+                        <label for="editar-especie">Espécie *</label>
+                        <select id="editar-especie" required>
+                            <option value="Cão">Cão</option>
+                            <option value="Gato">Gato</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-grupo">
+                        <label for="editar-raca">Raça</label>
+                        <input type="text" id="editar-raca" maxlength="80" placeholder="Ex: Vira-lata (SRD)">
+                    </div>
+
+                    <div class="form-grupo">
+                        <label for="editar-idade">Idade *</label>
+                        <input type="text" id="editar-idade" maxlength="40" required placeholder="Ex: 2 anos / 5 meses">
+                    </div>
+
+                    <div class="form-grupo">
+                        <label for="editar-pelagem">Pelagem *</label>
+                        <select id="editar-pelagem" required>
+                            <option value="">Selecione</option>
+                            <option value="Curta">Curta</option>
+                            <option value="Média">Média</option>
+                            <option value="Longa">Longa</option>
+                            <option value="Sem pelo">Sem pelo</option>
+                            <option value="Enrolada">Enrolada</option>
+                        </select>
+                    </div>
+
+                    <div class="form-grupo">
+                        <label for="editar-sexo">Sexo *</label>
+                        <select id="editar-sexo" required>
+                            <option value="Macho">Macho</option>
+                            <option value="Fêmea">Fêmea</option>
+                        </select>
+                    </div>
+
+                    <div class="form-grupo">
+                        <label for="editar-porte">Porte *</label>
+                        <select id="editar-porte" required>
+                            <option value="Pequeno">Pequeno</option>
+                            <option value="Médio">Médio</option>
+                            <option value="Grande">Grande</option>
+                        </select>
+                    </div>
+
+                    <div class="form-grupo full-width">
+                        <label for="editar-foto">Foto do Animal</label>
+                        <input type="file" id="editar-foto" accept="image/jpeg,image/png,image/webp">
+                        <span class="dica">Formatos aceitos: JPG, PNG, WebP. Máximo 5MB. Deixe em branco para manter a foto atual.</span>
+                    </div>
+
+                    <div class="form-grupo full-width">
+                        <label for="editar-descricao">História / Descrição *</label>
+                        <textarea id="editar-descricao" rows="3" maxlength="300" required placeholder="Conte um pouco sobre o temperamento do animal..."></textarea>
+                    </div>
+
+                    <div class="form-grupo full-width">
+                        <label for="editar-status">Status *</label>
+                        <select id="editar-status" required>
+                            <option value="Disponível">Disponível</option>
+                            <option value="Adotado">Adotado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-rodape">
+                    <button type="submit" class="btn-principal" id="btn-salvar-edicao">Salvar Alterações</button>
+                    <button type="button" class="btn-secundario" id="btn-cancelar-edicao">Cancelar</button>
+                    <div id="msg-status-edicao" class="mensagem-status" aria-live="polite"></div>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
