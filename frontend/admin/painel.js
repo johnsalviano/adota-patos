@@ -99,122 +99,129 @@
     }
 
     // ---------------- Solicitações ----------------
-    async function carregarSolicitacoes() {
-        var container = document.getElementById('lista-solicitacoes');
-        container.textContent = '';
-        var p = document.createElement('p');
-        p.className = 'carregando';
-        p.textContent = 'Carregando solicitações...';
-        container.appendChild(p);
-
-        var resp = await cliente
-            .from('adocoes')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-        if (resp.error) {
+        async function carregarSolicitacoes() {
+            var container = document.getElementById('lista-solicitacoes');
             container.textContent = '';
-            var msg = document.createElement('p');
-            msg.textContent = 'Erro ao carregar solicitações: ' + resp.error.message;
-            container.appendChild(msg);
-            return;
-        }
+            var p = document.createElement('p');
+            p.className = 'carregando';
+            p.textContent = 'Carregando solicitações...';
+            container.appendChild(p);
 
-        if (!resp.data || resp.data.length === 0) {
-            container.textContent = '';
-            var vazio = document.createElement('p');
-            vazio.className = 'vazio';
-            vazio.textContent = 'Nenhuma solicitação de adoção encontrada.';
-            container.appendChild(vazio);
-            return;
-        }
+            var resp = await cliente
+                .from('adocoes')
+                .select('*')
+                .order('created_at', { ascending: false });
 
-        var idsAnimais = (resp.data
-            .map(function (a) { return a.animal_id; })
-            .filter(Boolean)).join(',');
-
-        var mapaAnimais = {};
-        if (idsAnimais) {
-            var animaisResp = await cliente
-                .from('animais')
-                .select('id, nome')
-                .in('id', idsAnimais.split(','));
-            if (!animaisResp.error && animaisResp.data) {
-                animaisResp.data.forEach(function (animal) {
-                    mapaAnimais[animal.id] = animal.nome;
-                });
+            if (resp.error) {
+                container.textContent = '';
+                var msg = document.createElement('p');
+                msg.textContent = 'Erro ao carregar solicitações: ' + resp.error.message;
+                container.appendChild(msg);
+                return;
             }
-        }
 
-        container.textContent = '';
-
-        resp.data.forEach(function (item) {
-            var card = document.createElement('div');
-            card.className = 'solicitacao-card';
-
-            var header = document.createElement('div');
-            header.className = 'solicitacao-header';
-            var nomeAdotante = document.createElement('strong');
-            nomeAdotante.textContent = 'Adotante: ' + item.nome;
-            var badge = document.createElement('span');
-            badge.className = 'badge-status badge-' + badgeStatus(item.status);
-            badge.textContent = item.status;
-            header.appendChild(nomeAdotante);
-            header.appendChild(badge);
-            card.appendChild(header);
-
-            var corpo = document.createElement('div');
-            corpo.className = 'solicitacao-corpo';
-        var dados = [
-            ['E-mail', item.email],
-            ['Telefone', item.telefone],
-            ['Cidade', item.cidade],
-            ['Experiência', item.experiencia],
-            ['Motivo', item.motivo]
-        ];
-        if (item.animal_id) {
-            var nomeAnimal = mapaAnimais[item.animal_id];
-            dados.push(['Animal', nomeAnimal ? nomeAnimal : item.animal_id]);
-        }
-        dados.push(['Solicitada em', item.created_at ? new Date(item.created_at).toLocaleString('pt-BR') : null]);
-            dados.forEach(function (par) {
-                var linha = document.createElement('p');
-                var rotulo = document.createElement('strong');
-                rotulo.textContent = par[0] + ': ';
-                linha.appendChild(rotulo);
-                linha.appendChild(document.createTextNode(par[1] || 'Não informado'));
-                corpo.appendChild(linha);
+            // Filtrar: não mostrar solicitações recusadas na lista operacional
+            var solicitacoesOperacionais = (resp.data || []).filter(function (item) {
+                return item.status !== 'Recusada';
             });
-            card.appendChild(corpo);
 
-            if (podeAvaliar(item.status)) {
-                var acoes = document.createElement('div');
-                acoes.className = 'solicitacao-acoes';
-
-                var btnAprovar = document.createElement('button');
-                btnAprovar.type = 'button';
-                btnAprovar.className = 'btn-aprovar';
-                btnAprovar.textContent = 'Aprovar';
-                btnAprovar.addEventListener('click', function () {
-                    atualizarStatus(item.id, 'Aprovada');
-                });
-
-                var btnRecusar = document.createElement('button');
-                btnRecusar.type = 'button';
-                btnRecusar.className = 'btn-recusar';
-                btnRecusar.textContent = 'Recusar';
-                btnRecusar.addEventListener('click', function () {
-                    atualizarStatus(item.id, 'Recusada');
-                });
-
-                acoes.appendChild(btnAprovar);
-                acoes.appendChild(btnRecusar);
-                card.appendChild(acoes);
+            if (!solicitacoesOperacionais || solicitacoesOperacionais.length === 0) {
+                container.textContent = '';
+                var vazio = document.createElement('p');
+                vazio.className = 'vazio';
+                vazio.textContent = 'Nenhuma solicitação de adoção pendente ou em análise.';
+                container.appendChild(vazio);
+                return;
             }
 
-            container.appendChild(card);
-        });
-    }
+            var idsAnimais = (solicitacoesOperacionais
+                .map(function (a) { return a.animal_id; })
+                .filter(Boolean)).join(',');
+
+            var mapaAnimais = {};
+            if (idsAnimais) {
+                var animaisResp = await cliente
+                    .from('animais')
+                    .select('id, nome')
+                    .in('id', idsAnimais.split(','));
+                if (!animaisResp.error && animaisResp.data) {
+                    animaisResp.data.forEach(function (animal) {
+                        mapaAnimais[animal.id] = animal.nome;
+                    });
+                }
+            }
+
+            container.textContent = '';
+
+            solicitacoesOperacionais.forEach(function (item) {
+                var card = document.createElement('div');
+                card.className = 'solicitacao-card';
+
+                var header = document.createElement('div');
+                header.className = 'solicitacao-header';
+                var nomeAdotante = document.createElement('strong');
+                nomeAdotante.textContent = 'Adotante: ' + item.nome;
+                var badge = document.createElement('span');
+                badge.className = 'badge-status badge-' + badgeStatus(item.status);
+                badge.textContent = item.status;
+                header.appendChild(nomeAdotante);
+                header.appendChild(badge);
+                card.appendChild(header);
+
+                var corpo = document.createElement('div');
+                corpo.className = 'solicitacao-corpo';
+                var dados = [
+                    ['E-mail', item.email],
+                    ['Telefone', item.telefone],
+                    ['Cidade', item.cidade],
+                    ['Experiência', item.experiencia],
+                    ['Motivo', item.motivo]
+                ];
+                if (item.animal_id) {
+                    var nomeAnimal = mapaAnimais[item.animal_id];
+                    dados.push(['Animal', nomeAnimal ? nomeAnimal : item.animal_id]);
+                }
+                dados.push(['Solicitada em', item.created_at ? new Date(item.created_at).toLocaleString('pt-BR') : null]);
+                dados.forEach(function (par) {
+                    var linha = document.createElement('p');
+                    var rotulo = document.createElement('strong');
+                    rotulo.textContent = par[0] + ': ';
+                    linha.appendChild(rotulo);
+                    linha.appendChild(document.createTextNode(par[1] || 'Não informado'));
+                    corpo.appendChild(linha);
+                });
+                card.appendChild(corpo);
+
+                if (podeAvaliar(item.status)) {
+                    var acoes = document.createElement('div');
+                    acoes.className = 'solicitacao-acoes';
+
+                    var btnAprovar = document.createElement('button');
+                    btnAprovar.type = 'button';
+                    btnAprovar.className = 'btn-aprovar';
+                    btnAprovar.textContent = 'Aprovar';
+                    btnAprovar.addEventListener('click', function () {
+                        atualizarStatus(item.id, 'Aprovada');
+                    });
+
+                    var btnRecusar = document.createElement('button');
+                    btnRecusar.type = 'button';
+                    btnRecusar.className = 'btn-recusar';
+                    btnRecusar.textContent = 'Recusar';
+                    btnRecusar.addEventListener('click', function () {
+                        if (confirm('Tem certeza que deseja recusar esta solicitação? Ela será removida da lista operacional.')) {
+                            atualizarStatus(item.id, 'Recusada');
+                        }
+                    });
+
+                    acoes.appendChild(btnAprovar);
+                    acoes.appendChild(btnRecusar);
+                    card.appendChild(acoes);
+                }
+
+                container.appendChild(card);
+            });
+        }
 
     async function atualizarStatus(idSolicitacao, novoStatus) {
         var resp = await cliente
@@ -246,7 +253,8 @@
             ['idade', 'Informe a idade do animal.'],
             ['sexo', 'Selecione o sexo.'],
             ['porte', 'Selecione o porte.'],
-            ['descricao', 'Descreva a história do animal.']
+            ['descricao', 'Descreva a história do animal.'],
+            ['pelagem', 'Selecione a pelagem.']
         ];
 
         for (var i = 0; i < obrigatorios.length; i++) {
@@ -310,6 +318,7 @@
                 idade: document.getElementById('idade').value.trim(),
                 sexo: document.getElementById('sexo').value,
                 porte: document.getElementById('porte').value,
+                pelagem: document.getElementById('pelagem').value,
                 descricao: document.getElementById('descricao').value.trim(),
                 foto_url: urlData.data.publicUrl,
                 status: 'Disponível'
@@ -392,6 +401,21 @@
 
             var header = document.createElement('div');
             header.className = 'animal-header';
+            
+            // Miniatura da foto
+            if (animal.foto_url) {
+                var thumb = document.createElement('img');
+                thumb.src = animal.foto_url;
+                thumb.alt = 'Miniatura de ' + animal.nome;
+                thumb.style.width = '60px';
+                thumb.style.height = '60px';
+                thumb.style.objectFit = 'cover';
+                thumb.style.borderRadius = '8px';
+                thumb.style.marginRight = '12px';
+                thumb.style.flexShrink = '0';
+                header.appendChild(thumb);
+            }
+
             var nome = document.createElement('strong');
             nome.textContent = animal.nome;
             var badge = document.createElement('span');
@@ -409,6 +433,7 @@
                 ['Idade', animal.idade],
                 ['Sexo', animal.sexo],
                 ['Porte', animal.porte],
+                ['Pelagem', animal.pelagem],
                 ['Descrição', animal.descricao],
                 ['Status', animal.status]
             ];
@@ -467,7 +492,7 @@
     async function editarAnimal(id) {
         var resp = await cliente
             .from('animais')
-            .select('nome, especie, idade, porte, descricao, status')
+            .select('*')
             .eq('id', id)
             .single();
         if (resp.error || !resp.data) {
@@ -475,38 +500,46 @@
             return;
         }
         var animal = resp.data;
-        var novoNome = prompt('Novo nome do animal:', animal.nome);
-        if (novoNome === null || novoNome.trim() === '') return;
-        var novaEspecie = prompt('Nova espécie (' + animal.especie + '):', animal.especie);
-        if (novaEspecie === null) return;
-        var novaIdade = prompt('Nova idade (' + animal.idade + '):', animal.idade);
-        if (novaIdade === null) return;
-        var novoPorte = prompt('Novo porte (' + animal.porte + '):', animal.porte);
-        if (novoPorte === null) return;
-        var novaDescricao = prompt('Nova descrição:', animal.descricao);
-        if (novaDescricao === null) return;
-        var novoStatus = prompt('Novo status (Disponível / Adotado):', animal.status);
-        if (novoStatus === null) return;
-        if (novoStatus !== 'Disponível' && novoStatus !== 'Adotado') {
-            window.alert('Status inválido. Use Disponível ou Adotado.');
-            return;
+
+        // Preencher o modal com os dados do animal
+        document.getElementById('editar-animal-id').value = animal.id;
+        document.getElementById('editar-nome').value = animal.nome || '';
+        document.getElementById('editar-especie').value = animal.especie || 'Cão';
+        document.getElementById('editar-raca').value = animal.raca || '';
+        document.getElementById('editar-idade').value = animal.idade || '';
+        document.getElementById('editar-pelagem').value = animal.pelagem || '';
+        document.getElementById('editar-sexo').value = animal.sexo || 'Macho';
+        document.getElementById('editar-porte').value = animal.porte || 'Pequeno';
+        document.getElementById('editar-descricao').value = animal.descricao || '';
+        document.getElementById('editar-status').value = animal.status || 'Disponível';
+
+        // Mostrar miniatura da foto atual se houver
+        var fotoAtual = document.getElementById('editar-foto-atual');
+        if (animal.foto_url) {
+            if (!fotoAtual) {
+                var img = document.createElement('img');
+                img.id = 'editar-foto-atual';
+                img.src = animal.foto_url;
+                img.alt = 'Foto atual de ' + animal.nome;
+                img.style.maxWidth = '150px';
+                img.style.maxHeight = '150px';
+                img.style.borderRadius = '8px';
+                img.style.marginBottom = '8px';
+                img.style.objectFit = 'cover';
+                var fotoInput = document.getElementById('editar-foto');
+                fotoInput.parentNode.insertBefore(img, fotoInput.nextSibling);
+            } else {
+                fotoAtual.src = animal.foto_url;
+                fotoAtual.alt = 'Foto atual de ' + animal.nome;
+            }
+        } else if (fotoAtual) {
+            fotoAtual.remove();
         }
-        var updateResp = await cliente
-            .from('animais')
-            .update({
-                nome: novoNome.trim(),
-                especie: novaEspecie.trim(),
-                idade: novaIdade.trim(),
-                porte: novoPorte.trim(),
-                descricao: novaDescricao.trim(),
-                status: novoStatus
-            })
-            .eq('id', id);
-        if (updateResp.error) {
-            window.alert('Erro ao editar animal: ' + updateResp.error.message);
-        } else {
-            carregarAnimais();
-        }
+
+        // Abrir modal
+        var modal = document.getElementById('editarAnimalModal');
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
     }
 
     async function excluirAnimal(id) {
@@ -520,6 +553,147 @@
             carregarAnimais();
         }
     }
+
+    // ---------------- Modal Edição Animal ----------------
+    function fecharModalEditar() {
+        var modal = document.getElementById('editarAnimalModal');
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+        document.getElementById('form-editar-animal').reset();
+        var fotoAtual = document.getElementById('editar-foto-atual');
+        if (fotoAtual) fotoAtual.remove();
+    }
+
+    document.getElementById('fecharEditarAnimal').addEventListener('click', fecharModalEditar);
+    document.getElementById('btn-cancelar-edicao').addEventListener('click', fecharModalEditar);
+
+    document.getElementById('form-editar-animal').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        var btnSubmit = document.getElementById('btn-salvar-edicao');
+        var fotoInput = document.getElementById('editar-foto');
+        var msgStatus = document.getElementById('msg-status-edicao');
+
+        // Validação dos campos obrigatórios
+        var obrigatorios = [
+            ['editar-nome', 'Informe o nome do animal.'],
+            ['editar-especie', 'Selecione a espécie.'],
+            ['editar-idade', 'Informe a idade do animal.'],
+            ['editar-sexo', 'Selecione o sexo.'],
+            ['editar-porte', 'Selecione o porte.'],
+            ['editar-descricao', 'Descreva a história do animal.'],
+            ['editar-pelagem', 'Selecione a pelagem.'],
+            ['editar-status', 'Selecione o status.']
+        ];
+
+        for (var i = 0; i < obrigatorios.length; i++) {
+            var campo = document.getElementById(obrigatorios[i][0]);
+            if (campo.value.trim() === '') {
+                msgStatus.textContent = obrigatorios[i][1];
+                msgStatus.className = 'mensagem-status erro';
+                campo.focus();
+                return;
+            }
+        }
+
+        // Validação de status
+        var status = document.getElementById('editar-status').value;
+        if (status !== 'Disponível' && status !== 'Adotado') {
+            msgStatus.textContent = 'Status inválido. Use Disponível ou Adotado.';
+            msgStatus.className = 'mensagem-status erro';
+            return;
+        }
+
+        var id = document.getElementById('editar-animal-id').value;
+        if (!id) {
+            msgStatus.textContent = 'Erro: ID do animal não encontrado.';
+            msgStatus.className = 'mensagem-status erro';
+            return;
+        }
+
+        var arquivoFoto = fotoInput.files?.[0];
+        var EXTENSAO_POR_MIME = {
+            'image/jpeg': 'jpg',
+            'image/png': 'png',
+            'image/webp': 'webp'
+        };
+
+        if (arquivoFoto) {
+            if (arquivoFoto.size > TAMANHO_MAX_FOTO) {
+                msgStatus.textContent = 'A foto deve ter no máximo 5MB.';
+                msgStatus.className = 'mensagem-status erro';
+                return;
+            }
+            if (!EXTENSAO_POR_MIME[arquivoFoto.type]) {
+                msgStatus.textContent = 'Formato não aceito. Use JPG, PNG ou WebP.';
+                msgStatus.className = 'mensagem-status erro';
+                return;
+            }
+        }
+
+        btnSubmit.disabled = true;
+        btnSubmit.textContent = 'Salvando...';
+        msgStatus.textContent = '';
+        msgStatus.className = 'mensagem-status';
+
+        try {
+            var dadosAnimal = {
+                nome: document.getElementById('editar-nome').value.trim(),
+                especie: document.getElementById('editar-especie').value,
+                raca: document.getElementById('editar-raca').value.trim() || null,
+                idade: document.getElementById('editar-idade').value.trim(),
+                sexo: document.getElementById('editar-sexo').value,
+                porte: document.getElementById('editar-porte').value,
+                pelagem: document.getElementById('editar-pelagem').value,
+                descricao: document.getElementById('editar-descricao').value.trim(),
+                status: status
+            };
+
+            if (arquivoFoto) {
+                var extensao = EXTENSAO_POR_MIME[arquivoFoto.type];
+                var caminhoFoto = 'animais/' + crypto.randomUUID() + '.' + extensao;
+
+                var upload = await cliente.storage
+                    .from('fotos-animais')
+                    .upload(caminhoFoto, arquivoFoto);
+
+                if (upload.error) throw upload.error;
+
+                var urlData = cliente.storage
+                    .from('fotos-animais')
+                    .getPublicUrl(caminhoFoto);
+
+                dadosAnimal.foto_url = urlData.data.publicUrl;
+            }
+
+            var dbResp = await cliente.from('animais').update(dadosAnimal).eq('id', id);
+            if (dbResp.error) throw dbResp.error;
+
+            fecharModalEditar();
+            carregarAnimais();
+            mostrarFeedback('Animal atualizado com sucesso!', false);
+        } catch (err) {
+            console.error(err);
+            msgStatus.textContent = 'Erro ao editar animal: ' + err.message;
+            msgStatus.className = 'mensagem-status erro';
+        } finally {
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = 'Salvar Alterações';
+        }
+    });
+
+    // Fechar modal ao clicar fora
+    document.getElementById('editarAnimalModal').addEventListener('click', function (e) {
+        if (e.target === this) fecharModalEditar();
+    });
+
+    // Fechar modal com ESC
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            var modal = document.getElementById('editarAnimalModal');
+            if (modal.classList.contains('active')) fecharModalEditar();
+        }
+    });
 
     async function marcarAdotado(id) {
         var resp = await cliente
