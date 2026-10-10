@@ -407,12 +407,7 @@
                 var thumb = document.createElement('img');
                 thumb.src = animal.foto_url;
                 thumb.alt = 'Miniatura de ' + animal.nome;
-                thumb.style.width = '60px';
-                thumb.style.height = '60px';
-                thumb.style.objectFit = 'cover';
-                thumb.style.borderRadius = '8px';
-                thumb.style.marginRight = '12px';
-                thumb.style.flexShrink = '0';
+                thumb.className = 'animal-thumb';
                 header.appendChild(thumb);
             }
 
@@ -521,11 +516,7 @@
                 img.id = 'editar-foto-atual';
                 img.src = animal.foto_url;
                 img.alt = 'Foto atual de ' + animal.nome;
-                img.style.maxWidth = '150px';
-                img.style.maxHeight = '150px';
-                img.style.borderRadius = '8px';
-                img.style.marginBottom = '8px';
-                img.style.objectFit = 'cover';
+                img.className = 'editar-foto-atual';
                 var fotoInput = document.getElementById('editar-foto');
                 fotoInput.parentNode.insertBefore(img, fotoInput.nextSibling);
             } else {
@@ -539,7 +530,7 @@
         // Abrir modal
         var modal = document.getElementById('editarAnimalModal');
         modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
+        document.body.classList.add('modal-open');
     }
 
     async function excluirAnimal(id) {
@@ -558,7 +549,7 @@
     function fecharModalEditar() {
         var modal = document.getElementById('editarAnimalModal');
         modal.classList.remove('active');
-        document.body.style.overflow = '';
+        document.body.classList.remove('modal-open');
         document.getElementById('form-editar-animal').reset();
         var fotoAtual = document.getElementById('editar-foto-atual');
         if (fotoAtual) fotoAtual.remove();

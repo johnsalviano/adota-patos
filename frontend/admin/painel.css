@@ -299,6 +299,29 @@ input:invalid, select:invalid {
     color: var(--dark, #16332e);
 }
 
+/* Miniaturas de animais */
+.animal-thumb {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.editar-foto-atual {
+    max-width: 150px;
+    max-height: 150px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    object-fit: cover;
+}
+
+/* Body com modal aberto */
+body.modal-open {
+    overflow: hidden;
+}
+
 .badge-status {
     padding: 4px 12px;
     border-radius: 20px;
