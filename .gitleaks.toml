@@ -7,4 +7,5 @@ useDefault = true
 description = "Supabase publishable key (publica por design, seguranca vem da RLS)"
 regexes = [
     '''sb_publishable_[A-Za-z0-9_]+''',
+    '''eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+''',
 ]

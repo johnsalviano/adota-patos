@@ -735,9 +735,13 @@
 
         var abaTransparencia = document.getElementById('aba-transparencia');
         if (abaTransparencia) {
-            abaTransparencia.style.display = ehGerente ? 'block' : 'none';
-            if (!ehGerente && abaTransparencia.classList.contains('ativa')) {
-                mudarAba('solicitacoes');
+            if (ehGerente) {
+                abaTransparencia.hidden = false;
+            } else {
+                abaTransparencia.hidden = true;
+                if (abaTransparencia.classList.contains('ativa')) {
+                    mudarAba('solicitacoes');
+                }
             }
         }
 
