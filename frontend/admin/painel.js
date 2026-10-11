@@ -51,18 +51,28 @@
             document.getElementById('secao-solicitacoes').classList.remove('oculto');
             document.getElementById('secao-animais').classList.add('oculto');
             document.getElementById('secao-cadastrar').classList.add('oculto');
+            document.getElementById('secao-transparencia').classList.add('oculto');
             carregarSolicitacoes();
         } else if (aba === 'animais') {
             btns[1].classList.add('ativa');
             document.getElementById('secao-solicitacoes').classList.add('oculto');
             document.getElementById('secao-animais').classList.remove('oculto');
             document.getElementById('secao-cadastrar').classList.add('oculto');
+            document.getElementById('secao-transparencia').classList.add('oculto');
             carregarAnimais();
-        } else {
+        } else if (aba === 'cadastrar') {
             btns[2].classList.add('ativa');
             document.getElementById('secao-solicitacoes').classList.add('oculto');
             document.getElementById('secao-animais').classList.add('oculto');
             document.getElementById('secao-cadastrar').classList.remove('oculto');
+            document.getElementById('secao-transparencia').classList.add('oculto');
+        } else if (aba === 'transparencia') {
+            btns[3].classList.add('ativa');
+            document.getElementById('secao-solicitacoes').classList.add('oculto');
+            document.getElementById('secao-animais').classList.add('oculto');
+            document.getElementById('secao-cadastrar').classList.add('oculto');
+            document.getElementById('secao-transparencia').classList.remove('oculto');
+            carregarTransparenciaAdmin();
         }
     }
 
@@ -361,6 +371,21 @@
     document.getElementById('aba-cadastrar').addEventListener('click', function () {
         mudarAba('cadastrar');
     });
+
+    document.getElementById('aba-transparencia').addEventListener('click', function () {
+        mudarAba('transparencia');
+    });
+
+    // ---------------- Verificar se é gerente de transparência ----------------
+    async function verificarGerenteTransparencia() {
+        try {
+            var resp = await cliente.rpc('eh_gerente_transparencia');
+            return resp.data === true;
+        } catch (err) {
+            console.error('Erro ao verificar gerente:', err);
+            return false;
+        }
+    }
 
 
     // ---------------- Animais ----------------
@@ -695,6 +720,246 @@
             window.alert('Erro ao marcar animal como Adotado: ' + resp.error.message);
         } else {
             carregarAnimais();
+        }
+    }
+
+    // ---------------- Transparência Admin ----------------
+    var ehGerenteTransparencia = false;
+    var TAMANHO_MAX_TRANSPARENCIA = 10 * 1024 * 1024; // 10MB
+    var MESES = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+        'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+
+    async function carregarTransparenciaAdmin() {
+        var ehGerente = await verificarGerenteTransparencia();
+        ehGerenteTransparencia = ehGerente;
+
+        var abaTransparencia = document.getElementById('aba-transparencia');
+        if (abaTransparencia) {
+            if (ehGerente) {
+                abaTransparencia.hidden = false;
+            } else {
+                abaTransparencia.hidden = true;
+                if (abaTransparencia.classList.contains('ativa')) {
+                    mudarAba('solicitacoes');
+                }
+            }
+        }
+
+        if (!ehGerente) return;
+
+        // Popular anos (2018 até ano atual + 1)
+        var anoAtual = new Date().getFullYear();
+        var selectAno = document.getElementById('transp-ano');
+        selectAno.innerHTML = '<option value="">Selecione o ano</option>';
+        for (var a = 2018; a <= anoAtual + 1; a++) {
+            var opt = document.createElement('option');
+            opt.value = a;
+            opt.textContent = a;
+            selectAno.appendChild(opt);
+        }
+
+        // Event listeners
+        selectAno.addEventListener('change', function () {
+            var mesSelect = document.getElementById('transp-mes');
+            if (this.value) {
+                mesSelect.disabled = false;
+                mesSelect.innerHTML = '<option value="">Selecione o mês</option>';
+                for (var m = 1; m <= 12; m++) {
+                    var opt = document.createElement('option');
+                    opt.value = m;
+                    opt.textContent = MESES[m];
+                    mesSelect.appendChild(opt);
+                }
+            } else {
+                mesSelect.disabled = true;
+                mesSelect.innerHTML = '<option value="">Selecione o mês</option>';
+            }
+        });
+
+        document.getElementById('form-transparencia').addEventListener('submit', handleEnviarTransparencia);
+        carregarListaTransparenciaAdmin();
+    }
+
+    function mostrarFeedbackTransparencia(msg, ehErro) {
+        var caixa = document.getElementById('msg-status-transparencia');
+        caixa.textContent = '';
+        caixa.classList.remove('sucesso', 'erro');
+        if (!msg) return;
+        caixa.textContent = msg;
+        caixa.classList.add(ehErro ? 'erro' : 'sucesso');
+    }
+
+    async function handleEnviarTransparencia(e) {
+        e.preventDefault();
+
+        var btnSubmit = document.getElementById('btn-enviar-transparencia');
+        var arquivoInput = document.getElementById('transp-arquivo');
+        var ano = document.getElementById('transp-ano').value;
+        var mes = document.getElementById('transp-mes').value;
+
+        if (!ano || !mes) {
+            mostrarFeedbackTransparencia('Selecione o ano e o mês.', true);
+            return;
+        }
+
+        var arquivo = arquivoInput.files?.[0];
+        if (!arquivo) {
+            mostrarFeedbackTransparencia('Selecione um arquivo PDF.', true);
+            return;
+        }
+
+        if (arquivo.type !== 'application/pdf') {
+            mostrarFeedbackTransparencia('Apenas arquivos PDF são permitidos.', true);
+            return;
+        }
+
+        if (arquivo.size > TAMANHO_MAX_TRANSPARENCIA) {
+            mostrarFeedbackTransparencia('Arquivo deve ter no máximo 10MB.', true);
+            return;
+        }
+
+        btnSubmit.disabled = true;
+        btnSubmit.textContent = 'Enviando...';
+        mostrarFeedbackTransparencia('', false);
+
+        try {
+            var formData = new FormData();
+            formData.append('arquivo', arquivo);
+            formData.append('ano', ano);
+            formData.append('mes', mes);
+
+            var resp = await fetch('/functions/v1/transparencia/upload', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + (await cliente.auth.getSession()).data.session.access_token
+                },
+                body: formData
+            });
+
+            var resultado = await resp.json();
+
+            if (!resp.ok) throw new Error(resultado.error || 'Erro ao enviar relatório');
+
+            document.getElementById('form-transparencia').reset();
+            document.getElementById('transp-mes').disabled = true;
+            document.getElementById('transp-mes').innerHTML = '<option value="">Selecione o mês</option>';
+            mostrarFeedbackTransparencia(resultado.mensagem || 'Relatório enviado com sucesso!', false);
+            carregarListaTransparenciaAdmin();
+        } catch (err) {
+            console.error(err);
+            mostrarFeedbackTransparencia('Erro ao enviar relatório: ' + err.message, true);
+        } finally {
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = 'Enviar Relatório';
+        }
+    }
+
+    async function carregarListaTransparenciaAdmin() {
+        var container = document.getElementById('lista-transparencia-admin');
+        container.textContent = '';
+        var p = document.createElement('p');
+        p.className = 'carregando';
+        p.textContent = 'Carregando relatórios...';
+        container.appendChild(p);
+
+        try {
+            var { data, error } = await cliente
+                .from('transparencia_relatorios')
+                .select('id, ano, mes, arquivo_nome, arquivo_tamanho, criado_em, atualizado_em, enviado_por')
+                .order('ano', { ascending: false })
+                .order('mes', { ascending: false });
+
+            if (error) throw error;
+
+            container.textContent = '';
+
+            if (!data || data.length === 0) {
+                var vazio = document.createElement('p');
+                vazio.className = 'transparencia-vazio-admin';
+                vazio.textContent = 'Nenhum relatório publicado ainda.';
+                container.appendChild(vazio);
+                return;
+            }
+
+            var titulo = document.createElement('h3');
+            titulo.textContent = 'Relatórios Publicados (' + data.length + ')';
+            container.appendChild(titulo);
+
+            data.forEach(function (rel) {
+                var card = document.createElement('div');
+                card.className = 'transparencia-admin-card';
+
+                var dataAtualizacao = new Date(rel.atualizado_em).toLocaleDateString('pt-BR', {
+                    day: '2-digit', month: '2-digit', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                });
+
+                var tamanhoMB = (rel.arquivo_tamanho / (1024 * 1024)).toFixed(2);
+
+                card.innerHTML = '\
+                    <div class="transparencia-admin-card-header">\
+                        <div class="transparencia-admin-card-info">\
+                            <h4>' + rel.arquivo_nome + '</h4>\
+                            <div class="transparencia-admin-card-meta">\
+                                <span>📅 ' + MESES[rel.mes] + '/' + rel.ano + '</span>\
+                                <span>📄 ' + tamanhoMB + ' MB</span>\
+                                <span>🕐 Atualizado: ' + dataAtualizacao + '</span>\
+                            </div>\
+                        </div>\
+                        <div class="transparencia-admin-card-acoes">\
+                            <button type="button" class="btn-remover" data-ano="' + rel.ano + '" data-mes="' + rel.mes + '">🗑️ Remover</button>\
+                        </div>\
+                    ';
+
+                container.appendChild(card);
+            });
+
+            // Event listeners para botões de remover
+            container.querySelectorAll('.btn-remover').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var ano = parseInt(this.dataset.ano, 10);
+                    var mes = parseInt(this.dataset.mes, 10);
+                    if (confirm('Tem certeza que deseja remover o relatório de ' + MESES[mes] + '/' + ano + '? Esta ação não pode ser desfeita.')) {
+                        removerTransparencia(ano, mes);
+                    }
+                });
+            });
+        } catch (err) {
+            console.error('Erro ao carregar lista de transparência:', err);
+            container.textContent = '';
+            var msg = document.createElement('p');
+            msg.className = 'transparencia-erro';
+            msg.textContent = 'Erro ao carregar relatórios: ' + err.message;
+            container.appendChild(msg);
+        }
+    }
+
+    async function removerTransparencia(ano, mes) {
+        var btn = document.querySelector('.btn-remover[data-ano="' + ano + '"][data-mes="' + mes + '"]');
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = 'Removendo...';
+        }
+
+        try {
+            var resp = await fetch('/functions/v1/transparencia/delete?ano=' + ano + '&mes=' + mes, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + (await cliente.auth.getSession()).data.session.access_token
+                }
+            });
+
+            var resultado = await resp.json();
+            if (!resp.ok) throw new Error(resultado.error || 'Erro ao remover relatório');
+
+            carregarListaTransparenciaAdmin();
+        } catch (err) {
+            console.error(err);
+            window.alert('Erro ao remover relatório: ' + err.message);
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = '🗑️ Remover';
+            }
         }
     }
 

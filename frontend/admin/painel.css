@@ -41,6 +41,13 @@ body {
     gap: 14px;
 }
 
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+}
+
 .logo img {
     height: 42px;
     width: auto;
@@ -419,5 +426,111 @@ body.modal-open {
     .solicitacao-header {
         flex-direction: column;
         align-items: flex-start;
+    }
+}
+
+/* ---------- Transparência Admin ---------- */
+
+.transparencia-desc {
+    color: var(--text, #55655f);
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.transparencia-form {
+    margin-bottom: 30px;
+    padding: 24px;
+    background: var(--gray, #fbfbea);
+    border-radius: var(--radius-md, 18px);
+    border: 1px solid #e2e8f0;
+}
+
+.transparencia-form .form-grupo {
+    margin-bottom: 16px;
+}
+
+.transparencia-lista-admin {
+    border-top: 1px solid #e2e8f0;
+    padding-top: 20px;
+}
+
+.transparencia-lista-admin h3 {
+    font-family: var(--font-display, 'Baloo 2', cursive);
+    font-size: 1.2rem;
+    margin-bottom: 16px;
+    color: var(--dark, #16332e);
+}
+
+.transparencia-admin-card {
+    border: 1px solid #e2e8f0;
+    border-radius: var(--radius-md, 18px);
+    padding: 20px;
+    margin-bottom: 16px;
+    background: var(--white);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.transparencia-admin-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.transparencia-admin-card-info h4 {
+    font-family: var(--font-display, 'Baloo 2', cursive);
+    font-size: 1.1rem;
+    color: var(--dark, #16332e);
+    margin-bottom: 8px;
+}
+
+.transparencia-admin-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 0.85rem;
+    color: var(--text, #55655f);
+}
+
+.transparencia-admin-card-acoes {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-remover {
+    background: var(--danger, #e74c3c);
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--radius-md, 18px);
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: filter 0.2s, opacity 0.2s;
+}
+
+.btn-remover:hover {
+    filter: brightness(0.92);
+}
+
+.transparencia-vazio-admin {
+    padding: 20px 0;
+    color: var(--text, #55655f);
+    text-align: center;
+}
+
+@media (max-width: 640px) {
+    .transparencia-admin-card-acoes {
+        justify-content: stretch;
+    }
+    .transparencia-admin-card-acoes .btn-remover {
+        width: 100%;
+        text-align: center;
     }
 }
