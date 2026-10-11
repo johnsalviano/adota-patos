@@ -41,32 +41,39 @@
          HEADER
     ========================== -->
     <header>
-        <div class="container navbar">
-            <a href="index.html" class="logo" aria-label="Adota Patos - Página inicial">
-                <img src="img/logo.webp" alt="Logo Adota Patos">
-            </a>
+            <div class="container navbar">
+                <a href="index.html" class="logo" aria-label="Adota Patos - Página inicial">
+                    <img src="img/logo.webp" alt="Logo Adota Patos">
+                </a>
 
-            <nav aria-label="Navegação principal">
-                <ul>
-                    <li><a href="index.html">Início</a></li>
-                    <li><a href="index.html#animais">Animais</a></li>
-                    <li><a href="index.html#adocao">Adoção</a></li>
-                    <li><a href="index.html#sobre">Sobre</a></li>
-                    <li><a href="index.html#contato">Contato</a></li>
-                    <li><a href="transparencia.html" class="header-link" aria-current="page">Transparência</a></li>
-                </ul>
-            </nav>
+                <nav aria-label="Navegação principal">
+                    <ul class="nav-list">
+                        <li><a href="index.html">Início</a></li>
+                        <li><a href="index.html#animais">Animais</a></li>
+                        <li><a href="index.html#adocao">Adoção</a></li>
+                        <li><a href="index.html#contato">Contato</a></li>
+                    </ul>
+                </nav>
 
-            <div class="header-cta">
-                <a href="doacao.html" class="header-link">Seja um Doador</a>
-                <a href="afiliacao.html" class="header-link">Afilie-se</a>
+                <div class="header-actions">
+                    <div class="header-dropdown">
+                        <button type="button" class="header-dropdown-btn" aria-haspopup="true" aria-expanded="false" aria-label="Mais opções">
+                            Mais
+                        </button>
+                        <div class="header-dropdown-menu" role="menu">
+                            <a href="doacao.html" class="header-dropdown-item" role="menuitem">Seja um Doador</a>
+                            <a href="afiliacao.html" class="header-dropdown-item" role="menuitem">Afilie-se</a>
+                        </div>
+                    </div>
+
+                    <a href="transparencia.html" class="header-link header-transparencia" aria-current="page">Transparência</a>
+
+                    <a href="admin/login.html" class="header-ong">Área da ONG</a>
+                </div>
+
+                <button class="menu-mobile" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="mobile-menu">☰</button>
             </div>
-
-            <a href="admin/login.html" class="header-ong">Área da ONG</a>
-
-            <button class="menu-mobile" type="button" aria-label="Abrir menu">☰</button>
-        </div>
-    </header>
+        </header>
 
     <main id="conteudo" tabindex="-1">
         <!-- =========================
