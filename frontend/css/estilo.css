@@ -215,6 +215,11 @@ header.scrolled {
     background: rgba(87, 216, 195, 0.15);
 }
 
+/* Hide Transparência and Área da ONG on desktop (they're in the dropdown) */
+.nav-item-desktop-hidden {
+    display: none;
+}
+
 .logo {
     display: flex;
     align-items: center;
@@ -460,6 +465,11 @@ nav ul.aberto {
     nav ul.aberto .header-dropdown-item {
         padding: 14px 20px;
         font-size: 1.1rem;
+    }
+
+    /* Show Transparência and Área da ONG in mobile menu */
+    nav ul.aberto .nav-item-desktop-hidden {
+        display: list-item;
     }
 }
 
