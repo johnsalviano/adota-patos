@@ -340,6 +340,14 @@ header.scrolled {
     transform: translateY(0);
 }
 
+/* Evita reabertura imediata por hover/focus após Escape */
+.header-dropdown.dropdown-escaped:focus-within .header-dropdown-menu,
+.header-dropdown.dropdown-escaped:hover .header-dropdown-menu {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+}
+
 /* Desktop hover: open menu on hover, close when mouse leaves */
 @media (hover: hover) and (pointer: fine) {
     .header-dropdown:hover .header-dropdown-menu {
