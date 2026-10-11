@@ -534,3 +534,141 @@ body.modal-open {
         text-align: center;
     }
 }
+
+/* ---------- Inline Edição Animal ---------- */
+
+.animal-corpo {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.animal-view {
+    display: block;
+}
+
+.animal-edit {
+    display: none;
+}
+
+.animal-edit:not(.oculto) {
+    display: block;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.edit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.edit-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.edit-grupo.full-width {
+    grid-column: 1 / -1;
+}
+
+.edit-grupo label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--dark, #16332e);
+}
+
+.edit-grupo input,
+.edit-grupo select,
+.edit-grupo textarea {
+    padding: 12px 16px;
+    border: 1px solid #dcdcd0;
+    border-radius: var(--radius-md, 18px);
+    font-family: inherit;
+    font-size: 0.95rem;
+    background: var(--gray, #fbfbea);
+    outline: none;
+    width: 100%;
+}
+
+.edit-grupo input:focus,
+.edit-grupo select:focus,
+.edit-grupo textarea:focus {
+    border-color: var(--primary-dark, #29a794);
+    background: var(--white);
+}
+
+.edit-grupo textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.edit-grupo .dica {
+    font-size: 0.78rem;
+    color: var(--text, #55655f);
+}
+
+.edit-acoes {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding-top: 8px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.edit-acoes .btn-principal,
+.edit-acoes .btn-secundario {
+    flex: 1;
+    min-width: 140px;
+}
+
+.edit-msg {
+    width: 100%;
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: var(--radius-md, 18px);
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.edit-msg.sucesso {
+    background: var(--primary-light, #a9eee1);
+    color: var(--dark, #16332e);
+}
+
+.edit-msg.erro {
+    background: #ffd8d8;
+    color: #8a1f1f;
+}
+
+/* Botão editar oculto durante edição */
+.solicitacao-acoes .btn-editar[style*="display: none"] {
+    display: none !important;
+}
+
+/* Responsivo para edição inline */
+@media (max-width: 640px) {
+    .edit-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .edit-acoes {
+        flex-direction: column;
+    }
+    
+    .edit-acoes .btn-principal,
+    .edit-acoes .btn-secundario {
+        width: 100%;
+    }
+}
+
+.edit-btn-hidden {
+    display: none !important;
+}

@@ -421,213 +421,297 @@
 
         container.textContent = '';
         resp.data.forEach(function (animal) {
-            var card = document.createElement('div');
-            card.className = 'animal-card';
+                    var card = document.createElement('div');
+                    card.className = 'animal-card';
+                    card.dataset.animalId = animal.id;
 
-            var header = document.createElement('div');
-            header.className = 'animal-header';
-            
-            // Miniatura da foto
-            if (animal.foto_url) {
-                var thumb = document.createElement('img');
-                thumb.src = animal.foto_url;
-                thumb.alt = 'Miniatura de ' + animal.nome;
-                thumb.className = 'animal-thumb';
-                header.appendChild(thumb);
-            }
+                    var header = document.createElement('div');
+                    header.className = 'animal-header';
 
-            var nome = document.createElement('strong');
-            nome.textContent = animal.nome;
-            var badge = document.createElement('span');
-            badge.className = 'badge-status badge-' + (animal.status === 'Adotado' ? 'Aprovada' : 'Pendente');
-            badge.textContent = animal.status || 'Disponível';
-            header.appendChild(nome);
-            header.appendChild(badge);
-            card.appendChild(header);
+                    // Miniatura da foto
+                    if (animal.foto_url) {
+                        var thumb = document.createElement('img');
+                        thumb.src = animal.foto_url;
+                        thumb.alt = 'Miniatura de ' + animal.nome;
+                        thumb.className = 'animal-thumb';
+                        header.appendChild(thumb);
+                    }
 
-            var corpo = document.createElement('div');
-            corpo.className = 'solicitacao-corpo';
-            var dados = [
-                ['Espécie', animal.especie],
-                ['Raça', animal.raca || 'Não informado'],
-                ['Idade', animal.idade],
-                ['Sexo', animal.sexo],
-                ['Porte', animal.porte],
-                ['Pelagem', animal.pelagem],
-                ['Descrição', animal.descricao],
-                ['Status', animal.status]
-            ];
-            dados.forEach(function (par) {
-                var linha = document.createElement('p');
-                var rotulo = document.createElement('strong');
-                rotulo.textContent = par[0] + ': ';
-                linha.appendChild(rotulo);
-                linha.appendChild(document.createTextNode(par[1] || 'Não informado'));
-                corpo.appendChild(linha);
-            });
-            card.appendChild(corpo);
+                    var nome = document.createElement('strong');
+                    nome.textContent = animal.nome;
+                    var badge = document.createElement('span');
+                    badge.className = 'badge-status badge-' + (animal.status === 'Adotado' ? 'Aprovada' : 'Pendente');
+                    badge.textContent = animal.status || 'Disponível';
+                    header.appendChild(nome);
+                    header.appendChild(badge);
+                    card.appendChild(header);
 
-            var acoes = document.createElement('div');
-            acoes.className = 'solicitacao-acoes';
+                    var corpo = document.createElement('div');
+                    corpo.className = 'animal-corpo';
 
-            var btnEditar = document.createElement('button');
-            btnEditar.type = 'button';
-            btnEditar.className = 'btn-editar';
-            btnEditar.textContent = 'Editar';
-            btnEditar.addEventListener('click', function () {
-                editarAnimal(animal.id);
-            });
+                    // View mode - dados do animal
+                    var viewMode = document.createElement('div');
+                    viewMode.className = 'animal-view';
+                    var dados = [
+                        ['Espécie', animal.especie],
+                        ['Raça', animal.raca || 'Não informado'],
+                        ['Idade', animal.idade],
+                        ['Sexo', animal.sexo],
+                        ['Porte', animal.porte],
+                        ['Pelagem', animal.pelagem],
+                        ['Descrição', animal.descricao],
+                        ['Status', animal.status]
+                    ];
+                    dados.forEach(function (par) {
+                        var linha = document.createElement('p');
+                        var rotulo = document.createElement('strong');
+                        rotulo.textContent = par[0] + ': ';
+                        linha.appendChild(rotulo);
+                        linha.appendChild(document.createTextNode(par[1] || 'Não informado'));
+                        viewMode.appendChild(linha);
+                    });
+                    corpo.appendChild(viewMode);
 
-            var btnExcluir = document.createElement('button');
-            btnExcluir.type = 'button';
-            btnExcluir.className = 'btn-recusar';
-            btnExcluir.textContent = 'Excluir';
-            btnExcluir.addEventListener('click', function () {
-                if (confirm('Tem certeza que deseja excluir o animal ' + animal.nome + '?')) {
-                    excluirAnimal(animal.id);
-                }
-            });
+                    // Edit mode - formulário inline (inicialmente oculto)
+                    var editMode = document.createElement('div');
+                    editMode.className = 'animal-edit oculto';
+                    editMode.innerHTML = '\
+                        <div class="edit-grid">\
+                            <div class="edit-grupo">\
+                                <label for="edit-nome-' + animal.id + '">Nome *</label>\
+                                <input type="text" id="edit-nome-' + animal.id + '" maxlength="80" required>\
+                            </div>\
+                            <div class="edit-grupo">\
+                                <label for="edit-especie-' + animal.id + '">Espécie *</label>\
+                                <select id="edit-especie-' + animal.id + '" required>\
+                                    <option value="Cão">Cão</option>\
+                                    <option value="Gato">Gato</option>\
+                                    <option value="Outro">Outro</option>\
+                                </select>\
+                            </div>\
+                            <div class="edit-grupo">\
+                                <label for="edit-raca-' + animal.id + '">Raça</label>\
+                                <input type="text" id="edit-raca-' + animal.id + '" maxlength="80">\
+                            </div>\
+                            <div class="edit-grupo">\
+                                <label for="edit-idade-' + animal.id + '">Idade *</label>\
+                                <input type="text" id="edit-idade-' + animal.id + '" maxlength="40" required>\
+                            </div>\
+                            <div class="edit-grupo">\
+                                <label for="edit-pelagem-' + animal.id + '">Pelagem *</label>\
+                                <input type="text" id="edit-pelagem-' + animal.id + '" maxlength="80" required placeholder="Ex: Caramelo, Preta com manchas brancas">\
+                            </div>\
+                            <div class="edit-grupo">\
+                                <label for="edit-sexo-' + animal.id + '">Sexo *</label>\
+                                <select id="edit-sexo-' + animal.id + '" required>\
+                                    <option value="Macho">Macho</option>\
+                                    <option value="Fêmea">Fêmea</option>\
+                                </select>\
+                            </div>\
+                            <div class="edit-grupo">\
+                                <label for="edit-porte-' + animal.id + '">Porte *</label>\
+                                <select id="edit-porte-' + animal.id + '" required>\
+                                    <option value="Pequeno">Pequeno</option>\
+                                    <option value="Médio">Médio</option>\
+                                    <option value="Grande">Grande</option>\
+                                </select>\
+                            </div>\
+                            <div class="edit-grupo full-width">\
+                                <label for="edit-foto-' + animal.id + '">Foto do Animal</label>\
+                                <input type="file" id="edit-foto-' + animal.id + '" accept="image/jpeg,image/png,image/webp">\
+                                <span class="dica">JPG, PNG, WebP. Máx 5MB. Deixe em branco para manter a foto atual.</span>\
+                            </div>\
+                            <div class="edit-grupo full-width">\
+                                <label for="edit-descricao-' + animal.id + '">Descrição *</label>\
+                                <textarea id="edit-descricao-' + animal.id + '" rows="3" maxlength="300" required></textarea>\
+                            </div>\
+                            <div class="edit-grupo full-width">\
+                                <label for="edit-status-' + animal.id + '">Status *</label>\
+                                <select id="edit-status-' + animal.id + '" required>\
+                                    <option value="Disponível">Disponível</option>\
+                                    <option value="Adotado">Adotado</option>\
+                                </select>\
+                            </div>\
+                        </div>\
+                        <div class="edit-acoes">\
+                            <button type="button" class="btn-principal btn-salvar-edit" data-id="' + animal.id + '">Salvar</button>\
+                            <button type="button" class="btn-secundario btn-cancelar-edit" data-id="' + animal.id + '">Cancelar</button>\
+                            <div class="edit-msg" aria-live="polite"></div>\
+                        </div>\
+                    ';
+                    corpo.appendChild(editMode);
 
-            var btnAdotado = document.createElement('button');
-            btnAdotado.type = 'button';
-            btnAdotado.className = 'btn-aprovar';
-            btnAdotado.textContent = 'Marcar como Adotado';
-            btnAdotado.addEventListener('click', function () {
-                if (animal.status === 'Disponível') {
-                    marcarAdotado(animal.id);
-                } else {
-                    window.alert('Este animal já está marcado como Adotado.');
-                }
-            });
+                    card.appendChild(corpo);
 
-            acoes.appendChild(btnEditar);
-            acoes.appendChild(btnExcluir);
-            acoes.appendChild(btnAdotado);
-            card.appendChild(acoes);
+                    var acoes = document.createElement('div');
+                    acoes.className = 'solicitacao-acoes';
 
-            container.appendChild(card);
-        });
+                    var btnEditar = document.createElement('button');
+                    btnEditar.type = 'button';
+                    btnEditar.className = 'btn-editar';
+                    btnEditar.textContent = 'Editar';
+                    btnEditar.dataset.id = animal.id;
+                    btnEditar.addEventListener('click', function () {
+                        ativarModoEdicao(this.dataset.id);
+                    });
+
+                    var btnExcluir = document.createElement('button');
+                    btnExcluir.type = 'button';
+                    btnExcluir.className = 'btn-recusar';
+                    btnExcluir.textContent = 'Excluir';
+                    btnExcluir.addEventListener('click', function () {
+                        if (confirm('Tem certeza que deseja excluir o animal ' + animal.nome + '?')) {
+                            excluirAnimal(animal.id);
+                        }
+                    });
+
+                    var btnAdotado = document.createElement('button');
+                    btnAdotado.type = 'button';
+                    btnAdotado.className = 'btn-aprovar';
+                    btnAdotado.textContent = 'Marcar como Adotado';
+                    btnAdotado.addEventListener('click', function () {
+                        if (animal.status === 'Disponível') {
+                            marcarAdotado(animal.id);
+                        } else {
+                            window.alert('Este animal já está marcado como Adotado.');
+                        }
+                    });
+
+                    acoes.appendChild(btnEditar);
+                    acoes.appendChild(btnExcluir);
+                    acoes.appendChild(btnAdotado);
+                    card.appendChild(acoes);
+
+                    container.appendChild(card);
+                });
     }
 
     async function editarAnimal(id) {
-        var resp = await cliente
-            .from('animais')
-            .select('*')
-            .eq('id', id)
-            .single();
-        if (resp.error || !resp.data) {
-            window.alert('Erro ao carregar animal: ' + (resp.error ? resp.error.message : 'não encontrado'));
-            return;
-        }
-        var animal = resp.data;
+        // Função legada - redireciona para inline
+        ativarModoEdicao(id);
+    }
 
-        // Preencher o modal com os dados do animal
-        document.getElementById('editar-animal-id').value = animal.id;
-        document.getElementById('editar-nome').value = animal.nome || '';
-        document.getElementById('editar-especie').value = animal.especie || 'Cão';
-        document.getElementById('editar-raca').value = animal.raca || '';
-        document.getElementById('editar-idade').value = animal.idade || '';
-        document.getElementById('editar-pelagem').value = animal.pelagem || '';
-        document.getElementById('editar-sexo').value = animal.sexo || 'Macho';
-        document.getElementById('editar-porte').value = animal.porte || 'Pequeno';
-        document.getElementById('editar-descricao').value = animal.descricao || '';
-        document.getElementById('editar-status').value = animal.status || 'Disponível';
+    // ---------------- Inline Edição Animal ----------------
+    function ativarModoEdicao(id) {
+        var card = document.querySelector('.animal-card[data-animal-id="' + id + '"]');
+        if (!card) return;
 
-        // Mostrar miniatura da foto atual se houver
-        var fotoAtual = document.getElementById('editar-foto-atual');
-        if (animal.foto_url) {
-            if (!fotoAtual) {
-                var img = document.createElement('img');
-                img.id = 'editar-foto-atual';
-                img.src = animal.foto_url;
-                img.alt = 'Foto atual de ' + animal.nome;
-                img.className = 'editar-foto-atual';
-                var fotoInput = document.getElementById('editar-foto');
-                fotoInput.parentNode.insertBefore(img, fotoInput.nextSibling);
-            } else {
-                fotoAtual.src = animal.foto_url;
-                fotoAtual.alt = 'Foto atual de ' + animal.nome;
+        var viewMode = card.querySelector('.animal-view');
+        var editMode = card.querySelector('.animal-edit');
+        var btnEditar = card.querySelector('.btn-editar');
+
+        if (!viewMode || !editMode) return;
+
+        // Preencher formulário com dados atuais
+        var linhas = viewMode.querySelectorAll('p');
+        var dados = {};
+        linhas.forEach(function (linha) {
+            var strong = linha.querySelector('strong');
+            if (strong) {
+                var key = strong.textContent.replace(':', '').trim().toLowerCase();
+                var value = linha.textContent.replace(strong.textContent, '').trim();
+                dados[key] = value === 'Não informado' ? '' : value;
             }
-        } else if (fotoAtual) {
-            fotoAtual.remove();
+        });
+
+        // Preencher campos do formulário
+        var setValue = function (id, value) {
+            var el = document.getElementById(id);
+            if (el) el.value = value || '';
+        };
+
+        setValue('edit-nome-' + id, dados.nome);
+        setValue('edit-especie-' + id, dados.espécie || 'Cão');
+        setValue('edit-raca-' + id, dados.raça);
+        setValue('edit-idade-' + id, dados.idade);
+        setValue('edit-pelagem-' + id, dados.pelagem);
+        setValue('edit-sexo-' + id, dados.sexo || 'Macho');
+        setValue('edit-porte-' + id, dados.porte || 'Pequeno');
+        setValue('edit-descricao-' + id, dados.descrição);
+        setValue('edit-status-' + id, dados.status || 'Disponível');
+
+        // Alternar visibilidade
+        viewMode.classList.add('oculto');
+        editMode.classList.remove('oculto');
+
+        // Esconder botão editar, mostrar ações de salvar/cancelar
+        var btnEditarEl = card.querySelector('.btn-editar');
+        if (btnEditarEl) btnEditarEl.classList.add('edit-btn-hidden');
+
+        // Adicionar event listeners aos botões do modo edição
+        var btnSalvar = editMode.querySelector('.btn-salvar-edit');
+        var btnCancelar = editMode.querySelector('.btn-cancelar-edit');
+
+        if (btnSalvar) {
+            btnSalvar.onclick = function () { salvarEdicaoInline(id); };
         }
-
-        // Abrir modal
-        var modal = document.getElementById('editarAnimalModal');
-        modal.classList.add('active');
-        document.body.classList.add('modal-open');
-    }
-
-    async function excluirAnimal(id) {
-        var resp = await cliente
-            .from('animais')
-            .delete()
-            .eq('id', id);
-        if (resp.error) {
-            window.alert('Erro ao excluir animal: ' + resp.error.message);
-        } else {
-            carregarAnimais();
+        if (btnCancelar) {
+            btnCancelar.onclick = function () { cancelarEdicao(id); };
         }
     }
 
-    // ---------------- Modal Edição Animal ----------------
-    function fecharModalEditar() {
-        var modal = document.getElementById('editarAnimalModal');
-        modal.classList.remove('active');
-        document.body.classList.remove('modal-open');
-        document.getElementById('form-editar-animal').reset();
-        var fotoAtual = document.getElementById('editar-foto-atual');
-        if (fotoAtual) fotoAtual.remove();
+    function cancelarEdicao(id) {
+        var card = document.querySelector('.animal-card[data-animal-id="' + id + '"]');
+        if (!card) return;
+
+        var viewMode = card.querySelector('.animal-view');
+        var editMode = card.querySelector('.animal-edit');
+        var btnEditarEl = card.querySelector('.btn-editar');
+
+        viewMode.classList.remove('oculto');
+        editMode.classList.add('oculto');
+        if (btnEditarEl) btnEditarEl.classList.remove('edit-btn-hidden');
+
+        var msgEl = card.querySelector('.edit-msg');
+        if (msgEl) msgEl.textContent = '';
     }
 
-    document.getElementById('fecharEditarAnimal').addEventListener('click', fecharModalEditar);
-    document.getElementById('btn-cancelar-edicao').addEventListener('click', fecharModalEditar);
+    async function salvarEdicaoInline(id) {
+        var card = document.querySelector('.animal-card[data-animal-id="' + id + '"]');
+        if (!card) return;
 
-    document.getElementById('form-editar-animal').addEventListener('submit', async function (e) {
-        e.preventDefault();
+        var msgEl = card.querySelector('.edit-msg');
+        var btnSalvar = card.querySelector('.btn-salvar-edit');
 
-        var btnSubmit = document.getElementById('btn-salvar-edicao');
-        var fotoInput = document.getElementById('editar-foto');
-        var msgStatus = document.getElementById('msg-status-edicao');
+        // Coleta dados do formulário
+        var getValue = function (suffix) {
+            var el = document.getElementById('edit-' + suffix + '-' + id);
+            return el ? el.value.trim() : '';
+        };
 
-        // Validação dos campos obrigatórios
+        var getFile = function (suffix) {
+            var el = document.getElementById('edit-' + suffix + '-' + id);
+            return (el?.files?.[0]) ? el.files[0] : null;
+        };
+
         var obrigatorios = [
-            ['editar-nome', 'Informe o nome do animal.'],
-            ['editar-especie', 'Selecione a espécie.'],
-            ['editar-idade', 'Informe a idade do animal.'],
-            ['editar-sexo', 'Selecione o sexo.'],
-            ['editar-porte', 'Selecione o porte.'],
-            ['editar-descricao', 'Descreva a história do animal.'],
-            ['editar-pelagem', 'Selecione a pelagem.'],
-            ['editar-status', 'Selecione o status.']
+            ['nome', 'Informe o nome do animal.'],
+            ['especie', 'Selecione a espécie.'],
+            ['idade', 'Informe a idade do animal.'],
+            ['sexo', 'Selecione o sexo.'],
+            ['porte', 'Selecione o porte.'],
+            ['descricao', 'Descreva a história do animal.'],
+            ['pelagem', 'Informe a pelagem.'],
+            ['status', 'Selecione o status.']
         ];
 
         for (var i = 0; i < obrigatorios.length; i++) {
-            var campo = document.getElementById(obrigatorios[i][0]);
-            if (campo.value.trim() === '') {
-                msgStatus.textContent = obrigatorios[i][1];
-                msgStatus.className = 'mensagem-status erro';
-                campo.focus();
+            var val = getValue(obrigatorios[i][0]);
+            if (!val) {
+                msgEl.textContent = obrigatorios[i][1];
+                msgEl.className = 'edit-msg erro';
                 return;
             }
         }
 
-        // Validação de status
-        var status = document.getElementById('editar-status').value;
+        var status = getValue('status');
         if (status !== 'Disponível' && status !== 'Adotado') {
-            msgStatus.textContent = 'Status inválido. Use Disponível ou Adotado.';
-            msgStatus.className = 'mensagem-status erro';
+            msgEl.textContent = 'Status inválido. Use Disponível ou Adotado.';
+            msgEl.className = 'edit-msg erro';
             return;
         }
 
-        var id = document.getElementById('editar-animal-id').value;
-        if (!id) {
-            msgStatus.textContent = 'Erro: ID do animal não encontrado.';
-            msgStatus.className = 'mensagem-status erro';
-            return;
-        }
-
-        var arquivoFoto = fotoInput.files?.[0];
+        var arquivoFoto = getFile('foto');
         var EXTENSAO_POR_MIME = {
             'image/jpeg': 'jpg',
             'image/png': 'png',
@@ -636,32 +720,32 @@
 
         if (arquivoFoto) {
             if (arquivoFoto.size > TAMANHO_MAX_FOTO) {
-                msgStatus.textContent = 'A foto deve ter no máximo 5MB.';
-                msgStatus.className = 'mensagem-status erro';
+                msgEl.textContent = 'A foto deve ter no máximo 5MB.';
+                msgEl.className = 'edit-msg erro';
                 return;
             }
             if (!EXTENSAO_POR_MIME[arquivoFoto.type]) {
-                msgStatus.textContent = 'Formato não aceito. Use JPG, PNG ou WebP.';
-                msgStatus.className = 'mensagem-status erro';
+                msgEl.textContent = 'Formato não aceito. Use JPG, PNG ou WebP.';
+                msgEl.className = 'edit-msg erro';
                 return;
             }
         }
 
-        btnSubmit.disabled = true;
-        btnSubmit.textContent = 'Salvando...';
-        msgStatus.textContent = '';
-        msgStatus.className = 'mensagem-status';
+        btnSalvar.disabled = true;
+        btnSalvar.textContent = 'Salvando...';
+        msgEl.textContent = '';
+        msgEl.className = 'edit-msg';
 
         try {
             var dadosAnimal = {
-                nome: document.getElementById('editar-nome').value.trim(),
-                especie: document.getElementById('editar-especie').value,
-                raca: document.getElementById('editar-raca').value.trim() || null,
-                idade: document.getElementById('editar-idade').value.trim(),
-                sexo: document.getElementById('editar-sexo').value,
-                porte: document.getElementById('editar-porte').value,
-                pelagem: document.getElementById('editar-pelagem').value,
-                descricao: document.getElementById('editar-descricao').value.trim(),
+                nome: getValue('nome'),
+                especie: getValue('especie'),
+                raca: getValue('raca') || null,
+                idade: getValue('idade'),
+                sexo: getValue('sexo'),
+                porte: getValue('porte'),
+                pelagem: getValue('pelagem'),
+                descricao: getValue('descricao'),
                 status: status
             };
 
@@ -685,31 +769,87 @@
             var dbResp = await cliente.from('animais').update(dadosAnimal).eq('id', id);
             if (dbResp.error) throw dbResp.error;
 
-            fecharModalEditar();
-            carregarAnimais();
+            // Atualizar view mode com novos dados
+            atualizarViewMode(card, dadosAnimal);
+
+            // Voltar para view mode
+            var viewMode = card.querySelector('.animal-view');
+            var editMode = card.querySelector('.animal-edit');
+            var btnEditarEl = card.querySelector('.btn-editar');
+
+            viewMode.classList.remove('oculto');
+            editMode.classList.add('oculto');
+            if (btnEditarEl) btnEditarEl.classList.remove('edit-btn-hidden');
+
+            msgEl.textContent = '';
+            msgEl.className = 'edit-msg';
+
             mostrarFeedback('Animal atualizado com sucesso!', false);
         } catch (err) {
             console.error(err);
-            msgStatus.textContent = 'Erro ao editar animal: ' + err.message;
-            msgStatus.className = 'mensagem-status erro';
+            msgEl.textContent = 'Erro ao editar animal: ' + err.message;
+            msgEl.className = 'edit-msg erro';
         } finally {
-            btnSubmit.disabled = false;
-            btnSubmit.textContent = 'Salvar Alterações';
+            btnSalvar.disabled = false;
+            btnSalvar.textContent = 'Salvar';
         }
-    });
+    }
 
-    // Fechar modal ao clicar fora
-    document.getElementById('editarAnimalModal').addEventListener('click', function (e) {
-        if (e.target === this) fecharModalEditar();
-    });
+    function atualizarViewMode(card, dados) {
+        var viewMode = card.querySelector('.animal-view');
+        if (!viewMode) return;
 
-    // Fechar modal com ESC
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') {
-            var modal = document.getElementById('editarAnimalModal');
-            if (modal.classList.contains('active')) fecharModalEditar();
+        var linhas = viewMode.querySelectorAll('p');
+        var mapa = {
+            'espécie': 'especie',
+            'raça': 'raca',
+            'idade': 'idade',
+            'sexo': 'sexo',
+            'porte': 'porte',
+            'pelagem': 'pelagem',
+            'descrição': 'descricao',
+            'status': 'status'
+        };
+
+        linhas.forEach(function (linha) {
+            var strong = linha.querySelector('strong');
+            if (strong) {
+                var key = strong.textContent.replace(':', '').trim().toLowerCase();
+                var campo = mapa[key];
+                if (campo && dados[campo] !== undefined) {
+                    // Remove o texto antigo mantendo o strong
+                    var textoAntigo = linha.textContent.replace(strong.textContent, '').trim();
+                    linha.removeChild(linha.lastChild);
+                    linha.appendChild(document.createTextNode(dados[campo] || 'Não informado'));
+                }
+                }
+            });
+
+            // Atualizar badge de status
+        var badge = card.querySelector('.badge-status');
+        if (badge && dados.status) {
+            badge.className = 'badge-status badge-' + (dados.status === 'Adotado' ? 'Aprovada' : 'Pendente');
+            badge.textContent = dados.status;
         }
-    });
+
+        // Atualizar nome no header
+        var nomeEl = card.querySelector('.animal-header strong');
+        if (nomeEl && dados.nome) {
+            nomeEl.textContent = dados.nome;
+        }
+    }
+
+    async function excluirAnimal(id) {
+        var resp = await cliente
+            .from('animais')
+            .delete()
+            .eq('id', id);
+        if (resp.error) {
+            window.alert('Erro ao excluir animal: ' + resp.error.message);
+        } else {
+            carregarAnimais();
+        }
+    }
 
     async function marcarAdotado(id) {
         var resp = await cliente
