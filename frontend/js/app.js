@@ -259,12 +259,37 @@ if (headerDropdown && headerDropdownBtn && headerDropdownMenu) {
     // Sincroniza aria-expanded no hover (desktop) para leitores de tela
     if (!isTouchDevice) {
         headerDropdown.addEventListener("mouseenter", () => {
-            headerDropdownBtn.setAttribute("aria-expanded", "true");
+            if (!headerDropdown.classList.contains("dropdown-hover-disabled")) {
+                headerDropdownBtn.setAttribute("aria-expanded", "true");
+            }
         });
         headerDropdown.addEventListener("mouseleave", () => {
             headerDropdownBtn.setAttribute("aria-expanded", "false");
         });
     }
+
+    // Sincroniza aria-expanded no foco do teclado (Tab)
+    headerDropdownBtn.addEventListener("focus", () => {
+        headerDropdownBtn.setAttribute("aria-expanded", "true");
+    });
+    headerDropdownBtn.addEventListener("blur", () => {
+        // Só define false se o menu não estiver aberto via hover/clique
+        if (!headerDropdown.classList.contains("open") && 
+            !headerDropdown.matches(":hover")) {
+            headerDropdownBtn.setAttribute("aria-expanded", "false");
+        }
+    });
+
+    // Impede reabertura por hover após fechar com Escape
+    headerDropdownBtn.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+            headerDropdown.classList.add("dropdown-hover-disabled");
+            // Reabilita hover após breve delay para permitir mover mouse para fora
+            setTimeout(() => {
+                headerDropdown.classList.remove("dropdown-hover-disabled");
+            }, 300);
+        }
+    });
 }
 
 // =========================
