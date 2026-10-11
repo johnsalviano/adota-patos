@@ -24,7 +24,7 @@ export function ipDaRequisicao(req: Request): string {
       const privado =
         /^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|127\.|::1|f[cd][0-9a-f]{2}:|fe80:)/i
           .test(ip)
-      if (!privido) return ip
+      if (!privado) return ip
     }
   }
   return 'desconhecido'
