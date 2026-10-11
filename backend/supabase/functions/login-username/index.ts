@@ -14,16 +14,11 @@ import { ipDaRequisicao } from '../_shared/ip.ts'
 import { registrarLog } from '../_shared/log.ts'
 
 // Política de tentativas de login. Janela curta (1 minuto na
-// função registrar_envio) e teto modesto: contenção de tentativa
+// função registrar_envio_v2) e teto modesto: contenção de tentativa
 // automatizada sem travar a pessoa que digita a senha duas vezes
 // errado. Nada de bloqueio permanente — a caderneta zera sozinha.
-// Chave própria ('login:' + ip) para não compartilhar a
-// caderneta com o formulário de adoção.
+// Categoria 'login' isola o painel administrativo dos formulários públicos.
 const LIMITE_TENTATIVAS_POR_MINUTO = 10
-// Teto global, igual ao da adoção. registrar_envio tem duas
-// sobrecargas, e o PostgREST só desambigua se os três parâmetros
-// vierem nomeados: omitir p_limite_global devolve PGRST203.
-const LIMITE_GLOBAL_POR_MINUTO = 60
 
 function json(corpo: unknown, status: number, cors: Record<string, string>): Response {
   return new Response(JSON.stringify(corpo), {
@@ -58,11 +53,11 @@ Deno.serve(async (req: Request) => {
     // Rate limit antes de qualquer trabalho: se estourou, nem
     // chegamos a consultar o banco de membros.
     const { data: dentroDoLimite, error: erroLimite } = await supabaseServer.rpc(
-      'registrar_envio',
+      'registrar_envio_v2',
       {
-        p_ip: `login:${ip}`,
+        p_ip: ip,
+        p_categoria: 'login',
         p_limite: LIMITE_TENTATIVAS_POR_MINUTO,
-        p_limite_global: LIMITE_GLOBAL_POR_MINUTO,
       },
     )
 

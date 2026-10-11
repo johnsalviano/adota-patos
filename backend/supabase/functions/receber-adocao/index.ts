@@ -13,7 +13,6 @@ import {
   ipDaRequisicao,
   registrarLog,
   LIMITE_POR_MINUTO,
-  LIMITE_GLOBAL_POR_MINUTO,
 } from './seguranca.ts'
 
 function json(
@@ -74,11 +73,11 @@ Deno.serve(async (req: Request) => {
     const ip = ipDaRequisicao(req)
 
     const { data: dentroDoLimite, error: erroLimite } = await supabase.rpc(
-      'registrar_envio',
+      'registrar_envio_v2',
       {
         p_ip: ip,
+        p_categoria: 'adocao',
         p_limite: LIMITE_POR_MINUTO,
-        p_limite_global: LIMITE_GLOBAL_POR_MINUTO,
       },
     )
 

@@ -9,23 +9,114 @@
 // ============================================================
 
 // IP real do cliente segundo o Cloudflare (não forjável pelo cliente).
+// NOTA: cf-connecting-ip é definido pelo Cloudflare na borda da rede.
+// Se a Edge Function rodar atrás do Cloudflare (configuração padrão
+// do Supabase), este cabeçalho é confiável. Caso contrário, cai-se
+// no fallback x-forwarded-for com validação estrita.
 export function ipDaRequisicao(req: Request): string {
+  // 1. cf-connecting-ip: definido pelo Cloudflare, não forjável pelo cliente
+  // quando a requisição passa pelo proxy do Cloudflare.
   const cf = req.headers.get('cf-connecting-ip')
-  if (cf) return cf
+  if (cf && isPublicIP(cf)) return cf
 
-  // A cadeia x-forwarded-for mistura IPs falsos na frente e saltos internos
-  // atrás. O único confiável é o último IP público — varremos da direita
-  // para a esquerda pulando faixas privadas/loopback.
+  // 2. x-forwarded-for: pode ser forjado pelo cliente.
+  // Só usamos se NÃO houver cf-connecting-ip (ex: desenvolvimento local
+  // sem Cloudflare). Varremos da direita para a esquerda pulando privados.
   const cadeia = req.headers.get('x-forwarded-for')
   if (cadeia) {
     const candidatos = cadeia.split(',').map((ip) => ip.trim())
     for (let i = candidatos.length - 1; i >= 0; i--) {
       const ip = candidatos[i]
-      const privado =
-        /^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|127\.|::1|f[cd][0-9a-f]{2}:|fe80:)/i
-          .test(ip)
-      if (!privado) return ip
+      if (isPublicIP(ip)) return ip
     }
   }
-  return 'desconhecido'
+
+  // 3. Fallback: nenhum IP público verificável.
+  // Retornamos identificador único por requisição para NÃO criar
+  // chave compartilhada 'desconhecido' que permitiria DoS cruzado.
+  // Em produção com Cloudflare, este caminho NUNCA deve ser atingido.
+  return `anon-${crypto.randomUUID()}`
+}
+
+// Verifica se um IP (IPv4, IPv6 ou IPv4-mapeado-em-IPv6) é público/roteável.
+function isPublicIP(ip: string): boolean {
+  if (!ip) return false
+
+  // IPv4 mapeado em IPv6: ::ffff:192.168.1.1 -> extrai IPv4 interno
+  const ipv4Mapeado = ip.match(/^::ffff:(.+)$/i)
+  const ipParaTestar = ipv4Mapeado ? ipv4Mapeado[1] : ip
+
+  // IPv4
+  if (ipParaTestar.includes('.')) {
+    return isPublicIPv4(ipParaTestar)
+  }
+
+  // IPv6
+  if (ipParaTestar.includes(':')) {
+    return isPublicIPv6(ipParaTestar)
+  }
+
+  return false
+}
+
+function isPublicIPv4(ip: string): boolean {
+  const parts = ip.split('.').map(Number)
+  if (parts.length !== 4 || parts.some(p => p < 0 || p > 255)) return false
+
+  const [a, b] = parts
+
+  // Privados RFC 1918
+  if (a === 10) return false
+  if (a === 172 && b >= 16 && b <= 31) return false
+  if (a === 192 && b === 168) return false
+
+  // Loopback
+  if (a === 127) return false
+
+  // Link-local
+  if (a === 169 && b === 254) return false
+
+  // Multicast
+  if (a >= 224 && a <= 239) return false
+
+  // Reservado / futuro
+  if (a >= 240) return false
+
+  // 0.0.0.0/8
+  if (a === 0) return false
+
+  return true
+}
+
+function isPublicIPv6(ip: string): boolean {
+  // Normaliza: remove zone ID se houver (%eth0)
+  const cleanIP = ip.split('%')[0].toLowerCase()
+
+  // Loopback
+  if (cleanIP === '::1') return false
+
+  // IPv4-mapeado (já tratado antes, mas por segurança)
+  if (cleanIP.startsWith('::ffff:')) {
+    return isPublicIPv4(cleanIP.slice(7))
+  }
+
+  // Unspecified
+  if (cleanIP === '::') return false
+
+  // Unique Local Addresses (ULA) - fc00::/7
+  if (cleanIP.startsWith('fc') || cleanIP.startsWith('fd')) return false
+
+  // Link-local - fe80::/10
+  if (cleanIP.startsWith('fe80:')) return false
+
+  // Multicast - ff00::/8
+  if (cleanIP.startsWith('ff')) return false
+
+  // Documentation - 2001:db8::/32
+  if (cleanIP.startsWith('2001:db8:')) return false
+
+  // Teredo - 2001::/32 (túnel, trata como público se necessário)
+  // 6to4 - 2002::/16
+
+  return true
 }
