@@ -296,10 +296,14 @@ if (headerDropdown && headerDropdownBtn && headerDropdownMenu) {
         headerDropdownBtn.setAttribute('aria-expanded', 'true');
     });
     headerDropdownBtn.addEventListener('blur', () => {
-        // Só define false se o menu não estiver aberto via hover, foco ou classe open
-        if (!isMenuOpen()) {
-            headerDropdownBtn.setAttribute('aria-expanded', 'false');
-        }
+        // Pequeno delay para permitir movimento de foco para opções do menu
+        setTimeout(() => {
+            // Só define false se o menu não estiver aberto via hover, foco ou classe open
+            if (!isMenuOpen()) {
+                headerDropdownBtn.setAttribute('aria-expanded', 'false');
+            }
+            maybeRemoveEscaped();
+        }, 0);
     });
 
     // Também sincroniza quando o foco entra/sai das opções do menu
