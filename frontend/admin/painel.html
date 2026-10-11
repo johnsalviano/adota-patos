@@ -22,9 +22,9 @@
     <div id="conteudo-painel" class="oculto">
         <header class="cabecalho">
             <div class="cabecalho-conteudo">
-                <div class="logo" aria-hidden="true">
-                    <img src="../img/logo.webp" alt="">
-                </div>
+                <a href="../index.html" class="logo" aria-label="Adota Patos - Página inicial">
+                    <img src="../img/logo.webp" alt="Logo Adota Patos">
+                </a>
                 <span class="logo-nome">🐾 Adota Patos <span class="logo-legenda">Painel da equipe</span></span>
                 <button type="button" class="sair" id="botao-sair">Sair</button>
             </div>
@@ -39,6 +39,7 @@
                     <button type="button" class="aba-btn ativa" id="aba-solicitacoes" role="tab" aria-selected="true">Solicitações de Adoção</button>
                     <button type="button" class="aba-btn" id="aba-animais" role="tab" aria-selected="false">Animais</button>
                     <button type="button" class="aba-btn" id="aba-cadastrar" role="tab" aria-selected="false">Cadastrar Animal</button>
+                    <button type="button" class="aba-btn" id="aba-transparencia" role="tab" aria-selected="false" style="display: none;">Gerenciar Transparência</button>
                 </div>
             </div>
 
@@ -128,6 +129,41 @@
                 <h2 id="titulo-animais">Animais Cadastrados 🐾</h2>
                 <div id="lista-animais" class="lista-animais" aria-live="polite">
                     <p class="carregando">Carregando animais...</p>
+                </div>
+            </section>
+
+            <section id="secao-transparencia" class="cartao oculto" aria-labelledby="titulo-transparencia">
+                <h2 id="titulo-transparencia">Gerenciar Transparência 📊</h2>
+                <p class="transparencia-desc">Gerencie os relatórios financeiros mensais publicados no site. Apenas o gerente autorizado (Rafael.Dantas) pode enviar, substituir ou remover relatórios.</p>
+                
+                <form id="form-transparencia" class="transparencia-form" novalidate>
+                    <div class="form-grid">
+                        <div class="form-grupo">
+                            <label for="transp-ano">Ano *</label>
+                            <select id="transp-ano" required>
+                                <option value="">Selecione o ano</option>
+                            </select>
+                        </div>
+                        <div class="form-grupo">
+                            <label for="transp-mes">Mês *</label>
+                            <select id="transp-mes" required disabled>
+                                <option value="">Selecione o mês</option>
+                            </select>
+                        </div>
+                        <div class="form-grupo full-width">
+                            <label for="transp-arquivo">Arquivo PDF *</label>
+                            <input type="file" id="transp-arquivo" accept="application/pdf" required>
+                            <span class="dica">Apenas PDF. Máximo 10MB.</span>
+                        </div>
+                    </div>
+                    <div class="form-rodape">
+                        <button type="submit" class="btn-principal" id="btn-enviar-transparencia">Enviar Relatório</button>
+                        <div id="msg-status-transparencia" class="mensagem-status" aria-live="polite"></div>
+                    </div>
+                </form>
+
+                <div class="transparencia-lista-admin" id="lista-transparencia-admin" aria-live="polite">
+                    <p class="carregando">Carregando relatórios...</p>
                 </div>
             </section>
         </main>

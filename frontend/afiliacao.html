@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Afilie-se - Adota Patos</title>
+    <meta name="description" content="Página de afiliação da ONG Adota Patos. Torne-se associado com contribuição mensal de R$ 20,00.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐾</text></svg>">
+    <meta name="theme-color" content="#57d8c3">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/estilo.css">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "NonprofitType",
+        "name": "Adota Patos",
+        "description": "ONG dedicada ao resgate, tratamento veterinário e adoção responsável de cães e gatos em Patos-PB.",
+        "url": "https://johnsalviano.github.io/adota-patos/",
+        "areaServed": {
+            "@type": "City",
+            "name": "Patos",
+            "containedInPlace": {
+                "@type": "State",
+                "name": "Paraíba"
+            }
+        },
+        "sameAs": [
+            "https://www.instagram.com/adotapatosoficial/",
+            "https://www.facebook.com/adotapatosoficial/"
+        ]
+    }
+    </script>
+</head>
+<body>
+    <a href="#conteudo" class="sr-only">Pular para o conteúdo</a>
+
+    <!-- =========================
+         HEADER (copiado do index.html)
+    ========================== -->
+    <header>
+        <div class="container navbar">
+            <a href="index.html" class="logo" aria-label="Adota Patos - Página inicial">
+                <img src="img/logo.webp" alt="Logo Adota Patos">
+            </a>
+
+            <nav aria-label="Navegação principal">
+                <ul>
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="index.html#animais">Animais</a></li>
+                    <li><a href="index.html#adocao">Adoção</a></li>
+                    <li><a href="index.html#sobre">Sobre</a></li>
+                    <li><a href="index.html#contato">Contato</a></li>
+                    <li><a href="transparencia.html" class="header-link">Transparência</a></li>
+                </ul>
+            </nav>
+
+            <div class="header-cta">
+                <a href="doacao.html" class="header-link">Seja um Doador</a>
+                <a href="afiliacao.html" class="header-link">Afilie-se</a>
+            </div>
+
+            <a href="admin/login.html" class="header-ong">Área da ONG</a>
+
+            <button class="menu-mobile" type="button" aria-label="Abrir menu">☰</button>
+        </div>
+    </header>
+
+    <main id="conteudo" tabindex="-1">
+        <!-- =========================
+             HERO AFILIACAO
+        ========================== -->
+        <section class="hero" id="inicio">
+            <div class="container hero-content">
+                <div class="hero-text">
+                    <h1>
+                        Torne-se um <span>Associado</span>
+                    </h1>
+                    <p>
+                        Com apenas R$ 20,00 por mês você ajuda na manutenção,<br>
+                        alimentação e cuidado dos animais resgatados pela Adota Patos.
+                    </p>
+                    <div class="hero-cta">
+                        <a href="#afiliacao-form" class="btn">Quero me afiliar</a>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img
+                        src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?auto=format&fit=crop&w=900&q=80"
+                        alt="Grupo de cães e gatos felizes em um abrigo"
+                    >
+                </div>
+            </div>
+        </section>
+
+        <div class="wave-divider">
+            <svg viewBox="0 0 1200 70" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M0,32 C200,70 400,0 600,28 C800,56 1000,10 1200,32 L1200,70 L0,70 Z" fill="#fbfbea"></path>
+            </svg>
+        </div>
+
+        <!-- =========================
+             AFILIACAO FORMULARIO
+        ========================== -->
+        <section id="afiliacao-form" class="afiliacao-section">
+            <div class="container">
+                <div class="section-header reveal">
+                    <span class="eyebrow">📝 Cadastro</span>
+                    <h2>Formulário de <span>Afiliação</span></h2>
+                    <p>
+                        Preencha todos os campos abaixo para se tornar associado da Adota Patos.
+                    </p>
+                </div>
+
+                <form class="form-container reveal" id="afiliacaoForm">
+                    <div class="form-grid">
+                        <!-- Dados pessoais -->
+                        <div class="form-group">
+                            <label for="afNome">Nome completo</label>
+                            <input type="text" id="afNome" name="afNome" maxlength="100" placeholder="Digite seu nome completo" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="afNomeMae">Nome da mãe</label>
+                            <input type="text" id="afNomeMae" name="afNomeMae" maxlength="100" placeholder="Digite o nome da sua mãe" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="afDataNasc">Data de nascimento</label>
+                            <input type="date" id="afDataNasc" name="afDataNasc" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="afSexo">Sexo</label>
+                            <select id="afSexo" name="afSexo" required>
+                                <option value="">Selecione</option>
+                                <option value="M">Masculino</option>
+                                <option value="F">Feminino</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="afEstadoCivil">Estado civil</label>
+                            <select id="afEstadoCivil" name="afEstadoCivil" required>
+                                <option value="">Selecione</option>
+                                <option value="Solteiro(a)">Solteiro(a)</option>
+                                <option value="Casado(a)">Casado(a)</option>
+                                <option value="Divorciado(a)">Divorciado(a)</option>
+                                <option value="Viúvo(a)">Viúvo(a)</option>
+                                <option value="União estável">União estável</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="afRG">RG</label>
+                            <input type="text" id="afRG" name="afRG" maxlength="20" placeholder="Digite o número do RG" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="afOrgaoExpedidor">Órgão expedidor/UF</label>
+                            <input type="text" id="afOrgaoExpedidor" name="afOrgaoExpedidor" maxlength="10" placeholder="Ex: SSP/SP" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="afCPF">CPF</label>
+                            <input type="text" id="afCPF" name="afCPF" maxlength="14" placeholder="000.000.000-00" required>
+                        </div>
+
+                        <!-- Endereço -->
+                        <div class="form-group full">
+                            <label for="afEndereco">Endereço</label>
+                            <input type="text" id="afEndereco" name="afEndereco" maxlength="150" placeholder="Logradouro, número, complemento" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="afBairro">Bairro</label>
+                            <input type="text" id="afBairro" name="afBairro" maxlength="80" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="afCep">CEP</label>
+                            <input type="text" id="afCep" name="afCep" maxlength="9" placeholder="00000-000" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="afCidade">Cidade</label>
+                            <input type="text" id="afCidade" name="afCidade" maxlength="60" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="afUf">UF</label>
+                            <input type="text" id="afUf" name="afUf" maxlength="2" placeholder="EX" required>
+                        </div>
+
+                        <!-- Contato -->
+                        <div class="form-group">
+                            <label for="afTelefone">Telefone</label>
+                            <input type="tel" id="afTelefone" name="afTelefone" maxlength="15" placeholder="(83) 99999-9999" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="afEmail">E-mail</label>
+                            <input type="email" id="afEmail" name="afEmail" maxlength="100" placeholder="seuemail@email.com" required>
+                        </div>
+
+                        <!-- Informações sobre animais alimentados -->
+                        <div class="form-group">
+                            <label for="afCaes">Quantidade de cães de rua que você alimenta</label>
+                            <input type="number" id="afCaes" name="afCaes" min="0" placeholder="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="afGatos">Quantidade de gatos de rua que você alimenta</label>
+                            <input type="number" id="afGatos" name="afGatos" min="0" placeholder="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="afTotal">Total de animais alimentados</label>
+                            <input type="text" id="afTotal" name="afTotal" readonly placeholder="Calculado automaticamente">
+                        </div>
+
+                        <!-- Valores da afiliação -->
+                        <div class="form-group full">
+                            <p>Contribuição mensal: <strong>R$ 20,00</strong></p>
+                            <p>Valor fixo para manutenção dos animais.</p>
+                        </div>
+
+                        <!-- Declarações e aceites -->
+                        <div class="form-group full">
+                            <fieldset>
+                                <legend>Declarações</legend>
+                                <label class="consentimento-lgpd" style="justify-content: flex-start;">
+                                    <input type="checkbox" id="afDecl1" required>
+                                    <span>Declaro que estou solicitando minha inclusão no cadastro de associados da Adota Patos.</span>
+                                </label>
+                                <label class="consentimento-lgpd" style="justify-content: flex-start;">
+                                    <input type="checkbox" id="afDecl2" required>
+                                    <span>Estou ciente da natureza da entidade e da finalidade da contribuição.</span>
+                                </label>
+                                <label class="consentimento-lgpd" style="justify-content: flex-start;">
+                                    <input type="checkbox" id="afDecl3" required>
+                                    <span>Estou ciente das disposições pertinentes da associação.</span>
+                                </label>
+                                <label class="consentimento-lgpd" style="justify-content: flex-start;">
+                                    <input type="checkbox" id="afDecl4" required>
+                                    <span>Declaro a veracidade das informações fornecidas neste formulário.</span>
+                                </label>
+                                <label class="consentimento-lgpd" style="justify-content: flex-start;">
+                                    <input type="checkbox" id="afDecl5" required>
+                                    <span>Estou de acordo com as condições estabelecidas pela ONG para associados.</span>
+                                </label>
+                            </fieldset>
+                        </div>
+                    </div>
+
+                    <!-- Anti-spam: honeypot -->
+                    <div class="segredo-campos" aria-hidden="true">
+                        <label>Website <input type="text" id="afWebsite" name="afWebsite" tabindex="-1" autocomplete="off"></label>
+                    </div>
+
+                    <button type="submit" class="btn">Enviar inscrição de afiliação ❤️</button>
+                </form>
+
+                <div id="formFeedbackAfiliacao" class="form-feedback"></div>
+            </div>
+        </section>
+
+        <div class="wave-divider">
+            <svg viewBox="0 0 1200 70" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M0,32 C200,70 400,0 600,28 C800,56 1000,10 1200,32 L1200,70 L0,70 Z" fill="#fbfbea"></path>
+            </svg>
+        </div>
+    </main>
+
+    <!-- =========================
+         FOOTER (copiado)
+    ========================== -->
+    <footer>
+        <small>
+            © 2026 Adota Patos - PB — Todos os direitos reservados.
+            <button type="button" class="abrir-politica">Política de Privacidade</button>
+        </small>
+    </footer>
+
+    <!-- =========================
+         MODAL DA POLÍTICA DE PRIVACIDADE (mesmo do index)
+    ========================== -->
+    <div class="modal" id="politicaModal" role="dialog" aria-modal="true" aria-labelledby="titulo-politica">
+        <div class="modal-content">
+            <button class="close-modal" id="fecharPolitica" type="button" aria-label="Fechar">&times;</button>
+            <h3 id="titulo-politica">🔒 Política de Privacidade</h3>
+            <p class="politica-data">Última atualização: 23/08/2026</p>
+            <h4>Quem somos</h4>
+            <p>A Associação Adota Patos (CNPJ 30.688.644/0001-85) é uma organização sem fins lucrativos de Patos-PB dedicada ao resgate, tratamento veterinário e adoção responsável de cães e gatos. Somos o controlador dos dados pessoais tratados nesta plataforma.</p>
+            <h4>Quais dados coletamos</h4>
+            <ul>
+                <li><strong>Formulário de afiliação:</strong> nome completo, nome da mãe, data de nascimento, sexo, estado civil, RG, órgão expedidor/UF, CPF, endereço, bairro, CEP, cidade, UF, telefone, e-mail, quantidade de cães e gatos alimentados, total calculado, declarações de aceite.</li>
+                <li><strong>Estatísticas anônimas de acesso</strong> (páginas vistas), apenas se você aceitar os cookies de estatística.</li>
+            </ul>
+            <h4>Para quê usamos</h4>
+            <p>Exclusivamente para registrar sua afiliação e entrar em contato sobre ela. As estatísticas anônimas nos ajudam a entender como melhorar o site. <strong>Não vendemos, trocamos ou alugamos seus dados</strong> — para ninguém, nunca.</p>
+            <h4>Base legal</h4>
+            <p>O seu consentimento explícito (art. 7º, I, da Lei nº 13.709/2018 – LGPD), dado quando você marca a autorização no formulário. Sem essa marcação, nada é enviado para nós.</p>
+            <h4>Por quanto tempo guardamos</h4>
+            <ul>
+                <li>Registros de afiliação são mantidos enquanto ativo (para prestação de contas e comunicação).</li>
+                <li>Registros técnicos de segurança ficam até <strong>90 dias</strong> e contêm apenas evento, IP e detalhe técnico — nenhum dado pessoal.</li>
+            </ul>
+            <h4>Com quem compartilhamos</h4>
+            <p>Somente entre membros autorizados da equipe da ONG e com a infraestrutura que hospeda o sistema (Supabase). Nenhuma outra empresa recebe seus dados.</p>
+            <h4>Cookies e Google Analytics</h4>
+            <p>Na sua primeira visita perguntamos se aceita cookies de estatística. O Google Analytics só é ativado após o seu aceite; quem recusa navega com o site funcionando exatamente igual.</p>
+            <h4>Como protegemos</h4>
+            <p>Acesso restrito por controle de permissões no banco de dados, limites automáticos contra robôs, transporte criptografado (HTTPS) e proteções contra injeção de código. Nenhuma tecnologia é infalível, mas seguimos o princípio da defesa em camadas.</p>
+            <h4>Seus direitos (art. 18 da LGPD)</h4>
+            <p>Você pode confirmar que tratamos seus dados, acessá-los, corrigi-los, pedir anonimização, bloqueio ou exclusão, solicitar portabilidade, saber com quem foram compartilhados e revogar o consentimento a qualquer momento. É só falar com a gente:</p>
+            <ul>
+                <li>E-mail: contatoadotapatos@gmail.com</li>
+                <li>WhatsApp: (83) 98156-7801</li>
+            </ul>
+            <p>Pedidos são respondidos em até 15 dias.</p>
+            <h4>Mudanças nesta política</h4>
+            <p>Qualquer alteração será publicada nesta página com nova data de atualização.</p>
+        </div>
+    </div>
+
+    <script src="js/erros.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Auto-calculate total animals fed
+        const caesInput = document.getElementById('afCaes');
+        const gatosInput = document.getElementById('afGatos');
+        const totalInput = document.getElementById('afTotal');
+        function calcularTotal() {
+            const caes = parseInt(caesInput.value, 10) || 0;
+            const gatos = parseInt(gatosInput.value, 10) || 0;
+            totalInput.value = caes + gatos;
+        }
+        caesInput.addEventListener('input', calcularTotal);
+        gatosInput.addEventListener('input', calcularTotal);
+
+        // Form submission for afiliacao
+        document.getElementById('afiliacaoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Enviando...';
+
+            // Form validity check
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+                return;
+            }
+
+            const formData = new FormData(form);
+
+            const data = Object.fromEntries(formData.entries());
+
+
+            try {
+                const response = await fetch('https://fnlqruzbgwffhrqmpfvi.supabase.co/functions/v1/receber-afiliacao', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (response.ok && result.ok) {
+                    form.reset();
+                    document.getElementById('formFeedbackAfiliacao').textContent = result.mensagem || 'Inscrição de afiliação registrada com sucesso!';
+                    document.getElementById('formFeedbackAfiliacao').className = 'form-feedback sucesso';
+                } else {
+                    throw new Error(result.mensagem || 'Erro ao registrar afiliação');
+                }
+            } catch (err) {
+                document.getElementById('formFeedbackAfiliacao').textContent = err.message || 'Não conseguimos registrar sua inscrição agora. Tente novamente mais tarde.';
+                document.getElementById('formFeedbackAfiliacao').className = 'form-feedback erro';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+    </script>
+    <script>
+        // CPF validation (mod 11)
+        function validateCPF(cpf) {
+            cpf = cpf.replace(/[^\d]+/g,'');
+            if (cpf.length !== 11 || cpf.match(/(\\d)\\1{10}/)) return false;
+            let sum = 0;
+            for (let i = 0; i < 9; i++) sum += parseInt(cpf.charAt(i), 10) * (10 - i);
+            let rev = 11 - (sum % 11);
+            if (rev === 10 || rev === 11) rev = 0;
+            if (rev !== parseInt(cpf.charAt(9), 10)) return false;
+            sum = 0;
+            for (let i = 0; i < 10; i++) sum += parseInt(cpf.charAt(i), 10) * (11 - i);
+            rev = 11 - (sum % 11);
+            if (rev === 10 || rev === 11) rev = 0;
+            if (rev !== parseInt(cpf.charAt(10), 10)) return false;
+            return true;
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const cpfInput = document.getElementById('afCPF');
+            cpfInput.addEventListener('input', function() {
+                const value = cpfInput.value;
+                if (value.trim() === '') {
+                    cpfInput.setCustomValidity('');
+                    return;
+                }
+                if (!validateCPF(value)) {
+                    cpfInput.setCustomValidity('O CPF informado não parece válido.');
+                } else {
+                    cpfInput.setCustomValidity('');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

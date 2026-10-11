@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transparência Financeira - Adota Patos</title>
+    <meta name="description" content="Relatórios financeiros mensais da ONG Adota Patos. Consulte e baixe os relatórios de transparência por ano e mês.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐾</text></svg>">
+    <meta name="theme-color" content="#57d8c3">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/estilo.css">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "NonprofitType",
+        "name": "Adota Patos",
+        "description": "ONG dedicada ao resgate, tratamento veterinário e adoção responsável de cães e gatos em Patos-PB.",
+        "url": "https://johnsalviano.github.io/adota-patos/",
+        "areaServed": {
+            "@type": "City",
+            "name": "Patos",
+            "containedInPlace": {
+                "@type": "State",
+                "name": "Paraíba"
+            }
+        },
+        "sameAs": [
+            "https://www.instagram.com/adotapatosoficial/",
+            "https://www.facebook.com/adotapatosoficial/"
+        ]
+    }
+    </script>
+</head>
+<body>
+    <a href="#conteudo" class="sr-only">Pular para o conteúdo</a>
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+    <header>
+        <div class="container navbar">
+            <a href="index.html" class="logo" aria-label="Adota Patos - Página inicial">
+                <img src="img/logo.webp" alt="Logo Adota Patos">
+            </a>
+
+            <nav aria-label="Navegação principal">
+                <ul>
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="index.html#animais">Animais</a></li>
+                    <li><a href="index.html#adocao">Adoção</a></li>
+                    <li><a href="index.html#sobre">Sobre</a></li>
+                    <li><a href="index.html#contato">Contato</a></li>
+                    <li><a href="transparencia.html" class="header-link" aria-current="page">Transparência</a></li>
+                </ul>
+            </nav>
+
+            <div class="header-cta">
+                <a href="doacao.html" class="header-link">Seja um Doador</a>
+                <a href="afiliacao.html" class="header-link">Afilie-se</a>
+            </div>
+
+            <a href="admin/login.html" class="header-ong">Área da ONG</a>
+
+            <button class="menu-mobile" type="button" aria-label="Abrir menu">☰</button>
+        </div>
+    </header>
+
+    <main id="conteudo" tabindex="-1">
+        <!-- =========================
+             HERO TRANSPARÊNCIA
+        ========================== -->
+        <section class="hero" id="inicio">
+            <div class="container hero-content">
+                <div class="hero-text">
+                    <h1>
+                        Transparência <span>Financeira</span>
+                    </h1>
+                    <p>
+                        Acompanhe mensalmente as doações recebidas e os custos da Adota Patos.
+                        Relatórios publicados pela própria organização, disponíveis para download.
+                    </p>
+                </div>
+                <div class="hero-image">
+                    <img
+                        src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=900&q=80"
+                        alt="Documentos financeiros e calculadora representando transparência e prestação de contas"
+                    >
+                </div>
+            </div>
+        </section>
+
+        <div class="wave-divider">
+            <svg viewBox="0 0 1200 70" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M0,32 C200,70 400,0 600,28 C800,56 1000,10 1200,32 L1200,70 L0,70 Z" fill="#fbfbea"></path>
+            </svg>
+        </div>
+
+        <!-- =========================
+             SELETOR DE PERÍODO
+        ========================== -->
+        <section class="transparencia-section">
+            <div class="container">
+                <div class="section-header reveal">
+                    <span class="eyebrow">📊 Relatórios Mensais</span>
+                    <h2>Consulte os <span>Relatórios</span></h2>
+                    <p>
+                        Selecione o ano e o mês para visualizar os relatórios disponíveis.
+                        Os relatórios mais recentes aparecem primeiro.
+                    </p>
+                </div>
+
+                <div class="transparencia-filtros reveal">
+                    <div class="filtro-grupo">
+                        <label for="filtro-ano">Ano</label>
+                        <select id="filtro-ano" aria-label="Selecionar ano">
+                            <option value="">Selecione o ano</option>
+                        </select>
+                    </div>
+                    <div class="filtro-grupo">
+                        <label for="filtro-mes">Mês</label>
+                        <select id="filtro-mes" aria-label="Selecionar mês" disabled>
+                            <option value="">Selecione o mês</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="transparencia-resultados" class="transparencia-resultados reveal" aria-live="polite">
+                    <p class="transparencia-vazio">Selecione um ano e um mês para ver os relatórios disponíveis.</p>
+                </div>
+
+                <div id="transparencia-carregando" class="transparencia-carregando oculto" aria-live="polite">
+                    <div class="spinner"></div>
+                    <p>Carregando relatórios...</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="wave-divider">
+            <svg viewBox="0 0 1200 70" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M0,32 C200,70 400,0 600,28 C800,56 1000,10 1200,32 L1200,70 L0,70 Z" fill="#fbfbea"></path>
+            </svg>
+        </div>
+
+        <!-- =========================
+             SOBRE A TRANSPARÊNCIA
+        ========================== -->
+        <section id="sobre-transparencia" class="transparencia-sobre">
+            <div class="container about-content">
+                <div class="about-text reveal">
+                    <span class="eyebrow">🔍 Compromisso</span>
+                    <h2>Nossa <span>Transparência</span></h2>
+                    <p>
+                        A Adota Patos acredita que a confiança se constrói com clareza. Por isso,
+                        publicamos mensalmente os relatórios financeiros detalhando todas as
+                        doações recebidas (Pix, alimentos, materiais) e todos os custos
+                        operacionais (veterinário, alimentação, medicamentos, manutenção).
+                    </p>
+                    <p>
+                        Cada relatório é um documento PDF assinado pela diretoria e armazenado
+                        de forma segura. Qualquer pessoa pode consultar e baixar, sem necessidade
+                        de cadastro ou login.
+                    </p>
+                    <p>
+                        Se você fez uma doação e quer confirmar se ela aparece no relatório,
+                        ou se deseja entender como os recursos são aplicados, esta página
+                        é para você.
+                    </p>
+                </div>
+                <div class="about-image reveal">
+                    <img
+                        src="https://images.unsplash.com/photo-1554224155-8d6e8f1c8b8c?auto=format&fit=crop&w=900&q=80"
+                        alt="Pessoa analisando documentos financeiros com transparência"
+                    >
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+    <footer>
+        <small>
+            © 2026 Adota Patos - PB — Todos os direitos reservados.
+            <button type="button" class="abrir-politica">Política de Privacidade</button>
+        </small>
+    </footer>
+
+    <!-- =========================
+         MODAL DA POLÍTICA DE PRIVACIDADE
+    ========================== -->
+    <div class="modal" id="politicaModal" role="dialog" aria-modal="true" aria-labelledby="titulo-politica">
+        <div class="modal-content">
+            <button class="close-modal" id="fecharPolitica" type="button" aria-label="Fechar">&times;</button>
+            <h3 id="titulo-politica">🔒 Política de Privacidade</h3>
+            <p class="politica-data">Última atualização: 23/08/2026</p>
+            <h4>Quem somos</h4>
+            <p>A Associação Adota Patos (CNPJ 30.688.644/0001-85) é uma organização sem fins lucrativos de Patos-PB dedicada ao resgate, tratamento veterinário e adoção responsável de cães e gatos. Somos o controlador dos dados pessoais tratados nesta plataforma.</p>
+            <h4>Quais dados coletamos</h4>
+            <ul>
+                <li><strong>Formulários do site:</strong> nome, telefone, e-mail, cidade, experiência com animais, motivo do interesse e tipo de doação.</li>
+                <li><strong>Estatísticas anônimas de acesso</strong> (páginas vistas), apenas se você aceitar os cookies de estatística.</li>
+            </ul>
+            <h4>Para quê usamos</h4>
+            <p>Exclusivamente para avaliar solicitações de adoção, registrar doações e entrar em contato. <strong>Não vendemos, trocamos ou alugamos seus dados</strong> — para ninguém, nunca.</p>
+            <h4>Base legal</h4>
+            <p>O seu consentimento explícito (art. 7º, I, da Lei nº 13.709/2018 – LGPD). Sem essa marcação, nada é enviado para nós.</p>
+            <h4>Por quanto tempo guardamos</h4>
+            <ul>
+                <li>Solicitações de adoção não aprovadas: <strong>6 meses</strong>.</li>
+                <li>Registros de doação: <strong>2 anos</strong> para prestação de contas.</li>
+                <li>Registros técnicos de segurança: <strong>90 dias</strong>.</li>
+            </ul>
+            <h4>Com quem compartilhamos</h4>
+            <p>Somente entre membros autorizados da equipe da ONG e com a infraestrutura que hospeda o sistema (Supabase).</p>
+            <h4>Cookies e Google Analytics</h4>
+            <p>O Google Analytics só é ativado após o seu aceite; quem recusa navega com o site funcionando exatamente igual.</p>
+            <h4>Como protegemos</h4>
+            <p>Acesso restrito por controle de permissões no banco, limites contra robôs, transporte criptografado (HTTPS) e proteções contra injeção de código.</p>
+            <h4>Seus direitos (art. 18 da LGPD)</h4>
+            <p>Você pode confirmar, acessar, corrigir, pedir anonimização, bloqueio ou exclusão, solicitar portabilidade, saber com quem foram compartilhados e revogar o consentimento. Fale conosco:</p>
+            <ul>
+                <li>E-mail: contatoadotapatos@gmail.com</li>
+                <li>WhatsApp: (83) 98156-7801</li>
+            </ul>
+            <p>Pedidos são respondidos em até 15 dias.</p>
+            <h4>Mudanças nesta política</h4>
+            <p>Qualquer alteração será publicada nesta página com nova data de atualização.</p>
+        </div>
+    </div>
+
+    <script src="js/erros.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/transparencia.js"></script>
+</body>
+</html>
