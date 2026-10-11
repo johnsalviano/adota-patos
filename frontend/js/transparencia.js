@@ -202,10 +202,8 @@
         filtroMes.value = '';
         currentMes = null;
         atualizarMeses(ano);
-        if (ano) {
-            carregarRelatorios(ano, filtroMes.value);
-        } else {
-            mostrarVazio('Selecione um ano e um mês para ver os relatórios disponíveis.');
+        if (!ano) {
+            mostrarVazio('Selecione o mês e o ano para consultar o relatório de transparência.');
         }
     });
 
@@ -215,7 +213,7 @@
         if (currentAno && currentMes) {
             carregarRelatorios(currentAno, currentMes);
         } else {
-            mostrarVazio('Selecione um ano e um mês para ver os relatórios disponíveis.');
+            mostrarVazio('Selecione o mês e o ano para consultar o relatório de transparência.');
         }
     });
 

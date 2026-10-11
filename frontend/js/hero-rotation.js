@@ -1,6 +1,6 @@
-// Hero image random rotation
+// Hero image deterministic cyclic rotation (1 → 2 → 3 → 1...)
 (function() {
-    var heroImages = [
+    const heroImages = [
         {
             src: 'img/hero_candidate_dog_cat_sunlight.webp',
             alt: 'Cachorro e gato vira-latas sentados juntos ao ar livre sob luz solar natural, representando os animais resgatados pela Adota Patos'
@@ -15,10 +15,22 @@
         }
     ];
 
-    function setRandomHeroImage() {
-        var randomIndex = Math.floor(Math.random() * heroImages.length);
-        var selected = heroImages[randomIndex];
-        var heroImg = document.getElementById('hero-img');
+    const STORAGE_KEY = 'adota-patos-hero-index';
+
+    function getNextIndex() {
+        let lastIndex = parseInt(localStorage.getItem(STORAGE_KEY), 10);
+        if (Number.isNaN(lastIndex) || lastIndex < 0 || lastIndex >= heroImages.length) {
+            lastIndex = -1; // First visit will become index 0
+        }
+        const nextIndex = (lastIndex + 1) % heroImages.length;
+        localStorage.setItem(STORAGE_KEY, String(nextIndex));
+        return nextIndex;
+    }
+
+    function setHeroImage() {
+        const index = getNextIndex();
+        const selected = heroImages[index];
+        const heroImg = document.getElementById('hero-img');
         if (heroImg) {
             heroImg.src = selected.src;
             heroImg.alt = selected.alt;
@@ -27,8 +39,8 @@
     }
 
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', setRandomHeroImage);
+        document.addEventListener('DOMContentLoaded', setHeroImage);
     } else {
-        setRandomHeroImage();
+        setHeroImage();
     }
 })();
