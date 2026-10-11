@@ -5,9 +5,9 @@
     // Configuração do Supabase - URL pública, chave anon carregada do HTML
     const SUPABASE_URL = 'https://fnlqruzbgwffhrqmpfvi.supabase.co';
     const SUPABASE_ANON_KEY = document.querySelector('meta[name="supabase-anon-key"]')?.content || '';
-    
-    // Simple in-memory cache for reports
-    const reportsCache = null;
+
+    // Cache de todos os relatórios carregados uma vez
+    let allReportsCache = null;
     let currentAno = null;
     let currentMes = null;
 
@@ -37,13 +37,16 @@
 
             const { data, error } = await supabase
                 .from('transparencia_relatorios')
-                .select('ano')
+                .select('ano, mes, id, arquivo_nome, arquivo_tamanho, criado_em, atualizado_em, enviado_por')
                 .order('ano', { ascending: false });
 
             if (error) throw error;
 
+            // Cache todos os relatórios para uso posterior
+            allReportsCache = data || [];
+
             const anosUnicos = [...new Set((data || []).map(r => r.ano))].sort((a, b) => b - a);
-            
+
             filtroAno.innerHTML = '<option value="">Selecione o ano</option>';
             anosUnicos.forEach(ano => {
                 const opt = document.createElement('option');
@@ -65,12 +68,9 @@
         }
 
         try {
-            const supabase = getSupabase();
-            if (!supabase) return;
+            // Filtrar meses do cache (sem nova consulta ao banco)
+            const relatoriosDoAno = (allReportsCache || []).filter(r => r.ano === parseInt(ano, 10));
 
-            // We'll filter from cache if available, otherwise fetch
-            const relatoriosDoAno = reportsCache?.filter(r => r.ano === parseInt(ano, 10)) || [];
-            
             const mesesDisponiveis = [...new Set(relatoriosDoAno.map(r => r.mes))]
                 .sort((a, b) => b - a);
 
@@ -100,7 +100,7 @@
 
     async function carregarRelatorios(ano, mes) {
         if (!ano || !mes) {
-            mostrarVazio('Selecione um ano e um mês para ver os relatórios disponíveis.');
+            mostrarVazio('Selecione o mês e o ano para consultar o relatório de transparência.');
             return;
         }
 
@@ -111,7 +111,22 @@
             const supabase = getSupabase();
             if (!supabase) throw new Error('Supabase não disponível');
 
-            const { data, error } = await supabase
+            // Usar cache primeiro
+            const relatoriosCache = (allReportsCache || []).filter(
+                r => r.ano === parseInt(ano, 10) && r.mes === parseInt(mes, 10)
+            );
+
+            if (relatoriosCache.length > 0) {
+                mostrarCarregando(false);
+                renderizarRelatorios(relatoriosCache);
+                return;
+            }
+
+            // Fallback: consulta ao banco se não estiver no cache
+            const supabaseFallback = getSupabase();
+            if (!supabaseFallback) throw new Error('Supabase não disponível');
+
+            const { data, error } = await supabaseFallback
                 .from('transparencia_relatorios')
                 .select('id, ano, mes, arquivo_nome, arquivo_tamanho, criado_em, atualizado_em, enviado_por')
                 .eq('ano', parseInt(ano, 10))
@@ -125,6 +140,11 @@
             if (!data || data.length === 0) {
                 mostrarVazio(`Nenhum relatório publicado para ${MESES[parseInt(mes, 10)]}/${ano}.`);
                 return;
+            }
+
+            // Atualizar cache com novos dados
+            if (allReportsCache) {
+                allReportsCache = [...allReportsCache, ...data];
             }
 
             renderizarRelatorios(data);
