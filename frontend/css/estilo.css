@@ -340,6 +340,15 @@ header.scrolled {
     transform: translateY(0);
 }
 
+/* Desktop hover: open menu on hover, close when mouse leaves */
+@media (hover: hover) and (pointer: fine) {
+    .header-dropdown:hover .header-dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+}
+
 .header-dropdown-item {
     display: block;
     padding: 12px 20px;

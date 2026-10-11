@@ -218,14 +218,20 @@ const headerDropdown = document.querySelector(".header-dropdown");
 const headerDropdownBtn = document.querySelector(".header-dropdown-btn");
 const headerDropdownMenu = document.querySelector(".header-dropdown-menu");
 
-if (headerDropdown && headerDropdownBtn && headerDropdownMenu) {
-    headerDropdownBtn.addEventListener("click", (event) => {
-        event.stopPropagation();
-        const isOpen = headerDropdown.classList.toggle("open");
-        headerDropdownBtn.setAttribute("aria-expanded", isOpen);
-    });
+// Detecta dispositivo com toque
+const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
-    // Fecha ao clicar fora
+if (headerDropdown && headerDropdownBtn && headerDropdownMenu) {
+    // Click toggle apenas em dispositivos de toque (mobile)
+    if (isTouchDevice) {
+        headerDropdownBtn.addEventListener("click", (event) => {
+            event.stopPropagation();
+            const isOpen = headerDropdown.classList.toggle("open");
+            headerDropdownBtn.setAttribute("aria-expanded", isOpen);
+        });
+    }
+
+    // Fecha ao clicar fora (funciona em desktop e mobile)
     document.addEventListener("click", (event) => {
         if (!headerDropdown.contains(event.target)) {
             headerDropdown.classList.remove("open");
@@ -233,7 +239,7 @@ if (headerDropdown && headerDropdownBtn && headerDropdownMenu) {
         }
     });
 
-    // Fecha com Escape
+    // Fecha com Escape (acessibilidade)
     document.addEventListener("keydown", (event) => {
         if (event.key === "Escape" && headerDropdown.classList.contains("open")) {
             headerDropdown.classList.remove("open");
@@ -249,6 +255,16 @@ if (headerDropdown && headerDropdownBtn && headerDropdownMenu) {
             headerDropdownBtn.setAttribute("aria-expanded", "false");
         }
     });
+
+    // Sincroniza aria-expanded no hover (desktop) para leitores de tela
+    if (!isTouchDevice) {
+        headerDropdown.addEventListener("mouseenter", () => {
+            headerDropdownBtn.setAttribute("aria-expanded", "true");
+        });
+        headerDropdown.addEventListener("mouseleave", () => {
+            headerDropdownBtn.setAttribute("aria-expanded", "false");
+        });
+    }
 }
 
 // =========================
