@@ -286,16 +286,17 @@ header.scrolled {
     background: transparent;
     color: var(--dark);
     font-weight: 600;
-    padding: 10px 16px;
+    padding: 8px 12px;
     border-radius: var(--radius-pill);
     border: none;
     cursor: pointer;
     font-family: var(--font-body);
-    font-size: 0.95rem;
+    font-size: 1.5rem;
+    line-height: 1;
     transition: 0.25s;
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
     text-decoration: none;
     white-space: nowrap;
 }
@@ -327,7 +328,7 @@ header.scrolled {
     z-index: 100;
 }
 
-.header-dropdown:hover .header-dropdown-menu,
+.header-dropdown.open .header-dropdown-menu,
 .header-dropdown:focus-within .header-dropdown-menu {
     opacity: 1;
     visibility: visible;
@@ -456,20 +457,7 @@ nav ul.aberto {
         font-size: 1.1rem;
     }
 
-    nav ul.aberto .header-transparencia {
-        width: 100%;
-        text-align: center;
-        margin-left: 0;
-        margin-top: 12px;
-        padding: 14px 20px;
-        font-size: 1.1rem;
-    }
-
-    nav ul.aberto .header-ong {
-        width: 100%;
-        text-align: center;
-        margin-left: 0;
-        margin-top: 12px;
+    nav ul.aberto .header-dropdown-item {
         padding: 14px 20px;
         font-size: 1.1rem;
     }
