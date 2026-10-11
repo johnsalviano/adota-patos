@@ -211,6 +211,47 @@ navUl.addEventListener("click", (event) => {
 });
 
 // =========================
+// HEADER DROPDOWN (ícone ☰ no canto direito)
+// =========================
+
+const headerDropdown = document.querySelector(".header-dropdown");
+const headerDropdownBtn = document.querySelector(".header-dropdown-btn");
+const headerDropdownMenu = document.querySelector(".header-dropdown-menu");
+
+if (headerDropdown && headerDropdownBtn && headerDropdownMenu) {
+    headerDropdownBtn.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const isOpen = headerDropdown.classList.toggle("open");
+        headerDropdownBtn.setAttribute("aria-expanded", isOpen);
+    });
+
+    // Fecha ao clicar fora
+    document.addEventListener("click", (event) => {
+        if (!headerDropdown.contains(event.target)) {
+            headerDropdown.classList.remove("open");
+            headerDropdownBtn.setAttribute("aria-expanded", "false");
+        }
+    });
+
+    // Fecha com Escape
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && headerDropdown.classList.contains("open")) {
+            headerDropdown.classList.remove("open");
+            headerDropdownBtn.setAttribute("aria-expanded", "false");
+            headerDropdownBtn.focus();
+        }
+    });
+
+    // Fecha ao clicar em um item do menu
+    headerDropdownMenu.addEventListener("click", (event) => {
+        if (event.target.closest(".header-dropdown-item")) {
+            headerDropdown.classList.remove("open");
+            headerDropdownBtn.setAttribute("aria-expanded", "false");
+        }
+    });
+}
+
+// =========================
 // HEADER COM SOMBRA AO ROLAR
 // =========================
 
