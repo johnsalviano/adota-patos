@@ -26,7 +26,6 @@ jobs:
           fail_action: false
           allow_issue_writing: false
           cmd_options: "-a"
-          artifact_name: "zap-scan-report"
 
       - name: Upload ZAP HTML Report
         uses: actions/upload-artifact@v4
