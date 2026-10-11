@@ -636,7 +636,7 @@
 
         // Esconder botão editar, mostrar ações de salvar/cancelar
         var btnEditarEl = card.querySelector('.btn-editar');
-        if (btnEditarEl) btnEditarEl.style.display = 'none';
+        if (btnEditarEl) btnEditarEl.classList.add('edit-btn-hidden');
 
         // Adicionar event listeners aos botões do modo edição
         var btnSalvar = editMode.querySelector('.btn-salvar-edit');
@@ -660,7 +660,7 @@
 
         viewMode.classList.remove('oculto');
         editMode.classList.add('oculto');
-        if (btnEditarEl) btnEditarEl.style.display = '';
+        if (btnEditarEl) btnEditarEl.classList.remove('edit-btn-hidden');
 
         var msgEl = card.querySelector('.edit-msg');
         if (msgEl) msgEl.textContent = '';
@@ -779,7 +779,7 @@
 
             viewMode.classList.remove('oculto');
             editMode.classList.add('oculto');
-            if (btnEditarEl) btnEditarEl.style.display = '';
+            if (btnEditarEl) btnEditarEl.classList.remove('edit-btn-hidden');
 
             msgEl.textContent = '';
             msgEl.className = 'edit-msg';

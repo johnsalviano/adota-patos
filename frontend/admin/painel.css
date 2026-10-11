@@ -668,3 +668,7 @@ body.modal-open {
         width: 100%;
     }
 }
+
+.edit-btn-hidden {
+    display: none !important;
+}
