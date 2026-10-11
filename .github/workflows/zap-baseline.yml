@@ -26,13 +26,14 @@ jobs:
           fail_action: false
           allow_issue_writing: false
           cmd_options: "-a"
+          artifact_name: "zap-scan-report"
 
       - name: Upload ZAP HTML Report
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: zap-baseline-html-report
-          path: zap-report.html
+          path: report_html.html
           retention-days: 30
 
       - name: Upload ZAP JSON Report
@@ -40,22 +41,22 @@ jobs:
         if: always()
         with:
           name: zap-baseline-json-report
-          path: zap-report.json
+          path: report_json.json
           retention-days: 30
 
-      - name: Upload ZAP XML Report
+      - name: Upload ZAP Markdown Report
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: zap-baseline-xml-report
-          path: zap-report.xml
+          name: zap-baseline-md-report
+          path: report_md.md
           retention-days: 30
 
       - name: Check for Alerts
         if: always()
         run: |
-          if [ -f zap-report.json ]; then
-            ALERTS=$(jq '.site[0].alerts | length' zap-report.json 2>/dev/null || echo 0)
+          if [ -f report_json.json ]; then
+            ALERTS=$(jq '.site[0].alerts | length' report_json.json 2>/dev/null || echo 0)
             echo "Total alerts found: $ALERTS"
             if [ "$ALERTS" -gt 0 ]; then
               echo "::warning::OWASP ZAP found $ALERTS alerts. Check the artifacts for details."
@@ -63,5 +64,5 @@ jobs:
               echo "No alerts found by OWASP ZAP Baseline Scan."
             fi
           else
-            echo "No zap-report.json found."
+            echo "No report_json.json found."
           fi
