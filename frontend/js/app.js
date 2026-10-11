@@ -221,74 +221,84 @@ const headerDropdownMenu = document.querySelector(".header-dropdown-menu");
 // Detecta dispositivo com toque
 const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
+// Helper: verifica se o menu está aberto por qualquer mecanismo
+function isMenuOpen() {
+    return headerDropdown.classList.contains('open') ||
+           headerDropdown.matches(':hover') ||
+           headerDropdown.matches(':focus-within');
+}
+
 if (headerDropdown && headerDropdownBtn && headerDropdownMenu) {
     // Click toggle apenas em dispositivos de toque (mobile)
     if (isTouchDevice) {
-        headerDropdownBtn.addEventListener("click", (event) => {
+        headerDropdownBtn.addEventListener('click', (event) => {
             event.stopPropagation();
-            const isOpen = headerDropdown.classList.toggle("open");
-            headerDropdownBtn.setAttribute("aria-expanded", isOpen);
+            const isOpen = headerDropdown.classList.toggle('open');
+            headerDropdownBtn.setAttribute('aria-expanded', isOpen);
         });
     }
 
     // Fecha ao clicar fora (funciona em desktop e mobile)
-    document.addEventListener("click", (event) => {
+    document.addEventListener('click', (event) => {
         if (!headerDropdown.contains(event.target)) {
-            headerDropdown.classList.remove("open");
-            headerDropdownBtn.setAttribute("aria-expanded", "false");
+            headerDropdown.classList.remove('open');
+            headerDropdownBtn.setAttribute('aria-expanded', 'false');
         }
     });
 
-    // Fecha com Escape (acessibilidade)
-    document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape" && headerDropdown.classList.contains("open")) {
-            headerDropdown.classList.remove("open");
-            headerDropdownBtn.setAttribute("aria-expanded", "false");
+    // Fecha com Escape (acessibilidade) - fecha independente de como abriu
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && isMenuOpen()) {
+            headerDropdown.classList.remove('open');
+            headerDropdownBtn.setAttribute('aria-expanded', 'false');
             headerDropdownBtn.focus();
         }
     });
 
     // Fecha ao clicar em um item do menu
-    headerDropdownMenu.addEventListener("click", (event) => {
-        if (event.target.closest(".header-dropdown-item")) {
-            headerDropdown.classList.remove("open");
-            headerDropdownBtn.setAttribute("aria-expanded", "false");
+    headerDropdownMenu.addEventListener('click', (event) => {
+        if (event.target.closest('.header-dropdown-item')) {
+            headerDropdown.classList.remove('open');
+            headerDropdownBtn.setAttribute('aria-expanded', 'false');
         }
     });
 
     // Sincroniza aria-expanded no hover (desktop) para leitores de tela
     if (!isTouchDevice) {
-        headerDropdown.addEventListener("mouseenter", () => {
-            if (!headerDropdown.classList.contains("dropdown-hover-disabled")) {
-                headerDropdownBtn.setAttribute("aria-expanded", "true");
-            }
+        headerDropdown.addEventListener('mouseenter', () => {
+            headerDropdownBtn.setAttribute('aria-expanded', 'true');
         });
-        headerDropdown.addEventListener("mouseleave", () => {
-            headerDropdownBtn.setAttribute("aria-expanded", "false");
+        headerDropdown.addEventListener('mouseleave', () => {
+            // Só define false se não estiver aberto via foco ou classe open
+            if (!headerDropdown.classList.contains('open') && 
+                !headerDropdown.matches(':focus-within')) {
+                headerDropdownBtn.setAttribute('aria-expanded', 'false');
+            }
         });
     }
 
     // Sincroniza aria-expanded no foco do teclado (Tab)
-    headerDropdownBtn.addEventListener("focus", () => {
-        headerDropdownBtn.setAttribute("aria-expanded", "true");
+    headerDropdownBtn.addEventListener('focus', () => {
+        headerDropdownBtn.setAttribute('aria-expanded', 'true');
     });
-    headerDropdownBtn.addEventListener("blur", () => {
-        // Só define false se o menu não estiver aberto via hover/clique
-        if (!headerDropdown.classList.contains("open") && 
-            !headerDropdown.matches(":hover")) {
-            headerDropdownBtn.setAttribute("aria-expanded", "false");
+    headerDropdownBtn.addEventListener('blur', () => {
+        // Só define false se o menu não estiver aberto via hover, foco ou classe open
+        if (!isMenuOpen()) {
+            headerDropdownBtn.setAttribute('aria-expanded', 'false');
         }
     });
 
-    // Impede reabertura por hover após fechar com Escape
-    headerDropdownBtn.addEventListener("keydown", (event) => {
-        if (event.key === "Escape") {
-            headerDropdown.classList.add("dropdown-hover-disabled");
-            // Reabilita hover após breve delay para permitir mover mouse para fora
-            setTimeout(() => {
-                headerDropdown.classList.remove("dropdown-hover-disabled");
-            }, 300);
-        }
+    // Também sincroniza quando o foco entra/sai das opções do menu
+    headerDropdownMenu.addEventListener('focusin', () => {
+        headerDropdownBtn.setAttribute('aria-expanded', 'true');
+    });
+    headerDropdownMenu.addEventListener('focusout', () => {
+        // Pequeno delay para permitir movimento de foco dentro do menu
+        setTimeout(() => {
+            if (!isMenuOpen()) {
+                headerDropdownBtn.setAttribute('aria-expanded', 'false');
+            }
+        }, 0);
     });
 }
 

@@ -347,11 +347,6 @@ header.scrolled {
         visibility: visible;
         transform: translateY(0);
     }
-    .header-dropdown.dropdown-hover-disabled:hover .header-dropdown-menu {
-        opacity: 0;
-        visibility: hidden;
-        transform: translateY(-8px);
-    }
 }
 
 .header-dropdown-item {
