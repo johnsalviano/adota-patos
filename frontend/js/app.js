@@ -254,10 +254,7 @@ if (headerDropdown && headerDropdownBtn && headerDropdownMenu) {
             headerDropdown.classList.add('dropdown-escaped');
             headerDropdownBtn.setAttribute('aria-expanded', 'false');
             headerDropdownBtn.focus();
-            // Reabilita hover/focus após breve delay para permitir nova interação
-            setTimeout(() => {
-                headerDropdown.classList.remove('dropdown-escaped');
-            }, 300);
+            // O bloqueio persiste até o usuário sair da área do menu (hover E focus)
         }
     });
 
@@ -270,18 +267,28 @@ if (headerDropdown && headerDropdownBtn && headerDropdownMenu) {
         }
     });
 
+    // Helper: verifica se deve remover o bloqueio de Escape
+    function maybeRemoveEscaped() {
+        if (headerDropdown.classList.contains('dropdown-escaped') &&
+            !headerDropdown.matches(':hover') &&
+            !headerDropdown.matches(':focus-within')) {
+            headerDropdown.classList.remove('dropdown-escaped');
+        }
+    }
+
     // Sincroniza aria-expanded no hover (desktop) para leitores de tela
     if (!isTouchDevice) {
         headerDropdown.addEventListener('mouseenter', () => {
             headerDropdownBtn.setAttribute('aria-expanded', 'true');
         });
         headerDropdown.addEventListener('mouseleave', () => {
-            // Só define false se não estiver aberto via foco ou classe open
-            if (!headerDropdown.classList.contains('open') && 
-                !headerDropdown.matches(':focus-within')) {
-                headerDropdownBtn.setAttribute('aria-expanded', 'false');
-            }
-        });
+                    // Só define false se não estiver aberto via foco ou classe open
+                    if (!headerDropdown.classList.contains('open') &&
+                        !headerDropdown.matches(':focus-within')) {
+                        headerDropdownBtn.setAttribute('aria-expanded', 'false');
+                    }
+                    maybeRemoveEscaped();
+                });
     }
 
     // Sincroniza aria-expanded no foco do teclado (Tab)
@@ -305,6 +312,7 @@ if (headerDropdown && headerDropdownBtn && headerDropdownMenu) {
             if (!isMenuOpen()) {
                 headerDropdownBtn.setAttribute('aria-expanded', 'false');
             }
+            maybeRemoveEscaped();
         }, 0);
     });
 }
