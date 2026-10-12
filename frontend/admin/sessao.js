@@ -17,8 +17,8 @@
 (function (global) {
     'use strict';
 
-    var SUPABASE_URL = 'https://fnlqruzbgwffhrqmpfvi.supabase.co';
-    var SUPABASE_KEY = 'sb_publishable_jLvZpI_9Kg97Yqg6sdOzrQ_9gvAmRIR';
+    var SUPABASE_URL = document.querySelector('meta[name="supabase-url"]')?.content || 'https://fnlqruzbgwffhrqmpfvi.supabase.co';
+    var SUPABASE_KEY = document.querySelector('meta[name="supabase-key"]')?.content || '';
 
     // Marcador de preferencia (nao e credencial): "0" significa sessao
     // temporaria. Vive no sessionStorage, que e justamente o storage que

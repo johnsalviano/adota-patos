@@ -415,8 +415,8 @@ if (escolhaSalva === "aceito") {
 // CATALOGO DINAMICO (Supabase)
 // =========================
 
-const SUPABASE_URL = "https://fnlqruzbgwffhrqmpfvi.supabase.co";
-const SUPABASE_KEY = "sb_publishable_jLvZpI_9Kg97Yqg6sdOzrQ_9gvAmRIR";
+const SUPABASE_URL = document.querySelector('meta[name="supabase-url"]')?.content || "https://fnlqruzbgwffhrqmpfvi.supabase.co";
+const SUPABASE_KEY = document.querySelector('meta[name="supabase-key"]')?.content || "";
 
 function mensagemCatalogo(texto, erro = false, tentarNovamente = null) {
     const p = document.createElement("p");
