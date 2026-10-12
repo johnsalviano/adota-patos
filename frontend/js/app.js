@@ -415,7 +415,7 @@ if (escolhaSalva === "aceito") {
 // CATALOGO DINAMICO (Supabase)
 // =========================
 
-const SUPABASE_URL = "https://fnlqruzbgwffhrqmpfvi.supabase.co";
+const SUPABASE_URL = document.querySelector('meta[name="supabase-url"]')?.content || "https://fnlqruzbgwffhrqmpfvi.supabase.co";
 const SUPABASE_KEY = document.querySelector('meta[name="supabase-key"]')?.content || "";
 
 function mensagemCatalogo(texto, erro = false, tentarNovamente = null) {
@@ -448,7 +448,9 @@ async function carregarAnimais() {
         if (!resposta.ok) throw new Error("HTTP " + resposta.status);
         const animais = await resposta.json();
 
-        // Escapar HTML para prevenir XSS: todo texto vindo do banco é escapado antes de virar HTML.
+        // Segurança: todo texto vindo do banco é escapado antes de
+        // virar HTML. Assim um cadastro mal-intencionado nunca
+        // consegue injetar código na página (XSS).
         function escaparHtml(valor) {
             return String(valor ?? "")
                 .replaceAll("&", "&amp;")
