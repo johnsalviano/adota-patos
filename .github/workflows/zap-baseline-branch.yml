@@ -25,11 +25,25 @@ jobs:
       - name: Verify fixed files
         run: |
           echo "=== Checking doacao.html for timestamp ==="
-          grep -n "1558788353" frontend/doacao.html || echo "Timestamp NOT found (good)"
+          if grep -n "1558788353" frontend/doacao.html; then
+            echo "ERROR: Timestamp FOUND in doacao.html"
+            exit 1
+          else
+            echo "Timestamp NOT found (good)"
+          fi
           echo "=== Checking app.js for suspicious comment ==="
-          grep -n "Segurança" frontend/js/app.js || echo "Suspicious comment NOT found (good)"
+          if grep -n "Segurança" frontend/js/app.js; then
+            echo "ERROR: Suspicious comment FOUND in app.js"
+            exit 1
+          else
+            echo "Suspicious comment NOT found (good)"
+          fi
           echo "=== Checking CSP meta tags ==="
           grep -n "Content-Security-Policy" frontend/index.html || echo "CSP NOT found"
+          echo "=== Current commit ==="
+          git rev-parse HEAD
+          echo "=== File timestamps ==="
+          ls -la frontend/doacao.html frontend/js/app.js
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
