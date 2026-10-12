@@ -416,7 +416,7 @@ if (escolhaSalva === "aceito") {
 // =========================
 
 const SUPABASE_URL = "https://fnlqruzbgwffhrqmpfvi.supabase.co";
-const SUPABASE_KEY = "sb_publishable_jLvZpI_9Kg97Yqg6sdOzrQ_9gvAmRIR";
+const SUPABASE_KEY = document.querySelector('meta[name="supabase-key"]')?.content || "";
 
 function mensagemCatalogo(texto, erro = false, tentarNovamente = null) {
     const p = document.createElement("p");
@@ -448,9 +448,7 @@ async function carregarAnimais() {
         if (!resposta.ok) throw new Error("HTTP " + resposta.status);
         const animais = await resposta.json();
 
-        // Segurança: todo texto vindo do banco é escapado antes de
-        // virar HTML. Assim um cadastro mal-intencionado nunca
-        // consegue injetar código na página (XSS).
+        // Escapar HTML para prevenir XSS: todo texto vindo do banco é escapado antes de virar HTML.
         function escaparHtml(valor) {
             return String(valor ?? "")
                 .replaceAll("&", "&amp;")
