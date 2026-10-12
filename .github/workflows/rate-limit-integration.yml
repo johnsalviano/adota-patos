@@ -169,11 +169,12 @@ jobs:
       - name: Test 3 - Invalid category rejected
         run: |
           PGPASSWORD=postgres psql -h localhost -U postgres -d test_rate_limit -c "
-            BEGIN;
-            SELECT registrar_envio_v2('1.2.3.4', 'hack', 10);
+            DO \$\$
+            BEGIN
+              PERFORM registrar_envio_v2('1.2.3.4', 'hack', 10);
             EXCEPTION WHEN sqlstate '22023' THEN
               RAISE NOTICE 'PASS: Invalid category correctly rejected';
-            END;
+            END \$\$;
           "
 
       - name: Test 4 - Server-side limit enforcement (p_limite ignored)
