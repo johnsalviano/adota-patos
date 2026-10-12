@@ -27,7 +27,7 @@ jobs:
           echo "=== Checking doacao.html for timestamp ==="
           grep -q "1558788353" frontend/doacao.html && echo "ERROR: Timestamp FOUND" && exit 1 || echo "Timestamp NOT found (good)"
           echo "=== Checking app.js for suspicious comment ==="
-          grep -q "Segurança" frontend/js/app.js && echo "ERROR: Suspicious comment FOUND" && exit 1 || echo "Suspicious comment NOT found (good)"
+          grep -q "Seguranca" frontend/js/app.js && echo "ERROR: Suspicious comment FOUND" && exit 1 || echo "Suspicious comment NOT found (good)"
           echo "=== Checking CSP meta tags ==="
           grep -q "Content-Security-Policy" frontend/index.html && echo "CSP found" || echo "CSP NOT found"
           echo "=== Current commit ==="
