@@ -105,4 +105,4 @@ jobs:
             fi
           else
             echo "No report_json.json found."
-          fi
+          fi# Force refresh
