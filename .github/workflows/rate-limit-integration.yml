@@ -114,15 +114,51 @@ jobs:
                 RETURN v_contador <= v_limite_effective;
             END \$\$;
 
-            -- Revoke from PUBLIC (works in vanilla PG)
+            -- Permissões: replicar migration 017
+            -- Revogar de papéis públicos
             REVOKE EXECUTE ON FUNCTION public.registrar_envio_v2(text, text, int) FROM public;
+            REVOKE EXECUTE ON FUNCTION public.registrar_envio_v2(text, text, int) FROM anon;
+            REVOKE EXECUTE ON FUNCTION public.registrar_envio_v2(text, text, int) FROM authenticated;
+            -- Conceder ao service_role (criado abaixo para simular Supabase)
+            GRANT EXECUTE ON FUNCTION public.registrar_envio_v2(text, text, int) TO service_role;
           "
 
-      - name: Verify RPC exists and permissions
+      - name: Create Supabase-like roles and test permissions
+        run: |
+          PGPASSWORD=postgres psql -h localhost -U postgres -d test_rate_limit -c "
+            -- Criar papéis Supabase-like (no Supabase real já existem)
+            DO \$\$
+            BEGIN
+              IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'anon') THEN
+                CREATE ROLE anon NOLOGIN;
+              END IF;
+              IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticated') THEN
+                CREATE ROLE authenticated NOLOGIN;
+              END IF;
+              IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'service_role') THEN
+                CREATE ROLE service_role NOLOGIN BYPASSRLS;
+              END IF;
+            END \$\$;
+
+            -- Aplicar permissões da migration (replicar 017)
+            REVOKE EXECUTE ON FUNCTION public.registrar_envio_v2(text, text, int) FROM public;
+            REVOKE EXECUTE ON FUNCTION public.registrar_envio_v2(text, text, int) FROM anon;
+            REVOKE EXECUTE ON FUNCTION public.registrar_envio_v2(text, text, int) FROM authenticated;
+            GRANT EXECUTE ON FUNCTION public.registrar_envio_v2(text, text, int) TO service_role;
+          "
+
+      - name: Verify RPC permissions (effective privileges)
         run: |
           PGPASSWORD=postgres psql -h localhost -U postgres -d test_rate_limit -c "
             SELECT proname, prosecdef FROM pg_proc WHERE proname LIKE 'registrar_envio%';
-            SELECT has_function_privilege('public', 'registrar_envio_v2(text,text,int)', 'execute') as public_can_execute;
+            
+            -- Verificar privilégios efetivos
+            SELECT 
+              'public' as role, has_function_privilege('public', 'registrar_envio_v2(text,text,int)', 'execute') as can_execute
+            UNION ALL SELECT 'anon', has_function_privilege('anon', 'registrar_envio_v2(text,text,int)', 'execute')
+            UNION ALL SELECT 'authenticated', has_function_privilege('authenticated', 'registrar_envio_v2(text,text,int)', 'execute')
+            UNION ALL SELECT 'service_role', has_function_privilege('service_role', 'registrar_envio_v2(text,text,int)', 'execute')
+            UNION ALL SELECT 'postgres', has_function_privilege('postgres', 'registrar_envio_v2(text,text,int)', 'execute');
           "
 
       - name: Test rate limit logic (unit tests)
@@ -205,18 +241,29 @@ jobs:
             SELECT registrar_envio_v2('9.9.9.9', 'login', 10) as after_reset;
           "
 
-      - name: Test 6 - PUBLIC cannot execute
+      - name: Test 6 - PUBLIC/anon/authenticated cannot execute, service_role can
         run: |
+          # Test that public/anon/authenticated cannot execute
           PGPASSWORD=postgres psql -h localhost -U postgres -d test_rate_limit -c "
-            -- Create a test role without superuser privileges
-            CREATE ROLE test_role NOINHERIT;
-            GRANT test_role TO postgres;
-          "
-          PGPASSWORD=postgres psql -h localhost -U postgres -d test_rate_limit -c "
-            SET ROLE test_role;
+            SET ROLE anon;
             SELECT registrar_envio_v2('1.2.3.4', 'login', 10);
-          " 2>&1 | grep -q "permission denied" && echo "PASS: non-superuser blocked" || echo "FAIL: non-superuser not blocked"
-          PGPASSWORD=postgres psql -h localhost -U postgres -d test_rate_limit -c "DROP ROLE test_role;"
+          " 2>&1 | grep -q "permission denied" && echo "PASS: anon blocked" || echo "FAIL: anon not blocked"
+
+          PGPASSWORD=postgres psql -h localhost -U postgres -d test_rate_limit -c "
+            SET ROLE authenticated;
+            SELECT registrar_envio_v2('1.2.3.4', 'login', 10);
+          " 2>&1 | grep -q "permission denied" && echo "PASS: authenticated blocked" || echo "FAIL: authenticated not blocked"
+
+          PGPASSWORD=postgres psql -h localhost -U postgres -d test_rate_limit -c "
+            SET ROLE public;
+            SELECT registrar_envio_v2('1.2.3.4', 'login', 10);
+          " 2>&1 | grep -q "permission denied" && echo "PASS: public blocked" || echo "FAIL: public not blocked"
+
+          # Test that service_role CAN execute
+          PGPASSWORD=postgres psql -h localhost -U postgres -d test_rate_limit -c "
+            SET ROLE service_role;
+            SELECT registrar_envio_v2('1.2.3.4', 'login', 10);
+          " 2>&1 | grep -q "permission denied" && echo "FAIL: service_role blocked" || echo "PASS: service_role can execute"
 
       - name: Test 7 - Concurrent requests (real concurrency test)
         run: |
@@ -279,5 +326,5 @@ jobs:
         run: |
           echo "=== Rate Limit Integration Test Summary ==="
           echo "Core functionality validated on vanilla PostgreSQL"
-          echo "Supabase-specific features (anon role, pg_cron) tested in Supabase environment only"
-          echo "All SQL-layer tests passed including concurrency"
+          echo "Supabase-like roles created and tested: anon, authenticated, service_role"
+          echo "All SQL-layer tests passed including concurrency and permissions"

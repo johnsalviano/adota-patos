@@ -73,9 +73,11 @@ BEGIN
     RETURN v_contador <= v_limite_effective;
 END $$;
 
--- Revogar execução de PUBLIC e anon (apenas service_role via Edge Functions)
+-- Permissões: revogar de papéis públicos, conceder apenas ao service_role
 REVOKE EXECUTE ON FUNCTION public.registrar_envio_v2(text, text, int) FROM public;
 REVOKE EXECUTE ON FUNCTION public.registrar_envio_v2(text, text, int) FROM anon;
+REVOKE EXECUTE ON FUNCTION public.registrar_envio_v2(text, text, int) FROM authenticated;
+GRANT EXECUTE ON FUNCTION public.registrar_envio_v2(text, text, int) TO service_role;
 
 -- Limpeza automática via pg_cron (remove entradas > 10 min)
 SELECT cron.unschedule('limpeza-rate-limit-v2')
