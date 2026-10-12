@@ -1,0 +1,93 @@
+name: OWASP ZAP Baseline Scan (Branch Preview)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - fix/zap-findings-2024
+
+permissions:
+  contents: read
+  actions: read
+  security-events: write
+
+jobs:
+  zap-baseline-branch:
+    name: OWASP ZAP Baseline Scan (Branch Preview)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./tests/e2e
+
+      - name: Start preview server
+        run: |
+          node servidor.mjs &
+          SERVER_PID=$!
+          echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV
+          sleep 5
+        working-directory: ./tests/e2e
+
+      - name: OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.12.0
+        with:
+          target: "http://localhost:3456"
+          fail_action: false
+          allow_issue_writing: false
+          cmd_options: "-a"
+
+      - name: Stop preview server
+        if: always()
+        run: |
+          if [ -n "$SERVER_PID" ]; then
+            kill $SERVER_PID 2>/dev/null || true
+          fi
+
+      - name: Upload ZAP HTML Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zap-baseline-html-report
+          path: report_html.html
+          retention-days: 30
+
+      - name: Upload ZAP JSON Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zap-baseline-json-report
+          path: report_json.json
+          retention-days: 30
+
+      - name: Upload ZAP Markdown Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zap-baseline-md-report
+          path: report_md.md
+          retention-days: 30
+
+      - name: Check for Alerts
+        if: always()
+        run: |
+          if [ -f report_json.json ]; then
+            ALERTS=$(jq '.site[0].alerts | length' report_json.json 2>/dev/null || echo 0)
+            echo "Total alerts found: $ALERTS"
+            if [ "$ALERTS" -gt 0 ]; then
+              echo "::warning::OWASP ZAP found $ALERTS alerts. Check the artifacts for details."
+            else
+              echo "No alerts found by OWASP ZAP Baseline Scan."
+            fi
+          else
+            echo "No report_json.json found."
+          fi
