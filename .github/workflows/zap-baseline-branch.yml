@@ -106,3 +106,4 @@ jobs:
           else
             echo "No report_json.json found."
           fi# Force refresh
+# Trigger CI
