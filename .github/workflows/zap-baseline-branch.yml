@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - fix/zap-findings-2024
+      - fix/zap-findings-2024-v2
 
 permissions:
   contents: read
