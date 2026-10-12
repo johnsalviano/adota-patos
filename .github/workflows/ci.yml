@@ -32,4 +32,4 @@ jobs:
             echo "::error::JS manipulando estilo diretamente (inline). Use classes CSS."
             exit 1
           fi
-          echo "OK: HTML e JS de producao sem estilo, script ou evento inline."
+          echo "OK: HTML e JS de producao sem estilo, script ou evento inline."# CI trigger
