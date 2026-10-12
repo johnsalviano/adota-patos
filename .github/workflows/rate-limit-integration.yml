@@ -208,9 +208,15 @@ jobs:
       - name: Test 6 - PUBLIC cannot execute
         run: |
           PGPASSWORD=postgres psql -h localhost -U postgres -d test_rate_limit -c "
-            SET ROLE public;
+            -- Create a test role without superuser privileges
+            CREATE ROLE test_role NOINHERIT;
+            GRANT test_role TO postgres;
+          "
+          PGPASSWORD=postgres psql -h localhost -U postgres -d test_rate_limit -c "
+            SET ROLE test_role;
             SELECT registrar_envio_v2('1.2.3.4', 'login', 10);
-          " 2>&1 | grep -q "permission denied" && echo "PASS: public blocked" || echo "FAIL: public not blocked"
+          " 2>&1 | grep -q "permission denied" && echo "PASS: non-superuser blocked" || echo "FAIL: non-superuser not blocked"
+          PGPASSWORD=postgres psql -h localhost -U postgres -d test_rate_limit -c "DROP ROLE test_role;"
 
       - name: Test 7 - Concurrent requests (atomicity via row lock)
         run: |
