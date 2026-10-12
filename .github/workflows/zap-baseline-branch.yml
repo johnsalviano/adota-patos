@@ -19,6 +19,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+        with:
+          clean: true
+
+      - name: Verify fixed files
+        run: |
+          echo "=== Checking doacao.html for timestamp ==="
+          grep -n "1558788353" frontend/doacao.html || echo "Timestamp NOT found (good)"
+          echo "=== Checking app.js for suspicious comment ==="
+          grep -n "Segurança" frontend/js/app.js || echo "Suspicious comment NOT found (good)"
+          echo "=== Checking CSP meta tags ==="
+          grep -n "Content-Security-Policy" frontend/index.html || echo "CSP NOT found"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
