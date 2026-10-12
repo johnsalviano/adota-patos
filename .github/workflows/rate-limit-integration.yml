@@ -218,17 +218,66 @@ jobs:
           " 2>&1 | grep -q "permission denied" && echo "PASS: non-superuser blocked" || echo "FAIL: non-superuser not blocked"
           PGPASSWORD=postgres psql -h localhost -U postgres -d test_rate_limit -c "DROP ROLE test_role;"
 
-      - name: Test 7 - Concurrent requests (atomicity via row lock)
+      - name: Test 7 - Concurrent requests (real concurrency test)
         run: |
           PGPASSWORD=postgres psql -h localhost -U postgres -d test_rate_limit -c "
-            -- Note: True concurrency test requires parallel connections
-            -- UPDATE ... RETURNING uses row-level lock, ensuring atomicity
-            SELECT 'Atomicity: UPDATE ... RETURNING uses implicit row lock' as note;
+            -- Reset test data
+            DELETE FROM rate_limit_envios_v2 WHERE ip = '203.0.113.50' AND categoria = 'login';
           "
+          # Run 15 concurrent requests via 15 parallel psql processes
+          # Each process calls the RPC once and captures the result
+          for i in {1..15}; do
+            (
+              PGPASSWORD=postgres psql -h localhost -U postgres -d test_rate_limit -t -c "
+                SELECT registrar_envio_v2('203.0.113.50', 'login', 10) as allowed;
+              " 2>/dev/null | grep -c 't' >> /tmp/allowed_count.txt
+            ) &
+          done
+          wait
+          ALLOWED=$(cat /tmp/allowed_count.txt | awk '{sum+=$1} END {print sum}')
+          echo "Allowed: $ALLOWED out of 15 (expected 10)"
+          if [ "$ALLOWED" -eq 10 ]; then
+            echo "PASS: Exactly 10 allowed, 5 blocked under concurrency"
+          else
+            echo "FAIL: Expected 10 allowed, got $ALLOWED"
+            exit 1
+          fi
+          rm -f /tmp/allowed_count.txt
+
+      - name: Test 8 - Concurrent isolation across categories
+        run: |
+          PGPASSWORD=postgres psql -h localhost -U postgres -d test_rate_limit -c "
+            DELETE FROM rate_limit_envios_v2 WHERE ip = '203.0.113.60' AND categoria IN ('login', 'doacao');
+          "
+          # 10 concurrent login + 10 concurrent doacao for same IP
+          for i in {1..10}; do
+            (
+              PGPASSWORD=postgres psql -h localhost -U postgres -d test_rate_limit -t -c "
+                SELECT registrar_envio_v2('203.0.113.60', 'login', 10) as allowed;
+              " 2>/dev/null | grep -c 't' >> /tmp/login_allowed.txt
+            ) &
+            (
+              PGPASSWORD=postgres psql -h localhost -U postgres -d test_rate_limit -t -c "
+                SELECT registrar_envio_v2('203.0.113.60', 'doacao', 5) as allowed;
+              " 2>/dev/null | grep -c 't' >> /tmp/doacao_allowed.txt
+            ) &
+          done
+          wait
+          LOGIN_ALLOWED=$(cat /tmp/login_allowed.txt | awk '{sum+=$1} END {print sum}')
+          DOACAO_ALLOWED=$(cat /tmp/doacao_allowed.txt | awk '{sum+=$1} END {print sum}')
+          echo "Login allowed: $LOGIN_ALLOWED (expected 10)"
+          echo "Doacao allowed: $DOACAO_ALLOWED (expected 5)"
+          if [ "$LOGIN_ALLOWED" -eq 10 ] && [ "$DOACAO_ALLOWED" -eq 5 ]; then
+            echo "PASS: Categories remain isolated under concurrency"
+          else
+            echo "FAIL: Expected login=10 doacao=5, got login=$LOGIN_ALLOWED doacao=$DOACAO_ALLOWED"
+            exit 1
+          fi
+          rm -f /tmp/login_allowed.txt /tmp/doacao_allowed.txt
 
       - name: Summary
         run: |
           echo "=== Rate Limit Integration Test Summary ==="
           echo "Core functionality validated on vanilla PostgreSQL"
           echo "Supabase-specific features (anon role, pg_cron) tested in Supabase environment only"
-          echo "All SQL-layer tests passed"
+          echo "All SQL-layer tests passed including concurrency"
