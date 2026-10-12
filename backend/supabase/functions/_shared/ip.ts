@@ -32,10 +32,12 @@ export function ipDaRequisicao(req: Request): string {
   }
 
   // 3. Fallback: nenhum IP público verificável.
-  // Retornamos identificador único por requisição para NÃO criar
-  // chave compartilhada 'desconhecido' que permitiria DoS cruzado.
   // Em produção com Cloudflare, este caminho NUNCA deve ser atingido.
-  return `anon-${crypto.randomUUID()}`
+  // Retornamos identificador fixo 'unknown' para não criar chave compartilhada
+  // 'desconhecido' que permitiria DoS cruzado, mas também não geramos UUID
+  // por requisição que permitiria burlar o rate limit.
+  // Em produção, esta rota não deve ser atingida (Cloudflare sempre injeta cf-connecting-ip).
+  return 'unknown'
 }
 
 // Verifica se um IP (IPv4, IPv6 ou IPv4-mapeado-em-IPv6) é público/roteável.
@@ -103,20 +105,21 @@ function isPublicIPv6(ip: string): boolean {
   // Unspecified
   if (cleanIP === '::') return false
 
-  // Unique Local Addresses (ULA) - fc00::/7
-  if (cleanIP.startsWith('fc') || cleanIP.startsWith('fd')) return false
+  // Primeiro hextet para validações de prefixo
+  const firstHextet = cleanIP.split(':')[0]
+  const firstHextetNum = parseInt(firstHextet, 16)
 
-  // Link-local - fe80::/10
-  if (cleanIP.startsWith('fe80:')) return false
+  // Unique Local Addresses (ULA) - fc00::/7 (fc00-fdff)
+  if (firstHextetNum >= 0xfc00 && firstHextetNum <= 0xfdff) return false
+
+  // Link-local - fe80::/10 (fe80-febf)
+  if (firstHextetNum >= 0xfe80 && firstHextetNum <= 0xfebf) return false
 
   // Multicast - ff00::/8
   if (cleanIP.startsWith('ff')) return false
 
   // Documentation - 2001:db8::/32
   if (cleanIP.startsWith('2001:db8:')) return false
-
-  // Teredo - 2001::/32 (túnel, trata como público se necessário)
-  // 6to4 - 2002::/16
 
   return true
 }

@@ -40,9 +40,26 @@ SET search_path = public
 AS $$
 DECLARE
     v_contador INT;
+    v_categoria_norm TEXT;
+    v_limite_effective INT;
 BEGIN
+    -- Validar categoria
+    v_categoria_norm := lower(trim(p_categoria));
+    IF v_categoria_norm NOT IN ('login', 'adocao', 'doacao', 'afiliacao') THEN
+        RAISE EXCEPTION 'Categoria inválida: %', p_categoria USING ERRCODE = '22023';
+    END IF;
+
+    -- Limite efetivo (não permite ampliar limite via parâmetro)
+    v_limite_effective := CASE v_categoria_norm
+        WHEN 'login' THEN 10
+        WHEN 'adocao' THEN 5
+        WHEN 'doacao' THEN 5
+        WHEN 'afiliacao' THEN 5
+        ELSE 5
+    END;
+
     -- Caderneta individual do IP para esta categoria
-    INSERT INTO rate_limit_envios_v2 (ip, categoria) VALUES (p_ip, p_categoria)
+    INSERT INTO rate_limit_envios_v2 (ip, categoria) VALUES (p_ip, v_categoria_norm)
     ON CONFLICT (ip, categoria) DO NOTHING;
 
     UPDATE rate_limit_envios_v2
@@ -50,11 +67,15 @@ BEGIN
                            THEN 1 ELSE contador + 1 END,
            janela_inicio = CASE WHEN janela_inicio < now() - INTERVAL '1 minute'
                            THEN now() ELSE janela_inicio END
-     WHERE ip = p_ip AND categoria = p_categoria
+     WHERE ip = p_ip AND categoria = v_categoria_norm
      RETURNING contador INTO v_contador;
 
-    RETURN v_contador <= p_limite;
+    RETURN v_contador <= v_limite_effective;
 END $$;
+
+-- Revogar execução de PUBLIC e anon (apenas service_role via Edge Functions)
+REVOKE EXECUTE ON FUNCTION public.registrar_envio_v2(text, text, int) FROM public;
+REVOKE EXECUTE ON FUNCTION public.registrar_envio_v2(text, text, int) FROM anon;
 
 -- Limpeza automática via pg_cron (remove entradas > 10 min)
 SELECT cron.unschedule('limpeza-rate-limit-v2')
@@ -108,3 +129,7 @@ BEGIN
 
     RETURN v_contador <= p_limite AND v_contador_global <= p_limite_global;
 END $$;
+
+-- Revogar execução da função legada
+REVOKE EXECUTE ON FUNCTION public.registrar_envio(text, int, int) FROM public;
+REVOKE EXECUTE ON FUNCTION public.registrar_envio(text, int, int) FROM anon;
