@@ -113,17 +113,9 @@ jobs:
 
                 RETURN v_contador <= v_limite_effective;
             END \$\$;
-
-            -- Permissões: replicar migration 017
-            -- Revogar de papéis públicos
-            REVOKE EXECUTE ON FUNCTION public.registrar_envio_v2(text, text, int) FROM public;
-            REVOKE EXECUTE ON FUNCTION public.registrar_envio_v2(text, text, int) FROM anon;
-            REVOKE EXECUTE ON FUNCTION public.registrar_envio_v2(text, text, int) FROM authenticated;
-            -- Conceder ao service_role (criado abaixo para simular Supabase)
-            GRANT EXECUTE ON FUNCTION public.registrar_envio_v2(text, text, int) TO service_role;
           "
 
-      - name: Create Supabase-like roles and test permissions
+      - name: Create Supabase-like roles and apply permissions
         run: |
           PGPASSWORD=postgres psql -h localhost -U postgres -d test_rate_limit -c "
             -- Criar papéis Supabase-like (no Supabase real já existem)
