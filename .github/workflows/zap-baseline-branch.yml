@@ -56,13 +56,13 @@ jobs:
         working-directory: ./tests/e2e
 
       - name: OWASP ZAP Baseline Scan
-        uses: zaproxy/action-baseline@v0.13.0
+        uses: zaproxy/action-baseline@v0.15.0
         with:
           target: "http://localhost:3456"
           fail_action: false
           allow_issue_writing: false
           cmd_options: "-a"
-        continue-on-error: true
+          artifact_name: "zap-baseline-reports"
 
       - name: Stop preview server
         if: always()
