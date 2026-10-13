@@ -56,18 +56,13 @@ jobs:
         working-directory: ./tests/e2e
 
       - name: OWASP ZAP Baseline Scan
-        run: |
-          set -euo pipefail
-          # Use ZAP Docker image from ghcr.io (same as action)
-          # --network=host allows container to reach host localhost:3456
-          echo "Starting ZAP scan against http://localhost:3456"
-          docker run --rm --network=host \
-            -v "${{ github.workspace }}:/zap/wrk/:rw" \
-            -w /zap/wrk \
-            ghcr.io/zaproxy/zaproxy:stable \
-            zap-baseline.py -t "http://localhost:3456" -f false -a -r report_html.html -j report_json.json -m report_md.md
-          echo "ZAP scan completed successfully"
-        continue-on-error: false
+        uses: zaproxy/action-baseline@v0.13.0
+        with:
+          target: "http://localhost:3456"
+          fail_action: false
+          allow_issue_writing: false
+          cmd_options: "-a"
+        continue-on-error: true
 
       - name: Stop preview server
         if: always()
