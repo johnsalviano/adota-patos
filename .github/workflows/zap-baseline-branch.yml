@@ -56,12 +56,18 @@ jobs:
         working-directory: ./tests/e2e
 
       - name: OWASP ZAP Baseline Scan
-        uses: zaproxy/action-baseline@v0.12.0
-        with:
-          target: "http://localhost:3456"
-          fail_action: false
-          allow_issue_writing: false
-          cmd_options: "-a"
+        run: |
+          set -euo pipefail
+          # Use ZAP Docker image with host.docker.internal to reach host localhost:3456
+          # --add-host=host.docker.internal:host-gateway makes host.docker.internal resolve to host IP
+          echo "Starting ZAP scan against http://host.docker.internal:3456"
+          docker run --rm --add-host=host.docker.internal:host-gateway \
+            -v "${{ github.workspace }}:/zap/wrk/:rw" \
+            -w /zap/wrk \
+            owasp/zap2docker-stable:2.17.0 \
+            zap-baseline.py -t "http://host.docker.internal:3456" -f false -a -r report_html.html -j report_json.json -m report_md.md
+          echo "ZAP scan completed successfully"
+        continue-on-error: false
 
       - name: Stop preview server
         if: always()
