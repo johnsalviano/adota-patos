@@ -69,7 +69,7 @@ export function validarDados(dados: Record<string, unknown>): string[] {
   // Validação para CEF (formato básico)
   const cep = dados['afCep'];
   if (typeof cep === 'string' && cep.trim() !== '') {
-    if !/^\d{5}-?\d{3}$/.test(cep.replace(/\s/g, '')) {
+    if (!/^\d{5}-?\d{3}$/.test(cep.replace(/\s/g, ''))) {
       erros.push('O CEP informado não parece válido.');
     }
   }
@@ -79,7 +79,7 @@ export function validarDados(dados: Record<string, unknown>): string[] {
   if (
     typeof email === 'string' &&
     email.trim() !== '' &&
-    !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email.trim())
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
   ) {
     erros.push('O e-mail informado não parece válido.');
   }

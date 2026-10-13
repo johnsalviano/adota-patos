@@ -196,4 +196,4 @@ Deno.serve(async (req: Request) => {
       cors,
     )
   }
-}
+})
