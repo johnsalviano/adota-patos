@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS transparencia_relatorios (
     enviado_por     UUID REFERENCES perfis_membros(id), -- quem enviou
     criado_em       TIMESTAMPTZ NOT NULL DEFAULT now(),
     atualizado_em   TIMESTAMPTZ NOT NULL DEFAULT now(),
-    
+
     -- Garante um relatório por mês/ano (pode ser substituído)
     UNIQUE (ano, mes)
 );
@@ -25,24 +25,9 @@ COMMENT ON TABLE transparencia_relatorios IS 'Relatórios financeiros mensais de
 -- Índice para consulta por ano/mês (mais recentes primeiro)
 CREATE INDEX IF NOT EXISTS idx_transparencia_ano_mes ON transparencia_relatorios(ano DESC, mes DESC);
 
--- 2. RLS (Row Level Security)
-ALTER TABLE transparencia_relatorios ENABLE ROW LEVEL SECURITY;
+-- 2. FUNÇÕES DE APOIO (criadas ANTES das policies que as referenciam)
 
--- 2.1 Leitura pública: qualquer um pode ver relatórios publicados
-CREATE POLICY "publico_le_transparencia"
-ON transparencia_relatorios FOR SELECT
-TO anon, authenticated
-USING (true);
-
--- 2.2 Escrita/Atualização/Exclusão: apenas o gerente autorizado (Rafael.Dantas)
--- A verificação é feita via função RPC que valida o username
-CREATE POLICY "gerente_gerencia_transparencia"
-ON transparencia_relatorios FOR ALL
-TO authenticated
-USING (public.eh_gerente_transparencia())
-WITH CHECK (public.eh_gerente_transparencia());
-
--- 3. FUNÇÃO PARA VERIFICAR SE É O GERENTE DE TRANSPARÊNCIA
+-- 2.1 FUNÇÃO PARA VERIFICAR SE É O GERENTE DE TRANSPARÊNCIA
 -- Retorna true apenas se o usuário autenticado for 'Rafael.Dantas'
 CREATE OR REPLACE FUNCTION public.eh_gerente_transparencia()
 RETURNS boolean
@@ -61,7 +46,7 @@ $$;
 COMMENT ON FUNCTION public.eh_gerente_transparencia() IS
 'Verifica se o usuário autenticado é o gerente de transparência (Rafael.Dantas). Usada em políticas RLS.';
 
--- 4. FUNÇÃO PARA OBTER USERNAME DO USUÁRIO ATUAL (para auditoria)
+-- 2.2 FUNÇÃO PARA OBTER USERNAME DO USUÁRIO ATUAL (para auditoria)
 CREATE OR REPLACE FUNCTION public.meu_username_transparencia()
 RETURNS text
 LANGUAGE sql
@@ -74,7 +59,24 @@ AS $$
     WHERE id = auth.uid()
 $$;
 
--- 5. STORAGE BUCKET PARA RELATÓRIOS DE TRANSPARÊNCIA
+-- 3. RLS (Row Level Security)
+ALTER TABLE transparencia_relatorios ENABLE ROW LEVEL SECURITY;
+
+-- 3.1 Leitura pública: qualquer um pode ver relatórios publicados
+CREATE POLICY "publico_le_transparencia"
+ON transparencia_relatorios FOR SELECT
+TO anon, authenticated
+USING (true);
+
+-- 3.2 Escrita/Atualização/Exclusão: apenas o gerente autorizado (Rafael.Dantas)
+-- A verificação é feita via função RPC que valida o username
+CREATE POLICY "gerente_gerencia_transparencia"
+ON transparencia_relatorios FOR ALL
+TO authenticated
+USING (public.eh_gerente_transparencia())
+WITH CHECK (public.eh_gerente_transparencia());
+
+-- 4. STORAGE BUCKET PARA RELATÓRIOS DE TRANSPARÊNCIA
 -- Público para leitura, restrito para escrita
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 VALUES (
@@ -89,13 +91,13 @@ ON CONFLICT (id) DO UPDATE SET
     file_size_limit = EXCLUDED.file_size_limit,
     allowed_mime_types = EXCLUDED.allowed_mime_types;
 
--- 5.1 Política: leitura pública
+-- 4.1 Política: leitura pública
 CREATE POLICY "publico_le_transparencia_storage"
 ON storage.objects FOR SELECT
 TO anon, authenticated
 USING (bucket_id = 'transparencia-relatorios');
 
--- 5.2 Política: escrita/atualização/exclusão apenas pelo gerente
+-- 4.2 Política: escrita/atualização/exclusão apenas pelo gerente
 CREATE POLICY "gerente_gerencia_transparencia_storage"
 ON storage.objects FOR ALL
 TO authenticated
@@ -108,7 +110,7 @@ WITH CHECK (
     AND public.eh_gerente_transparencia()
 );
 
--- 6. TRIGGER PARA ATUALIZAR updated_at
+-- 5. TRIGGER PARA ATUALIZAR updated_at
 CREATE OR REPLACE FUNCTION public.atualizar_updated_at_transparencia()
 RETURNS trigger
 LANGUAGE plpgsql

@@ -33,8 +33,7 @@ ALTER TABLE doacoes_outros ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "ong_le_doacoes_outros"
 ON doacoes_outros FOR SELECT
 TO authenticated
-USING (true)
-WITH CHECK (true);
+USING (eh_membro_ong());
 
 -- Nenhuma política de INSERT/UPDATE/DELETE para anon ou authenticated;
 -- somente a Edge Function (service_role) pode gravar, pois ignora RLS.
