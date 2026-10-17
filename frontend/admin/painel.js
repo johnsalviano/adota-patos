@@ -45,9 +45,13 @@
     // ---------------- Abas ----------------
     function mudarAba(aba) {
         var btns = document.querySelectorAll('.aba-btn');
-        btns.forEach(function (b) { b.classList.remove('ativa'); });
+        btns.forEach(function (b) {
+            b.classList.remove('ativa');
+            b.setAttribute('aria-selected', 'false');
+        });
         if (aba === 'solicitacoes') {
             btns[0].classList.add('ativa');
+            btns[0].setAttribute('aria-selected', 'true');
             document.getElementById('secao-solicitacoes').classList.remove('oculto');
             document.getElementById('secao-animais').classList.add('oculto');
             document.getElementById('secao-cadastrar').classList.add('oculto');
@@ -55,6 +59,7 @@
             carregarSolicitacoes();
         } else if (aba === 'animais') {
             btns[1].classList.add('ativa');
+            btns[1].setAttribute('aria-selected', 'true');
             document.getElementById('secao-solicitacoes').classList.add('oculto');
             document.getElementById('secao-animais').classList.remove('oculto');
             document.getElementById('secao-cadastrar').classList.add('oculto');
@@ -62,12 +67,14 @@
             carregarAnimais();
         } else if (aba === 'cadastrar') {
             btns[2].classList.add('ativa');
+            btns[2].setAttribute('aria-selected', 'true');
             document.getElementById('secao-solicitacoes').classList.add('oculto');
             document.getElementById('secao-animais').classList.add('oculto');
             document.getElementById('secao-cadastrar').classList.remove('oculto');
             document.getElementById('secao-transparencia').classList.add('oculto');
         } else if (aba === 'transparencia') {
             btns[3].classList.add('ativa');
+            btns[3].setAttribute('aria-selected', 'true');
             document.getElementById('secao-solicitacoes').classList.add('oculto');
             document.getElementById('secao-animais').classList.add('oculto');
             document.getElementById('secao-cadastrar').classList.add('oculto');
@@ -106,6 +113,7 @@
         document.getElementById('conteudo-painel').classList.remove('oculto');
 
         carregarSolicitacoes();
+        carregarTransparenciaAdmin();
     }
 
     // ---------------- Solicitações ----------------
@@ -1006,6 +1014,7 @@
             var { data, error } = await cliente
                 .from('transparencia_relatorios')
                 .select('id, ano, mes, arquivo_nome, arquivo_tamanho, criado_em, atualizado_em, enviado_por')
+                .eq('status_exclusao', 'ativo')
                 .order('ano', { ascending: false })
                 .order('mes', { ascending: false });
 

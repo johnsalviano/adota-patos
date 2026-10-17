@@ -14,6 +14,7 @@ import {
   registrarLog,
   LIMITE_POR_MINUTO,
 } from './seguranca.ts'
+import { validarContentTypeOuErro } from '../_shared/content-type.ts'
 
 function json(
   corpo: unknown,
@@ -29,6 +30,12 @@ function json(
       // Nunca cachear respostas de formulário: dados podem mudar
       // (LGPD) e o conteúdo varia por chamada.
       'Cache-Control': 'no-store',
+      // Cabeçalhos de segurança (defesa em profundidade)
+      'X-Frame-Options': 'DENY',
+      'X-Content-Type-Options': 'nosniff',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Resource-Policy': 'same-origin',
       ...extra,
     },
   })
@@ -38,7 +45,17 @@ Deno.serve(async (req: Request) => {
   const cors = corsPara(req.headers.get('origin'))
 
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: cors })
+    return new Response('ok', {
+      headers: {
+        ...cors,
+        // Cabeçalhos de segurança (defesa em profundidade)
+        'X-Frame-Options': 'DENY',
+        'X-Content-Type-Options': 'nosniff',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
+        'Cross-Origin-Opener-Policy': 'same-origin',
+        'Cross-Origin-Resource-Policy': 'same-origin',
+      },
+    })
   }
 
   if (req.method !== 'POST') {
@@ -49,6 +66,13 @@ Deno.serve(async (req: Request) => {
       { Allow: 'POST, OPTIONS' },
     )
   }
+
+  // CSRF: exige Content-Type application/json. Formulários HTML não
+  // conseguem enviar este content type sem fetch/XHR (que disparam preflight).
+  // text/plain é "simple" e não dispara preflight, permitindo CSRF via
+  // <form enctype="text/plain">. Bloqueamos explicitamente.
+  const erroContentType = validarContentTypeOuErro(req, cors, json)
+  if (erroContentType) return erroContentType
 
   try {
     // Formulário legítimo tem ~1 KB; proíbe corpos gigantes.

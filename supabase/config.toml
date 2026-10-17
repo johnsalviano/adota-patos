@@ -422,3 +422,12 @@ verify_jwt = false
 
 [functions.receber-doacao-outro]
 verify_jwt = false
+
+[functions.receber-adocao]
+verify_jwt = false
+
+[functions.login-username]
+verify_jwt = false
+
+[functions.transparencia]
+verify_jwt = false

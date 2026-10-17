@@ -12,6 +12,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { corsPara } from '../_shared/cors.ts'
 import { ipDaRequisicao } from '../_shared/ip.ts'
 import { registrarLog } from '../_shared/log.ts'
+import { validarContentTypeOuErro } from '../_shared/content-type.ts'
 
 // Política de tentativas de login. Janela curta (1 minuto na
 // função registrar_envio_v2) e teto modesto: contenção de tentativa
@@ -27,6 +28,12 @@ function json(corpo: unknown, status: number, cors: Record<string, string>): Res
       ...cors,
       'Content-Type': 'application/json',
       'Cache-Control': 'no-store',
+      // Cabeçalhos de segurança (defesa em profundidade)
+      'X-Frame-Options': 'DENY',
+      'X-Content-Type-Options': 'nosniff',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Resource-Policy': 'same-origin',
     },
   })
 }
@@ -34,10 +41,26 @@ function json(corpo: unknown, status: number, cors: Record<string, string>): Res
 Deno.serve(async (req: Request) => {
   const cors = corsPara(req.headers.get('origin'))
 
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: cors })
+  if (req.method === 'OPTIONS') return new Response('ok', {
+    headers: {
+      ...cors,
+      // Cabeçalhos de segurança (defesa em profundidade)
+      'X-Frame-Options': 'DENY',
+      'X-Content-Type-Options': 'nosniff',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Resource-Policy': 'same-origin',
+    },
+  })
   if (req.method !== 'POST') {
     return json({ ok: false, mensagem: 'Metodo nao permitido.' }, 405, cors)
   }
+
+  // CSRF: exige Content-Type application/json. Login CSRF permite
+  // que atacante logue vítima na conta do atacante. text/plain não
+  // dispara preflight. Bloqueamos explicitamente.
+  const erroContentType = validarContentTypeOuErro(req, cors, json)
+  if (erroContentType) return erroContentType
 
   try {
     // Chave privada do servidor (nunca exposta ao site).
