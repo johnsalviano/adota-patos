@@ -895,11 +895,11 @@
 
         if (!ehGerente) return;
 
-        // Popular anos (2018 até ano atual + 1)
+        // Popular anos (2018 até 2050) — permite cadastro até 2050
         var anoAtual = new Date().getFullYear();
         var selectAno = document.getElementById('transp-ano');
         selectAno.innerHTML = '<option value="">Selecione o ano</option>';
-        for (var a = 2018; a <= anoAtual + 1; a++) {
+        for (var a = 2018; a <= 2050; a++) {
             var opt = document.createElement('option');
             opt.value = a;
             opt.textContent = a;
