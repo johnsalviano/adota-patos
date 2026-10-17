@@ -30,26 +30,14 @@
 
     async function carregarAnos() {
         try {
-            const supabase = getSupabase();
-            if (!supabase) return;
-
-            // Buscar apenas anos distintos (metadados mínimos, sem relatórios completos)
-            const { data, error } = await supabase
-                .from('transparencia_relatorios')
-                .select('ano')
-                .order('ano', { ascending: false });
-
-            if (error) throw error;
-
-            const anosUnicos = [...new Set((data || []).map(r => r.ano))].sort((a, b) => b - a);
-
+            // Gerar anos dinamicamente de 2018 até 2050 (independente do banco)
             filtroAno.innerHTML = '<option value="">Selecione o ano</option>';
-            anosUnicos.forEach(ano => {
+            for (let a = 2018; a <= 2050; a++) {
                 const opt = document.createElement('option');
-                opt.value = ano;
-                opt.textContent = ano;
+                opt.value = a;
+                opt.textContent = a;
                 filtroAno.appendChild(opt);
-            });
+            }
         } catch (err) {
             console.error('Erro ao carregar anos:', err);
             filtroAno.innerHTML = '<option value="">Erro ao carregar anos</option>';
