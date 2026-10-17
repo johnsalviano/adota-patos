@@ -5,9 +5,6 @@
 // definidas no CSS. Nenhum estilo inline aqui.
 // ============================================
 
-// Monitoramento de erros. Sem DSN no projeto Sentry, esta
-// chamada resolve false e nada acontece: nenhuma requisicao
-// extra e nenhum erro no console. Ver frontend/js/erros.js.
 if (window.AdotaPatosErros) {
     window.AdotaPatosErros.iniciar();
 }
@@ -49,17 +46,17 @@ document.addEventListener("click", (event) => {
     if (primeiro) primeiro.focus();
 });
 
-closeModal.addEventListener("click", () => {
+closeModal?.addEventListener("click", () => {
     fecharModal(modal);
 });
 
-modal.addEventListener("click", (event) => {
+modal?.addEventListener("click", (event) => {
     if (event.target === modal) {
         fecharModal(modal);
     }
 });
 
-document.getElementById("adoptButton").addEventListener("click", () => {
+document.getElementById("adoptButton")?.addEventListener("click", () => {
     animalSelecionadoId = animalAtualId;
     fecharModal(modal);
 });
@@ -126,11 +123,11 @@ const adoptionForm = document.getElementById("adoptionForm");
 const motivoCampo = document.getElementById("reason");
 const contadorMotivo = document.getElementById("contador-motivo");
 
-motivoCampo.addEventListener("input", () => {
+motivoCampo?.addEventListener("input", () => {
     contadorMotivo.textContent = motivoCampo.value.length + "/300";
 });
 
-adoptionForm.addEventListener("submit", async (event) => {
+adoptionForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const botao = adoptionForm.querySelector("button[type=submit]") || adoptionForm.querySelector("button");
@@ -199,16 +196,18 @@ function mostrarFeedback(tipo, texto) {
 const menuMobile = document.querySelector(".menu-mobile");
 const navUl = document.querySelector("nav ul");
 
-menuMobile.addEventListener("click", () => {
-    navUl.classList.toggle("aberto");
-});
+if (menuMobile && navUl) {
+    menuMobile.addEventListener("click", () => {
+        navUl.classList.toggle("aberto");
+    });
 
-// Fecha o menu ao clicar em um link
-navUl.addEventListener("click", (event) => {
-    if (event.target.closest("a")) {
-        navUl.classList.remove("aberto");
-    }
-});
+    // Fecha o menu ao clicar em um link
+    navUl.addEventListener("click", (event) => {
+        if (event.target.closest("a")) {
+            navUl.classList.remove("aberto");
+        }
+    });
+}
 
 // =========================
 // HEADER DROPDOWN (ícone ☰ no canto direito)
@@ -328,7 +327,7 @@ if (headerDropdown && headerDropdownBtn && headerDropdownMenu) {
 const siteHeader = document.querySelector("header");
 
 window.addEventListener("scroll", () => {
-    siteHeader.classList.toggle("scrolled", window.scrollY > 20);
+    if (siteHeader) siteHeader.classList.toggle("scrolled", window.scrollY > 20);
 }, { passive: true });
 
 // =========================
@@ -436,6 +435,7 @@ function mensagemCatalogo(texto, erro = false, tentarNovamente = null) {
 
 async function carregarAnimais() {
     const container = document.getElementById("catalogo-animais");
+    if (!container) return;
     // Limpa o estado anterior (cards, vazio ou erro) e volta para o carregamento.
     // Isso mantem o estado unico mesmo quando a funcao roda de novo pelo botao
     // "Tentar novamente".
@@ -514,21 +514,23 @@ carregarAnimais();
 
 const politicaModal = document.getElementById("politicaModal");
 
-document.querySelectorAll(".abrir-politica").forEach((botao) => {
-    botao.addEventListener("click", () => {
-        focoAnterior = botao;
-        politicaModal.classList.add("active");
-        const primeiro = focoDentro(politicaModal);
-        if (primeiro) primeiro.focus();
+if (politicaModal) {
+    document.querySelectorAll(".abrir-politica").forEach((botao) => {
+        botao.addEventListener("click", () => {
+            focoAnterior = botao;
+            politicaModal.classList.add("active");
+            const primeiro = focoDentro(politicaModal);
+            if (primeiro) primeiro.focus();
+        });
     });
-});
 
-document.getElementById("fecharPolitica").addEventListener("click", () => {
-    fecharModal(politicaModal);
-});
-
-politicaModal.addEventListener("click", (event) => {
-    if (event.target === politicaModal) {
+    document.getElementById("fecharPolitica")?.addEventListener("click", () => {
         fecharModal(politicaModal);
-    }
-});
+    });
+
+    politicaModal.addEventListener("click", (event) => {
+        if (event.target === politicaModal) {
+            fecharModal(politicaModal);
+        }
+    });
+}
