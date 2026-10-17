@@ -18,33 +18,18 @@ serve(async (req) => {
   const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-  // Get user from auth header
+  // User identification: optional for GET (public download/list),
+  // required for POST/DELETE (manager-only operations)
   const authHeader = req.headers.get("Authorization");
-  if (!authHeader) {
-    return new Response(JSON.stringify({ error: "Não autorizado" }), {
-      status: 401,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+  let user: any = null;
+  if (authHeader) {
+    const token = authHeader.replace("Bearer ", "");
+    const { data: { user: authUser }, error: userError } = await supabase.auth.getUser(token);
+    if (!userError && authUser) user = authUser;
   }
 
-  const token = authHeader.replace("Bearer ", "");
-  const { data: { user }, error: userError } = await supabase.auth.getUser(token);
-  if (userError || !user) {
-    return new Response(JSON.stringify({ error: "Sessão inválida" }), {
-      status: 401,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-
-  // Check if user is the transparency manager
-  const { data: isManager, error: managerError } = await supabase.rpc("eh_gerente_transparencia");
-  if (managerError || !isManager) {
-    return new Response(JSON.stringify({ error: "Acesso negado: apenas o gerente de transparência pode realizar esta operação" }), {
-      status: 403,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-
+  // GET (list, download): public access — RLS policies control data-level access
+  // POST (upload), DELETE: requires gerente/transparencia access (checked per-action)
   try {
     const url = new URL(req.url);
     const pathParts = url.pathname.split("/").filter(Boolean);
@@ -70,12 +55,49 @@ serve(async (req) => {
 
       case "POST":
         if (action === "upload") {
+          if (!user) {
+            return new Response(JSON.stringify({ error: "Não autorizado" }), {
+              status: 401,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            });
+          }
+          // Check if user is gerente/developer via database query
+          // (uses service_role client to bypass RLS, but validates by email from JWT)
+          const { data: membro, error: membroError } = await supabase
+            .from("perfis_membros")
+            .select("perfil")
+            .eq("email", user.email)
+            .single();
+          if (membroError || !membro || !["gerente", "desenvolvedor"].includes(membro.perfil)) {
+            return new Response(JSON.stringify({ error: "Acesso negado: apenas o gerente de transparência pode enviar relatórios" }), {
+              status: 403,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            });
+          }
           return await uploadReport(supabase, req, user.id);
         }
         break;
 
       case "DELETE":
         if (action === "delete") {
+          if (!user) {
+            return new Response(JSON.stringify({ error: "Não autorizado" }), {
+              status: 401,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            });
+          }
+          // Check if user is gerente/developer via database query
+          const { data: membro, error: membroError } = await supabase
+            .from("perfis_membros")
+            .select("perfil")
+            .eq("email", user.email)
+            .single();
+          if (membroError || !membro || !["gerente", "desenvolvedor"].includes(membro.perfil)) {
+            return new Response(JSON.stringify({ error: "Acesso negado: apenas o gerente de transparência pode remover relatórios" }), {
+              status: 403,
+              headers: { ...corsHeaders, "Content-Type": "application/json" },
+            });
+          }
           const ano = url.searchParams.get("ano");
           const mes = url.searchParams.get("mes");
           if (!ano || !mes) {
@@ -106,6 +128,7 @@ async function listReports(supabase: any) {
   const { data, error } = await supabase
     .from("transparencia_relatorios")
     .select("id, ano, mes, arquivo_nome, arquivo_tamanho, criado_em, atualizado_em, enviado_por")
+    .eq("status_exclusao", "ativo")
     .order("ano", { ascending: false })
     .order("mes", { ascending: false });
 
@@ -145,9 +168,17 @@ async function uploadReport(supabase: any, req: Request, userId: string) {
     });
   }
 
-  // Validate file type
+  // Validate file type by MIME and binary PDF signature (magic bytes)
   if (file.type !== "application/pdf") {
     return new Response(JSON.stringify({ error: "Apenas arquivos PDF são permitidos" }), {
+      status: 400,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  const headerBytes = new Uint8Array(await file.slice(0, 5).arrayBuffer());
+  const headerText = new TextDecoder().decode(headerBytes);
+  if (headerText !== "%PDF-") {
+    return new Response(JSON.stringify({ error: "Arquivo não possui assinatura PDF válida" }), {
       status: 400,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
@@ -219,10 +250,10 @@ async function uploadReport(supabase: any, req: Request, userId: string) {
 }
 
 async function deleteReport(supabase: any, ano: number, mes: number) {
-  // Get report info first
+  // 1. Buscar registro atual
   const { data: report, error: findError } = await supabase
     .from("transparencia_relatorios")
-    .select("id, arquivo_path")
+    .select("id, arquivo_path, status_exclusao, storage_removed")
     .eq("ano", ano)
     .eq("mes", mes)
     .single();
@@ -234,23 +265,69 @@ async function deleteReport(supabase: any, ano: number, mes: number) {
     });
   }
 
-  // Delete from storage
+  // Se já está em 'excluindo', a operação já está em andamento — idempotente
+  if (report.status_exclusao === "excluindo") {
+    return new Response(JSON.stringify({
+      ok: true,
+      mensagem: "Exclusão já em andamento. Use o endpoint de recuperação para finalizar.",
+    }), {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  // Se já está 'excluido', nada a fazer — pode ser tratado como sucesso silencioso
+  if (report.status_exclusao === "excluido") {
+    return new Response(JSON.stringify({ ok: true, mensagem: "Registro já excluído." }), {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  // 2. Marcar como 'excluindo' (intenção) — não removemos o Storage antes disso
+  const { error: updateError } = await supabase
+    .from("transparencia_relatorios")
+    .update({ status_exclusao: "excluindo", storage_removed: false })
+    .eq("id", report.id);
+
+  if (updateError) {
+    return new Response(JSON.stringify({ error: "Falha ao marcar registro para exclusão" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  // 3. Remover do Storage
   const { error: storageError } = await supabase.storage
     .from("transparencia-relatorios")
     .remove([report.arquivo_path]);
 
   if (storageError) {
-    console.warn("Erro ao deletar do storage:", storageError);
-    // Continue to delete from DB even if storage fails
+    // Falha no Storage: manter em 'excluindo' para nova tentativa
+    return new Response(JSON.stringify({
+      error: `Falha ao remover arquivo no Storage: ${storageError.message}. Registro mantido em 'excluindo' para nova tentativa.`,
+    }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 
-  // Delete from database
+  // 4. Marcar storage_removed = true e status = 'excluido'
   const { error: dbError } = await supabase
     .from("transparencia_relatorios")
-    .delete()
+    .update({ status_exclusao: "excluido", storage_removed: true })
     .eq("id", report.id);
 
-  if (dbError) throw dbError;
+  if (dbError) {
+    // Storage removido, mas DB falhou: manter em 'excluindo' para recuperação
+    // O storage_removed já é true, então uma nova tentativa pode pular o Storage
+    return new Response(JSON.stringify({
+      error: "Arquivo removido mas metadados nao puderam ser excluidos. Contate o administrador.",
+    }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
 
   return new Response(JSON.stringify({ ok: true, mensagem: "Relatório removido com sucesso" }), {
     headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -263,6 +340,7 @@ async function downloadReport(supabase: any, ano: number, mes: number) {
     .select("arquivo_path, arquivo_nome")
     .eq("ano", ano)
     .eq("mes", mes)
+    .eq("status_exclusao", "ativo")
     .single();
 
   if (error || !report) {

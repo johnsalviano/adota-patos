@@ -4,7 +4,7 @@
 
     // Configuração do Supabase - URL pública, chave anon carregada do HTML
     const SUPABASE_URL = 'https://fnlqruzbgwffhrqmpfvi.supabase.co';
-    const SUPABASE_ANON_KEY = document.querySelector('meta[name="supabase-anon-key"]')?.content || '';
+    const SUPABASE_ANON_KEY = document.querySelector('meta[name="supabase-key"]')?.content || '';
 
     let currentAno = null;
     let currentMes = null;
