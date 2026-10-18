@@ -430,7 +430,7 @@ const SUPABASE_KEY = document.querySelector('meta[name="supabase-key"]')?.conten
 // Modo de teste: parâmetro qa_animais na URL (ex: ?qa_animais=3)
 const urlParams = new URLSearchParams(window.location.search);
 const HAS_TEST_PARAM = urlParams.has('qa_animais');
-const TEST_COUNT = HAS_TEST_PARAM ? Math.max(0, parseInt(urlParams.get('qa_animais') || '0')) : 0;
+const TEST_COUNT = HAS_TEST_PARAM ? Math.max(0, parseInt(urlParams.get('qa_animais') || '0', 10)) : 0;
 
 // Mock animals for test mode (10 distinct test animals - never written to Supabase)
 const MOCK_ANIMALS = [
