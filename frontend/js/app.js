@@ -62,7 +62,7 @@ document.getElementById("adoptButton")?.addEventListener("click", () => {
         fecharModal(modal);
         const banner = document.getElementById("test-banner");
         if (banner) {
-            banner.style.display = "block";
+            banner.classList.toggle("show", true);
         }
         alert("Modo de teste: este é um animal fictício. Não é possível iniciar adoção real.");
         return;
@@ -469,7 +469,7 @@ async function carregarAnimais() {
 
     const useTestMode = HAS_TEST_PARAM;
     if (banner) {
-        banner.style.display = useTestMode ? "block" : "none";
+        banner.classList.toggle("show", useTestMode);
     }
 
     if (useTestMode) {
