@@ -417,6 +417,21 @@ if (escolhaSalva === "aceito") {
 const SUPABASE_URL = document.querySelector('meta[name="supabase-url"]')?.content || "https://fnlqruzbgwffhrqmpfvi.supabase.co";
 const SUPABASE_KEY = document.querySelector('meta[name="supabase-key"]')?.content || "";
 
+// Modo de teste: parâmetro qa_animais na URL (ex: ?qa_animais=3)
+const urlParams = new URLSearchParams(window.location.search);
+const HAS_TEST_PARAM = urlParams.has('qa_animais');
+const TEST_COUNT = HAS_TEST_PARAM ? Math.max(0, parseInt(urlParams.get('qa_animais') || '0')) : 0;
+
+// Mock animals for test mode (6 distinct test animals - never written to Supabase)
+const MOCK_ANIMALS = [
+    { id: "test-1", nome: "Thor", idade: "2 anos", sexo: "Macho", porte: "Médio", descricao: "Thor é brincalhão, carinhoso e está procurando uma família para chamar de sua. Gosta de caminhadas e deitar no sofá ao final do dia.", foto_url: "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=800&q=80" },
+    { id: "test-2", nome: "Bob", idade: "3 anos", sexo: "Macho", porte: "Grande", descricao: "Bob é um cão tranquilo e protetor. Adora crianças e é perfeito para casas com quintal. Já está castrado e vacinado.", foto_url: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=800&q=80" },
+    { id: "test-3", nome: "Luna", idade: "1 ano", sexo: "Fêmea", porte: "Pequeno", descricao: "Luna é uma gata dócil e curiosa. Perfeita para apartamentos. Ama brincar com laser e dormir no colo. Já foi esterilizada.", foto_url: "https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8?auto=format&fit=crop&w=800&q=80" },
+    { id: "test-4", nome: "Maya", idade: "4 anos", sexo: "Fêmea", porte: "Médio", descricao: "Maya tem um coração enorme. Foi resgatada após negligência. Agora saudável e cheia de amor para dar. Procura um lar tranquilo.", foto_url: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=800&q=80" },
+    { id: "test-5", nome: "Rex", idade: "5 anos", sexo: "Macho", porte: "Grande", descricao: "Rex é fiel e protetor. Adora passeios pela manhã e brincar no parque. Castrado, vacinado e muito carinhoso.", foto_url: "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=800&q=80" },
+    { id: "test-6", nome: "Nina", idade: "8 meses", sexo: "Fêmea", porte: "Pequeno", descricao: "Nina é uma filhotinha cheia de energia! Brinca o dia todo, gosta de bolas e já se dá bem com gatos adultos.", foto_url: "https://images.unsplash.com/photo-1574158622682-e4e8528bce91?auto=format&fit=crop&w=800&q=80" },
+];
+
 function mensagemCatalogo(texto, erro = false, tentarNovamente = null) {
     const p = document.createElement("p");
     p.className = "catalogo-status" + (erro ? " erro" : "");
@@ -435,10 +450,23 @@ function mensagemCatalogo(texto, erro = false, tentarNovamente = null) {
 
 async function carregarAnimais() {
     const container = document.getElementById("catalogo-animais");
+    const banner = document.getElementById("test-banner");
     if (!container) return;
-    // Limpa o estado anterior (cards, vazio ou erro) e volta para o carregamento.
-    // Isso mantem o estado unico mesmo quando a funcao roda de novo pelo botao
-    // "Tentar novamente".
+
+    const useTestMode = HAS_TEST_PARAM;
+    if (banner) banner.style.display = useTestMode ? "block" : "none";
+
+    if (useTestMode) {
+        container.innerHTML = "";
+        const animais = MOCK_ANIMALS.slice(0, TEST_COUNT || MOCK_ANIMALS.length);
+        if (!animais.length) {
+            container.appendChild(mensagemCatalogo("🐕 Nenhum animal disponível no modo de teste."));
+            return;
+        }
+        container.innerHTML = animais.map((animal) => `\n            <article class="animal-card">\n                <span class="ribbon">Disponível</span>\n                <div class="img-wrap">\n                    <img src="${animal.foto_url.startsWith("https://") ? animal.foto_url : ""}" alt="${animal.nome.replace(/"/g,'&quot;')}" loading="lazy">\n                </div>\n                <div class="animal-info">\n                    <h3>${animal.nome.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</h3>\n                    <div class="animal-details">\n                        <span class="tag">${animal.idade.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>\n                        <span class="tag">${animal.sexo.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>\n                        <span class="tag">${animal.porte.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>\n                    </div>\n                    <p>${(animal.descricao || "").slice(0,140).replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>\n                    <button class="btn btn-details"\n                        data-name="${animal.nome.replace(/"/g,'&quot;')}" data-age="${animal.idade.replace(/"/g,'&quot;')}"\n                        data-sex="${animal.sexo.replace(/"/g,'&quot;')}" data-size="${animal.porte.replace(/"/g,'&quot;')}"\n                        data-description="${(animal.descricao||"").replace(/"/g,'&quot;')}"\n                        data-image="${animal.foto_url.startsWith("https://") ? animal.foto_url : ""}"\n                        data-id="${animal.id.replace(/"/g,'&quot;')}">\n                        Conhecer ${animal.nome.split(" ")[0]}\n                    </button>\n                </div>\n            </article>`).join("");
+        return;
+    }
+
     container.innerHTML = "";
     container.appendChild(mensagemCatalogo("Carregando animais... 🐾"));
     try {
