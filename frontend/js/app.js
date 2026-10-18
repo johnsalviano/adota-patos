@@ -1,17 +1,13 @@
-// ============================================
 // ADOTA PATOS - COMPORTAMENTO DO SITE
 // Comunica-se com a estrutura (index.html) via
 // ids e classes estaveis e com o tema via classes
 // definidas no CSS. Nenhum estilo inline aqui.
-// ============================================
 
 if (window.AdotaPatosErros) {
     window.AdotaPatosErros.iniciar();
 }
 
-// =========================
 // MODAL DOS ANIMAIS
-// =========================
 
 const modal = document.getElementById("animalModal");
 const modalImage = document.getElementById("modalImage");
@@ -71,9 +67,7 @@ document.getElementById("adoptButton")?.addEventListener("click", () => {
     fecharModal(modal);
 });
 
-// =========================
 // FOCUS TRAP + ESCAPE (modais)
-// =========================
 
 let focoAnterior = null;
 
@@ -125,9 +119,7 @@ function onEscape(event) {
 document.addEventListener("keydown", onEscape);
 document.addEventListener("keydown", trancarFoco);
 
-// =========================
 // FORMULARIO DE ADOCAO
-// =========================
 
 const adoptionForm = document.getElementById("adoptionForm");
 const motivoCampo = document.getElementById("reason");
@@ -199,9 +191,7 @@ function mostrarFeedback(tipo, texto) {
     area.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
-// =========================
 // MENU MOBILE
-// =========================
 
 const menuMobile = document.querySelector(".menu-mobile");
 const navUl = document.querySelector("nav ul");
@@ -219,9 +209,7 @@ if (menuMobile && navUl) {
     });
 }
 
-// =========================
 // HEADER DROPDOWN (ícone ☰ no canto direito)
-// =========================
 
 const headerDropdown = document.querySelector(".header-dropdown");
 const headerDropdownBtn = document.querySelector(".header-dropdown-btn");
@@ -330,9 +318,7 @@ if (headerDropdown && headerDropdownBtn && headerDropdownMenu) {
     });
 }
 
-// =========================
 // HEADER COM SOMBRA AO ROLAR
-// =========================
 
 const siteHeader = document.querySelector("header");
 
@@ -340,9 +326,7 @@ window.addEventListener("scroll", () => {
     if (siteHeader) siteHeader.classList.toggle("scrolled", window.scrollY > 20);
 }, { passive: true });
 
-// =========================
 // ANIMACAO AO ROLAR (REVEAL)
-// =========================
 
 const revealObserver = new IntersectionObserver(
     (entries) => {
@@ -360,11 +344,9 @@ document.querySelectorAll(".reveal").forEach((el) => {
   revealObserver.observe(el);
 });
 
-// =========================
 // COOKIES (LGPD): o Google Analytics é estatística de visitas.
 // Por respeito ao visitante (e pela LGPD), ele SÓ entra em cena
 // depois que a pessoa aceita. Quem recusa navega sem analytics.
-// =========================
 
 const GA_MEASUREMENT_ID = "G-S08M6034SR"; // propriedade GA4 oficial da ONG
 
@@ -420,13 +402,13 @@ if (escolhaSalva === "aceito") {
     });
 }
 
-// =========================
 // CATALOGO DINAMICO (Supabase)
-// =========================
 
 const SUPABASE_URL = document.querySelector('meta[name="supabase-url"]')?.content || "https://fnlqruzbgwffhrqmpfvi.supabase.co";
 const SUPABASE_KEY = document.querySelector('meta[name="supabase-key"]')?.content || "";
 
+
+// Mock animals for test mode (15 distinct test animals - never written to Supabase)
 // Modo de teste: parâmetro qa_animais na URL (ex: ?qa_animais=3)
 const urlParams = new URLSearchParams(window.location.search);
 const HAS_TEST_PARAM = urlParams.has('qa_animais');
@@ -450,6 +432,11 @@ const MOCK_ANIMALS = [
     { id: "test-14", nome: "Tico", idade: "2 anos", sexo: "Macho", porte: "Pequeno", pelagem: "Curta", descricao: "Tico é um chihuahua pequeno e corajoso, cheio de energia. Adora brincar e fazer amigos com todos.", foto_url: "https://images.unsplash.com/photo-1552788004-e28d3d7331f1?auto=format&fit=crop&w=800&q=80" },
     { id: "test-15", nome: "José", idade: "4 anos", sexo: "Macho", porte: "Grande", pelagem: "Curta", descricao: "José é um colaborador dedicado. Sempre está por perto, ajuda a cuidar dos animais e faz parte da equipe com carinho.", foto_url: "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=800&q=80" }
 ];
+
+// Modo de teste: parâmetro qa_animais na URL (ex: ?qa_animais=3)
+const urlParams = new URLSearchParams(window.location.search);
+const HAS_TEST_PARAM = urlParams.has('qa_animais');
+const TEST_COUNT = HAS_TEST_PARAM ? Math.max(0, parseInt(urlParams.get('qa_animais') || '0', 10)) : 0;
 ;
 
 function mensagemCatalogo(texto, erro = false, tentarNovamente = null) {
@@ -472,6 +459,9 @@ async function carregarAnimais() {
     const container = document.getElementById("catalogo-animais");
     const banner = document.getElementById("test-banner");
     if (!container) return;
+    // Limpa o estado anterior (cards, vazio ou erro) e volta para o carregamento.
+    // Isso mantem o estado unico mesmo quando a funcao roda de novo pelo botao
+    // "Tentar novamente".
 
     const useTestMode = HAS_TEST_PARAM;
     if (banner) {
@@ -485,6 +475,33 @@ async function carregarAnimais() {
             container.appendChild(mensagemCatalogo("🐕 Nenhum animal disponível no modo de teste."));
             return;
         }
+        container.innerHTML = animais.map((animal) => `
+            <article class="animal-card">
+                <span class="ribbon">Disponível</span>
+                <div class="img-wrap">
+                    <img src="${animal.foto_url.startsWith("https://") ? animal.foto_url : ""}" alt="${animal.nome.replace(/"/g,'&quot;')}" loading="lazy">
+                </div>
+                <div class="animal-info">
+                    <h3>${animal.nome.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</h3>
+                    <div class="animal-details">
+                        <span class="tag">${animal.idade.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>
+                        <span class="tag">${animal.sexo.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>
+                        <span class="tag">${animal.porte.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>
+                        ${animal.pelagem ? `<span class="tag">${animal.pelagem.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>` : ''}
+                    </div>
+                    <p>${(animal.descricao || "").slice(0,140).replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>
+                    <button class="btn btn-details"
+                        data-name="${animal.nome.replace(/"/g,'&quot;')}" data-age="${animal.idade.replace(/"/g,'&quot;')}"
+                        data-sex="${animal.sexo.replace(/"/g,'&quot;')}" data-size="${animal.porte.replace(/"/g,'&quot;')}"
+                        data-description="${(animal.descricao||"").replace(/"/g,'&quot;')}"
+                        data-image="${animal.foto_url.startsWith("https://") ? animal.foto_url : ""}"
+                        data-id="${animal.id.replace(/"/g,'&quot;')}">
+                        Conhecer ${animal.nome.split(" ")[0]}
+                    </button>
+                </div>
+            </article>`).join("");
+        return;
+    }
         container.innerHTML = animais.map((animal) => `\n            <article class="animal-card">\n                <span class="ribbon">Disponível</span>\n                <div class="img-wrap">\n                    <img src="${animal.foto_url.startsWith("https://") ? animal.foto_url : ""}" alt="${animal.nome.replace(/"/g,'&quot;')}" loading="lazy">\n                </div>\n                <div class="animal-info">\n                    <h3>${animal.nome.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</h3>\n                    <div class="animal-details">\n                        <span class="tag">${animal.idade.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>\n                        <span class="tag">${animal.sexo.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>\n                        <span class="tag">${animal.porte.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>\n                        <span class="tag">${animal.pelagem ? animal.pelagem.replace(/</g,'&lt;').replace(/>/g,'&gt;') : ''}</span>\n                    </div>\n                    <p>${(animal.descricao || "").slice(0,140).replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>\n                    <button class="btn btn-details"\n                        data-name="${animal.nome.replace(/"/g,'&quot;')}" data-age="${animal.idade.replace(/"/g,'&quot;')}"\n                        data-sex="${animal.sexo.replace(/"/g,'&quot;')}" data-size="${animal.porte.replace(/"/g,'&quot;')}"\n                        data-description="${(animal.descricao||"").replace(/"/g,'&quot;')}"\n                        data-image="${animal.foto_url.startsWith("https://") ? animal.foto_url : ""}"\n                        data-id="${animal.id.replace(/"/g,'&quot;')}">\n                        Conhecer ${animal.nome.split(" ")[0]}\n                    </button>\n                </div>\n            </article>`).join("");
         return;
     }
@@ -536,6 +553,7 @@ async function carregarAnimais() {
                         <span class="tag">${escaparHtml(animal.porte)}</span>
                         ${animal.pelagem ? `<span class="tag">${escaparHtml(animal.pelagem)}</span>` : ''}
                     </div>
+                    </div>
                     <p>${escaparHtml((animal.descricao || "").slice(0, 140))}</p>
                     <button class="btn btn-details"
                         data-name="${escaparHtml(animal.nome)}" data-age="${escaparHtml(animal.idade)}"
@@ -559,9 +577,7 @@ async function carregarAnimais() {
 
 carregarAnimais();
 
-// =========================
 // MODAL DA POLITICA DE PRIVACIDADE
-// =========================
 
 const politicaModal = document.getElementById("politicaModal");
 
