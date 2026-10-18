@@ -1,17 +1,13 @@
-// ============================================
 // ADOTA PATOS - COMPORTAMENTO DO SITE
 // Comunica-se com a estrutura (index.html) via
 // ids e classes estaveis e com o tema via classes
 // definidas no CSS. Nenhum estilo inline aqui.
-// ============================================
 
 if (window.AdotaPatosErros) {
     window.AdotaPatosErros.iniciar();
 }
 
-// =========================
 // MODAL DOS ANIMAIS
-// =========================
 
 const modal = document.getElementById("animalModal");
 const modalImage = document.getElementById("modalImage");
@@ -57,13 +53,21 @@ modal?.addEventListener("click", (event) => {
 });
 
 document.getElementById("adoptButton")?.addEventListener("click", () => {
+    // Em modo de teste, não iniciar adoção real - apenas fechar o modal com aviso
+    if (HAS_TEST_PARAM) {
+        fecharModal(modal);
+        const banner = document.getElementById("test-banner");
+        if (banner) {
+            banner.classList.toggle("show", true);
+        }
+        alert("Modo de teste: este é um animal fictício. Não é possível iniciar adoção real.");
+        return;
+    }
     animalSelecionadoId = animalAtualId;
     fecharModal(modal);
 });
 
-// =========================
 // FOCUS TRAP + ESCAPE (modais)
-// =========================
 
 let focoAnterior = null;
 
@@ -115,9 +119,7 @@ function onEscape(event) {
 document.addEventListener("keydown", onEscape);
 document.addEventListener("keydown", trancarFoco);
 
-// =========================
 // FORMULARIO DE ADOCAO
-// =========================
 
 const adoptionForm = document.getElementById("adoptionForm");
 const motivoCampo = document.getElementById("reason");
@@ -189,9 +191,7 @@ function mostrarFeedback(tipo, texto) {
     area.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
-// =========================
 // MENU MOBILE
-// =========================
 
 const menuMobile = document.querySelector(".menu-mobile");
 const navUl = document.querySelector("nav ul");
@@ -209,9 +209,7 @@ if (menuMobile && navUl) {
     });
 }
 
-// =========================
 // HEADER DROPDOWN (ícone ☰ no canto direito)
-// =========================
 
 const headerDropdown = document.querySelector(".header-dropdown");
 const headerDropdownBtn = document.querySelector(".header-dropdown-btn");
@@ -320,9 +318,7 @@ if (headerDropdown && headerDropdownBtn && headerDropdownMenu) {
     });
 }
 
-// =========================
 // HEADER COM SOMBRA AO ROLAR
-// =========================
 
 const siteHeader = document.querySelector("header");
 
@@ -330,9 +326,7 @@ window.addEventListener("scroll", () => {
     if (siteHeader) siteHeader.classList.toggle("scrolled", window.scrollY > 20);
 }, { passive: true });
 
-// =========================
 // ANIMACAO AO ROLAR (REVEAL)
-// =========================
 
 const revealObserver = new IntersectionObserver(
     (entries) => {
@@ -350,11 +344,9 @@ document.querySelectorAll(".reveal").forEach((el) => {
   revealObserver.observe(el);
 });
 
-// =========================
 // COOKIES (LGPD): o Google Analytics é estatística de visitas.
 // Por respeito ao visitante (e pela LGPD), ele SÓ entra em cena
 // depois que a pessoa aceita. Quem recusa navega sem analytics.
-// =========================
 
 const GA_MEASUREMENT_ID = "G-S08M6034SR"; // propriedade GA4 oficial da ONG
 
@@ -410,15 +402,19 @@ if (escolhaSalva === "aceito") {
     });
 }
 
-// =========================
 // CATALOGO DINAMICO (Supabase)
-// =========================
 
 const SUPABASE_URL = document.querySelector('meta[name="supabase-url"]')?.content || "https://fnlqruzbgwffhrqmpfvi.supabase.co";
 const SUPABASE_KEY = document.querySelector('meta[name="supabase-key"]')?.content || "";
 
 
 // Mock animals for test mode (15 distinct test animals - never written to Supabase)
+// Modo de teste: parâmetro qa_animais na URL (ex: ?qa_animais=3)
+const urlParams = new URLSearchParams(window.location.search);
+const HAS_TEST_PARAM = urlParams.has('qa_animais');
+const TEST_COUNT = HAS_TEST_PARAM ? Math.max(0, parseInt(urlParams.get('qa_animais') || '0', 10)) : 0;
+
+// Mock animals for test mode (10 distinct test animals - never written to Supabase)
 const MOCK_ANIMALS = [
     { id: "test-1", nome: "Thor", idade: "2 anos", sexo: "Macho", porte: "Médio", pelagem: "Curta", descricao: "Thor é brincalhão, carinhoso e está procurando uma família para chamar de sua. Gosta de caminhadas e deitar no sofá ao final do dia.", foto_url: "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=800&q=80" },
     { id: "test-2", nome: "Bob", idade: "3 anos", sexo: "Macho", porte: "Grande", pelagem: "Curta", descricao: "Bob é um cão tranquilo e protetor. Adora crianças e é perfeito para casas com quintal. Já está castrado e vacinado.", foto_url: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=800&q=80" },
@@ -441,6 +437,7 @@ const MOCK_ANIMALS = [
 const urlParams = new URLSearchParams(window.location.search);
 const HAS_TEST_PARAM = urlParams.has('qa_animais');
 const TEST_COUNT = HAS_TEST_PARAM ? Math.max(0, parseInt(urlParams.get('qa_animais') || '0', 10)) : 0;
+;
 
 function mensagemCatalogo(texto, erro = false, tentarNovamente = null) {
     const p = document.createElement("p");
@@ -465,10 +462,12 @@ async function carregarAnimais() {
     // Limpa o estado anterior (cards, vazio ou erro) e volta para o carregamento.
     // Isso mantem o estado unico mesmo quando a funcao roda de novo pelo botao
     // "Tentar novamente".
+
     const useTestMode = HAS_TEST_PARAM;
     if (banner) {
         banner.classList.toggle("show", useTestMode);
     }
+
     if (useTestMode) {
         container.innerHTML = "";
         const animais = MOCK_ANIMALS.slice(0, TEST_COUNT || MOCK_ANIMALS.length);
@@ -503,6 +502,10 @@ async function carregarAnimais() {
             </article>`).join("");
         return;
     }
+        container.innerHTML = animais.map((animal) => `\n            <article class="animal-card">\n                <span class="ribbon">Disponível</span>\n                <div class="img-wrap">\n                    <img src="${animal.foto_url.startsWith("https://") ? animal.foto_url : ""}" alt="${animal.nome.replace(/"/g,'&quot;')}" loading="lazy">\n                </div>\n                <div class="animal-info">\n                    <h3>${animal.nome.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</h3>\n                    <div class="animal-details">\n                        <span class="tag">${animal.idade.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>\n                        <span class="tag">${animal.sexo.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>\n                        <span class="tag">${animal.porte.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>\n                        <span class="tag">${animal.pelagem ? animal.pelagem.replace(/</g,'&lt;').replace(/>/g,'&gt;') : ''}</span>\n                    </div>\n                    <p>${(animal.descricao || "").slice(0,140).replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>\n                    <button class="btn btn-details"\n                        data-name="${animal.nome.replace(/"/g,'&quot;')}" data-age="${animal.idade.replace(/"/g,'&quot;')}"\n                        data-sex="${animal.sexo.replace(/"/g,'&quot;')}" data-size="${animal.porte.replace(/"/g,'&quot;')}"\n                        data-description="${(animal.descricao||"").replace(/"/g,'&quot;')}"\n                        data-image="${animal.foto_url.startsWith("https://") ? animal.foto_url : ""}"\n                        data-id="${animal.id.replace(/"/g,'&quot;')}">\n                        Conhecer ${animal.nome.split(" ")[0]}\n                    </button>\n                </div>\n            </article>`).join("");
+        return;
+    }
+
     container.innerHTML = "";
     container.appendChild(mensagemCatalogo("Carregando animais... 🐾"));
     try {
@@ -574,9 +577,7 @@ async function carregarAnimais() {
 
 carregarAnimais();
 
-// =========================
 // MODAL DA POLITICA DE PRIVACIDADE
-// =========================
 
 const politicaModal = document.getElementById("politicaModal");
 
