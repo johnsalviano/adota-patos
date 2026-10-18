@@ -417,6 +417,31 @@ if (escolhaSalva === "aceito") {
 const SUPABASE_URL = document.querySelector('meta[name="supabase-url"]')?.content || "https://fnlqruzbgwffhrqmpfvi.supabase.co";
 const SUPABASE_KEY = document.querySelector('meta[name="supabase-key"]')?.content || "";
 
+
+// Mock animals for test mode (15 distinct test animals - never written to Supabase)
+const MOCK_ANIMALS = [
+    { id: "test-1", nome: "Thor", idade: "2 anos", sexo: "Macho", porte: "Médio", pelagem: "Curta", descricao: "Thor é brincalhão, carinhoso e está procurando uma família para chamar de sua. Gosta de caminhadas e deitar no sofá ao final do dia.", foto_url: "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=800&q=80" },
+    { id: "test-2", nome: "Bob", idade: "3 anos", sexo: "Macho", porte: "Grande", pelagem: "Curta", descricao: "Bob é um cão tranquilo e protetor. Adora crianças e é perfeito para casas com quintal. Já está castrado e vacinado.", foto_url: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=800&q=80" },
+    { id: "test-3", nome: "Luna", idade: "1 ano", sexo: "Fêmea", porte: "Pequeno", pelagem: "Curta", descricao: "Luna é uma gata dócil e curiosa. Perfeita para apartamentos. Ama brincar com laser e dormir no colo. Já foi esterilizada.", foto_url: "https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8?auto=format&fit=crop&w=800&q=80" },
+    { id: "test-4", nome: "Maya", idade: "4 anos", sexo: "Fêmea", porte: "Médio", pelagem: "Curta", descricao: "Maya tem um coração enorme. Foi resgatada após negligência. Agora saudável e cheia de amor para dar. Procura um lar tranquilo.", foto_url: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=800&q=80" },
+    { id: "test-5", nome: "Rex", idade: "5 anos", sexo: "Macho", porte: "Grande", pelagem: "Curta", descricao: "Rex é fiel e protetor. Adora passeios pela manhã e brincar no parque. Castrado, vacinado e muito carinhoso.", foto_url: "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=800&q=80" },
+    { id: "test-6", nome: "Nina", idade: "8 meses", sexo: "Fêmea", porte: "Pequeno", pelagem: "Curta", descricao: "Nina é uma filhotinha cheia de energia! Brinca o dia todo, gosta de bolas e já se dá bem com gatos adultos.", foto_url: "https://images.unsplash.com/photo-1574158622682-e4e8528bce91?auto=format&fit=crop&w=800&q=80" },
+    { id: "test-7", nome: "Cooper", idade: "6 meses", sexo: "Macho", porte: "Pequeno", pelagem: "Curta", descricao: "Cooper é um labrador energeticamente vibrante, adora morder brinquedos e já aprendeu a sentar e a dar a pata. Está pronto para uma aventura.", foto_url: "https://images.unsplash.com/photo-1552788004-e28d3d7331f1?auto=format&fit=crop&w=800&q=80" },
+    { id: "test-8", nome: "Bella", idade: "9 meses", sexo: "Fêmea", porte: "Médio", pelagem: "Média", descricao: "Bella é uma labradoodle fofa e inteligente, que adora passar tempo com seus donos. Já aprendeu comandos básicos e é ótima para famílias com crianças.", foto_url: "https://images.unsplash.com/photo-1568980306537-809ead8c6b46?auto=format&fit=crop&w=800&q=80" },
+    { id: "test-9", nome: "Duke", idade: "4 anos", sexo: "Macho", porte: "Grande", pelagem: "Curta", descricao: "Duke é um grande golden retriever gentil, que adora passear e nadar. Tem um coração gentil e é muito protetor da família.", foto_url: "https://images.unsplash.com/photo-1516589828629-1b0e972d6e1f?auto=format&fit=crop&w=800&q=80" },
+    { id: "test-10", nome: "Maggie", idade: "7 anos", sexo: "Fêmea", porte: "Médio", pelagem: "Curta", descricao: "Maggie é uma shih tzu de personalidade forte, que adora ser o centro das atenções. Tem um sorriso contagiante e adora cochilar no colo dos donos.", foto_url: "https://images.unsplash.com/photo-1543466836-0316270297e2?auto=format&fit=crop&w=800&q=80" },
+    { id: "test-11", nome: "Pedro", idade: "2 anos", sexo: "Macho", porte: "Médio", pelagem: "Curta", descricao: "Pedro é um colaborador que gosta de ajudar no resgate de animais. Adora brincar com cães e está sempre disposto a ajudar.", foto_url: "https://images.unsplash.com/photo-1551187580-506f4b3d1e3d?auto=format&fit=crop&w=800&q=80" },
+    { id: "test-12", nome: "Carolina", idade: "3 anos", sexo: "Fêmea", porte: "Médio", pelagem: "Longa", descricao: "Carolina é uma cata-vento muito doce, mas um pouco tímida. Ama ficar no colo e é ótima com crianças.", foto_url: "https://images.unsplash.com/photo-1574158622682-e4e8528bce91?auto=format&fit=crop&w=800&q=80" },
+    { id: "test-13", nome: "Zé", idade: "5 anos", sexo: "Macho", porte: "Grande", pelagem: "Curta", descricao: "Zé é um pastor alemão treinado, obediente e leal. Ideal para quem busca um cão guardião e companheiro.", foto_url: "https://images.unsplash.com/photo-1546626010-289c32519324?auto=format&fit=crop&w=800&q=80" },
+    { id: "test-14", nome: "Tico", idade: "2 anos", sexo: "Macho", porte: "Pequeno", pelagem: "Curta", descricao: "Tico é um chihuahua pequeno e corajoso, cheio de energia. Adora brincar e fazer amigos com todos.", foto_url: "https://images.unsplash.com/photo-1552788004-e28d3d7331f1?auto=format&fit=crop&w=800&q=80" },
+    { id: "test-15", nome: "José", idade: "4 anos", sexo: "Macho", porte: "Grande", pelagem: "Curta", descricao: "José é um colaborador dedicado. Sempre está por perto, ajuda a cuidar dos animais e faz parte da equipe com carinho.", foto_url: "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=800&q=80" }
+];
+
+// Modo de teste: parâmetro qa_animais na URL (ex: ?qa_animais=3)
+const urlParams = new URLSearchParams(window.location.search);
+const HAS_TEST_PARAM = urlParams.has('qa_animais');
+const TEST_COUNT = HAS_TEST_PARAM ? Math.max(0, parseInt(urlParams.get('qa_animais') || '0', 10)) : 0;
+
 function mensagemCatalogo(texto, erro = false, tentarNovamente = null) {
     const p = document.createElement("p");
     p.className = "catalogo-status" + (erro ? " erro" : "");
@@ -435,14 +460,53 @@ function mensagemCatalogo(texto, erro = false, tentarNovamente = null) {
 
 async function carregarAnimais() {
     const container = document.getElementById("catalogo-animais");
+    const banner = document.getElementById("test-banner");
     if (!container) return;
     // Limpa o estado anterior (cards, vazio ou erro) e volta para o carregamento.
     // Isso mantem o estado unico mesmo quando a funcao roda de novo pelo botao
     // "Tentar novamente".
+    const useTestMode = HAS_TEST_PARAM;
+    if (banner) {
+        banner.classList.toggle("show", useTestMode);
+    }
+    if (useTestMode) {
+        container.innerHTML = "";
+        const animais = MOCK_ANIMALS.slice(0, TEST_COUNT || MOCK_ANIMALS.length);
+        if (!animais.length) {
+            container.appendChild(mensagemCatalogo("🐕 Nenhum animal disponível no modo de teste."));
+            return;
+        }
+        container.innerHTML = animais.map((animal) => `
+            <article class="animal-card">
+                <span class="ribbon">Disponível</span>
+                <div class="img-wrap">
+                    <img src="${animal.foto_url.startsWith("https://") ? animal.foto_url : ""}" alt="${animal.nome.replace(/"/g,'&quot;')}" loading="lazy">
+                </div>
+                <div class="animal-info">
+                    <h3>${animal.nome.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</h3>
+                    <div class="animal-details">
+                        <span class="tag">${animal.idade.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>
+                        <span class="tag">${animal.sexo.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>
+                        <span class="tag">${animal.porte.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>
+                        ${animal.pelagem ? `<span class="tag">${animal.pelagem.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>` : ''}
+                    </div>
+                    <p>${(animal.descricao || "").slice(0,140).replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>
+                    <button class="btn btn-details"
+                        data-name="${animal.nome.replace(/"/g,'&quot;')}" data-age="${animal.idade.replace(/"/g,'&quot;')}"
+                        data-sex="${animal.sexo.replace(/"/g,'&quot;')}" data-size="${animal.porte.replace(/"/g,'&quot;')}"
+                        data-description="${(animal.descricao||"").replace(/"/g,'&quot;')}"
+                        data-image="${animal.foto_url.startsWith("https://") ? animal.foto_url : ""}"
+                        data-id="${animal.id.replace(/"/g,'&quot;')}">
+                        Conhecer ${animal.nome.split(" ")[0]}
+                    </button>
+                </div>
+            </article>`).join("");
+        return;
+    }
     container.innerHTML = "";
     container.appendChild(mensagemCatalogo("Carregando animais... 🐾"));
     try {
-        const resposta = await fetch(SUPABASE_URL + "/rest/v1/animais?status=eq.Dispon%C3%ADvel&select=id,nome,idade,sexo,porte,descricao,foto_url&order=created_at.desc", {
+        const resposta = await fetch(SUPABASE_URL + "/rest/v1/animais?status=eq.Dispon%C3%ADvel&select=id,nome,idade,sexo,porte,pelagem,descricao,foto_url&order=created_at.desc", {
             headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + SUPABASE_KEY }
         });
         if (!resposta.ok) throw new Error("HTTP " + resposta.status);
@@ -484,6 +548,8 @@ async function carregarAnimais() {
                         <span class="tag">${escaparHtml(animal.idade)}</span>
                         <span class="tag">${escaparHtml(animal.sexo)}</span>
                         <span class="tag">${escaparHtml(animal.porte)}</span>
+                        ${animal.pelagem ? `<span class="tag">${escaparHtml(animal.pelagem)}</span>` : ''}
+                    </div>
                     </div>
                     <p>${escaparHtml((animal.descricao || "").slice(0, 140))}</p>
                     <button class="btn btn-details"
