@@ -468,7 +468,9 @@ async function carregarAnimais() {
     if (!container) return;
 
     const useTestMode = HAS_TEST_PARAM;
-    if (banner) banner.style.display = useTestMode ? "block" : "none";
+    if (banner) {
+        banner.style.display = useTestMode ? "block" : "none";
+    }
 
     if (useTestMode) {
         container.innerHTML = "";
