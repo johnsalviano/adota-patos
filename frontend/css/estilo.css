@@ -6,23 +6,6 @@
 @import url('tema.css');
 
 /* -------------------------
-   TEST BANNER
-   ------------------------- */
-.test-banner {
-    display: none;
-    background: #fff3cd;
-    border-left: 4px solid #ffc107;
-    padding: 12px;
-    margin-bottom: 16px;
-    border-radius: 6px;
-    font-weight: 600;
-    color: #856404;
-}
-.test-banner.show {
-    display: block;
-}
-
-/* -------------------------
    RESET E BASE
    ------------------------- */
 
