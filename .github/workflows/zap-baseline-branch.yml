@@ -72,7 +72,7 @@ jobs:
           fi
 
       - name: Upload ZAP HTML Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: zap-baseline-html-report
@@ -80,7 +80,7 @@ jobs:
           retention-days: 30
 
       - name: Upload ZAP JSON Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: zap-baseline-json-report
@@ -88,7 +88,7 @@ jobs:
           retention-days: 30
 
       - name: Upload ZAP Markdown Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: zap-baseline-md-report
