@@ -1,0 +1,30 @@
+# Caddyfile — servir o site Adota Patos com HTTPS automático
+# Caddy obtém e renova o certificado Let's Encrypt automaticamente.
+#
+# Substitua SEU-DOMINIO.com.br pelo domínio real quando contratado.
+# O frontend fica em /var/www/adota-patos (copiado pelo deploy.sh).
+
+SEU-DOMINIO.com.br, www.SEU-DOMINIO.com.br {
+    root * /var/www/adota-patos
+    file_server
+    encode gzip zstd
+
+    # Cabeçalhos de segurança (defesa em profundidade)
+    header {
+        X-Frame-Options "DENY"
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        Permissions-Policy "geolocation=(), microphone=(), camera=()"
+    }
+
+    # Cache longo para assets estáticos (CSS/JS/imagens)
+    @static path *.css *.js *.png *.jpg *.jpeg *.webp *.svg *.woff *.woff2 *.ico
+    header @static Cache-Control "public, max-age=31536000, immutable"
+
+    # HTML não cacheado (para atualizações aparecerem rápido)
+    @html path *.html /
+    header @html Cache-Control "no-cache, no-store, must-revalidate"
+
+    # Fallback para SPA (não necessário neste site, mas inofensivo)
+    try_files {path} {path}/ /index.html
+}
