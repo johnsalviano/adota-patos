@@ -12,6 +12,7 @@
 - Funcionalidade "ver senha" removida por decisão de segurança (T-046 ADIADO).
 - Revisão de `app.js` concluída (T-038): restaurado para versão limpa de `origin/main`, corrigido emoji mojibake. Suite E2E: 190 passed, 150 skipped, 0 failed.
 - Limpeza de artefatos concluída (T-040): removidos ZAP, stdout, test-results, .temp, arquivo corrompido; .gitignore complementado.
+- Cobertura de testes expandida (T-039): adicionado `login-painel-acesso.spec.ts` (14 testes, todos passando). Suite total: 204 passed, 150 skipped, 0 failed.
 - Handoff para a ONG concluído (T-047): `docs/HANDOFF-ONG.md` criado com instruções de uso e manutenção.
 
 ## Objetivo em andamento
@@ -49,8 +50,8 @@ Corrigir o layout do catálogo de animais (3 cards/linha desktop, 2 tablet, 1 mo
 - Layout visual protegido (REGRAS.md, 2026-10-18).
 
 ## Branch e último commit relevante
-- Branch atual: `feat/fix-visual-layout-preserve`
-- HEAD: `4ebf4eb`
+- Branch atual: `main` (após merge do PR #110)
+- HEAD: `4e02599`
 - origin/main: `5824a1d`
 
 ## Situação das alterações não commitadas

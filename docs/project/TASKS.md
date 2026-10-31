@@ -240,10 +240,20 @@
   - Corrigido emoji mojibake na linha 198 (`­ƒÉÂ `/`⚠️ ` → `🐶 `/`⚠️ `) que causava 2 falhas nos testes E2E.
   - `node --check` passou. Suite E2E: 190 passed, 150 skipped, 0 failed.
 
-### T-039 — Cobertura de testes: RLS, Edge Function, login, painel, upload
+### T-039 - Cobertura de testes: RLS, Edge Function, login, painel, upload
 - Prioridade: P2
-- Estado: PENDENTE
+- Estado: CONCLUÍDO
 - Critérios: suite Playwright cobre fluxos de painel e segurança (além do site público com rede simulada).
+- Evidências: adicionado `tests/e2e/login-painel-acesso.spec.ts` (14 testes, todos passando):
+  - Login válido → redireciona para painel; painel carrega conteúdo e abas.
+  - Login com senha incorreta → erro visível, não entra.
+  - Login com usuário inexistente → erro visível, não entra.
+  - Conta sem permissão de membro da ONG → bloqueada.
+  - Painel sem sessão → redireciona para login.
+  - Painel com sessão válida → carrega conteúdo.
+  - Botão "ver senha" não existe (removido por segurança).
+  - Cobertura existente já inclui: `painel-transparencia-acesso.spec.ts`, `api-content-type-safe.spec.ts` (Edge Function content-type), `login-lembrar-me.spec.ts`.
+- Observações: RLS em nível de banco não é testado pela suite (requer integração real); cobertura atual é via mocks de API.
 
 ### T-040 - Limpeza de artefatos/untracked antes de commit
 - Prioridade: P2
