@@ -73,3 +73,18 @@ adota-patos/
 │           └── receber-adocao/index.ts ← endpoint do formulário (Edge Function)
 └── frontend/              ← (site público e painel — Matheus)
 ```
+
+---
+
+## Regra de prevenção (2026-10-19) — catálogo de animais (#catalogo-animais)
+
+Invariante verificável em HTML/CSS e no DOM renderizado. Antes de publicar qualquer mudança no site ou no catálogo, confirme que:
+
+- `.section-header` é **sempre fechada** (`</div>`) antes de `#test-banner` e `.animals-grid`;
+- `.animals-grid` e `#catalogo-animais` são **irmãos** de `.section-header` dentro de `.container`, **nunca** aninhados dentro de `.section-header`;
+- `.section-header` leva `max-width: 700px` (cabeçalho centrado) e **não** deve envolver o grid, senão o catálogo some limitado a 700px em vez da largura útil de `.container`;
+- existe **um único** elemento `#test-banner` (o duplicado pode fazer com que `getElementById` retorne o vazio e o banner de teste `?qa_animais` não mostre texto);
+- o HTML do catálogo bate com o modelo de referência em `docs/arte-original/adota-patos.html` (árvore: `section#animais > .container > (.section-header | .test-banner | .animals-grid > #catalogo-animais)`);
+- breakpoint desktop 3 colunas, tablet 2 colunas, mobile 1 coluna — medido no navegador real, não apenas no HTML-fonte.
+
+Violação recente (2026-10-19): tag `</div>` de `.section-header` ausente em `frontend/index.html`; o parser aninhou `.animals-grid` dentro de `.section-header` (max-width 700px), estreitando o catálogo. Corrigido fechando a tag. Veja `docs/DOCUMENTACAO.md` §11.
