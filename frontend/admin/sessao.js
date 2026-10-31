@@ -34,16 +34,27 @@
 
         return {
             getItem: function (chave) {
-                // Le dos dois storages: o painel pode ser aberto direto pela
-                // URL, em outra aba, e nesse caso a sessao valida precisa
-                // ser encontrada mesmo que a preferencia nao tenha vindo
-                // junto. A temporaria tem prioridade por ser mais restrita.
-                var temporaria = global.sessionStorage.getItem(chave);
-                if (temporaria !== null) return temporaria;
-                return global.localStorage.getItem(chave);
+                // Preferencia pelo storage que corresponde a "Lembrar-me":
+                // evita que uma sessao temporaria antiga (sessionStorage)
+                // sombreie uma sessao persistente (localStorage) e faca o
+                // usuario ser deslogado mesmo com "Lembrar-me" marcado.
+                var preferido = destino.getItem(chave);
+                if (preferido !== null) return preferido;
+                // Fallback: permite encontrar a sessao valida quando o painel
+                // e aberto direto pela URL, em outra aba, sem a preferencia
+                // junto.
+                var outro = (destino === global.localStorage)
+                    ? global.sessionStorage : global.localStorage;
+                return outro.getItem(chave);
             },
             setItem: function (chave, valor) {
                 destino.setItem(chave, valor);
+                // Limpa a entrada correspondente no outro storage para evitar
+                // sessao antiga sombreando a nova (ex.: login temporario
+                // anterior deixando token em sessionStorage).
+                var outro = (destino === global.localStorage)
+                    ? global.sessionStorage : global.localStorage;
+                outro.removeItem(chave);
             },
             removeItem: function (chave) {
                 // O logout remove dos dois: nao pode sobrar sessao em um

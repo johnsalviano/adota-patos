@@ -264,6 +264,18 @@ Um animal pode receber **várias** solicitações; cada solicitação aponta par
 > registros sao verdadeiros e os dois continuam valendo como historico — mas
 > nao sao a mesma verificacao, e nenhum dos dois cobre o sistema inteiro.
 
+| 2026-10-30 | **Implementação do PUCP (Protocolo Universal de Continuidade)**: AGENTS.md na raiz + docs/project/ (PROJECT, TASKS, ROADMAP, STATE, DECISIONS, HANDOFF, history) com checklist central de 46+ tarefas, estados padronizados e handoff para continuidade entre agentes. Extensão aplicada também a academia-landing e hero-siege-bot. |
+| 2026-10-30 | **Regras globais atualizadas**: PUCP + política de integridade técnica (proibido mascarar erros/bypass/simular sucesso) adicionadas ao AGENTS.md global (propaga para Claude Code via @import). MEMORY.md atualizado com ponteiro. |
+| 2026-10-30 | **Correção P0 — Lembrar-me**: causa raiz identificada (sessão temporária sombreava a persistente). Corrigido em `sessao.js` (getItem prioriza storage da preferência; setItem limpa o outro) e `login.js` (auto-redirect para painel se há sessão; sincroniza checkbox; pré-preenche username+senha; auto-submit do formulário). Validado via CDP (marcado: persiste; desmarcado: morre). |
+| 2026-10-30 | **Correção P0 — fetch relativo**: `painel.js` upload/delete de transparência agora usam URL absoluta do Supabase (quebrava no GitHub Pages). |
+| 2026-10-30 | **Correção P1 — Migrations**: aplicadas 0004 (status doações alimentos/outros), 0005 (status afiliações), 0006 (doações monetárias) no Supabase remoto. |
+| 2026-10-30 | **Correção P1 — Edge Functions**: `confirmar-doacao-monetaria` e `receber-doacao-monetaria` deployadas (ACTIVE). Corrigido bug de imports em `receber-doacao-monetaria/index.ts`. |
+| 2026-10-30 | **Correção de segurança — "Ver senha" removido**: botão toggle de mostrar/ocultar senha removido do login (T-046 ADIADO). Motivo: com "Lembrar-me" auto-preenchendo/submetendo, o botão se torna desnecessário e poderia expor a senha em máquina compartilhada. |
+| 2026-10-30 | **Revisão de `app.js` (T-038)**: restaurado para versão limpa de `origin/main`; corrigido emoji mojibake na linha 198 (`­ƒÉÂ `/`⚠️ ` → `🐶 `/`⚠️ `) que causava 2 falhas nos testes E2E. |
+| 2026-10-30 | **Limpeza de artefatos (T-040)**: removidos ZAP, stdout, test-results, .temp, arquivo com nome corrompido; `.gitignore` complementado com certificados, banco local, cobertura, etc. |
+| 2026-10-30 | **Testes E2E**: 190 passed, 150 skipped, 0 failed (após correção do emoji mojibake). |
+| 2026-10-30 | **Versionamento**: branch `feat/pucp-e-correcoes-p0` com 3 commits; PR #110 aberto. |
+
 *(proximos registros entram aqui)*
 
 ---

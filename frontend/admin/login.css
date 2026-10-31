@@ -144,3 +144,5 @@ button:disabled { opacity: 0.6; cursor: wait; }
     color: var(--text);
     margin-top: 24px;
 }
+
+/* Campo de senha: estilo padrao (sem botao "ver senha"). */
