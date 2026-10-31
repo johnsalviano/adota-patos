@@ -252,12 +252,24 @@
   - Painel sem sessão → redireciona para login.
   - Painel com sessão válida → carrega conteúdo.
   - Botão "ver senha" não existe (removido por segurança).
+- Evidências (login/painel): adicionado `tests/e2e/login-painel-acesso.spec.ts` (14 testes, todos passando):
+  - Login válido → redireciona para painel; painel carrega conteúdo e abas.
+  - Login com senha incorreta → erro visível, não entra.
+  - Login com usuário inexistente → erro visível, não entra.
+  - Conta sem permissão de membro da ONG → bloqueada.
+  - Painel sem sessão → redireciona para login.
+  - Painel com sessão válida → carrega conteúdo.
+  - Botão "ver senha" não existe (removido por segurança).
 - Evidências (RLS): adicionado `tests/e2e/rls-anon.spec.ts` (6 testes, todos passando):
   - anon não lê `perfis_membros` (RLS bloqueia).
   - anon não lê `doacoes_monetarias` (RLS bloqueia).
   - anon lê catálogo de `animais` (RLS permite — público).
+- Evidências (transparência edge): adicionado `tests/e2e/transparencia-upload-edge.spec.ts` (6 testes, todos passando):
+  - Upload sem autenticação (sem Bearer) → 401/403/404/405.
+  - Upload com arquivo muito grande → rejeitado.
+  - Upload com MIME inválido → rejeitado pelo backend.
 - Cobertura existente já inclui: `painel-transparencia-acesso.spec.ts`, `api-content-type-safe.spec.ts` (Edge Function content-type), `login-lembrar-me.spec.ts`.
-- Observações: RLS testado via integração real (anon key contra Supabase remoto). Upload de transparência coberto em `painel-transparencia-acesso.spec.ts`.
+- Observações: RLS testado via integração real (anon key contra Supabase remoto). Upload de transparência coberto (sucesso, MIME falso, texto renomeado, exclusão com falha, edge cases).
 
 ### T-040 - Limpeza de artefatos/untracked antes de commit
 - Prioridade: P2
