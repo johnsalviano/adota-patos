@@ -252,8 +252,12 @@
   - Painel sem sessão → redireciona para login.
   - Painel com sessão válida → carrega conteúdo.
   - Botão "ver senha" não existe (removido por segurança).
-  - Cobertura existente já inclui: `painel-transparencia-acesso.spec.ts`, `api-content-type-safe.spec.ts` (Edge Function content-type), `login-lembrar-me.spec.ts`.
-- Observações: RLS em nível de banco não é testado pela suite (requer integração real); cobertura atual é via mocks de API.
+- Evidências (RLS): adicionado `tests/e2e/rls-anon.spec.ts` (6 testes, todos passando):
+  - anon não lê `perfis_membros` (RLS bloqueia).
+  - anon não lê `doacoes_monetarias` (RLS bloqueia).
+  - anon lê catálogo de `animais` (RLS permite — público).
+- Cobertura existente já inclui: `painel-transparencia-acesso.spec.ts`, `api-content-type-safe.spec.ts` (Edge Function content-type), `login-lembrar-me.spec.ts`.
+- Observações: RLS testado via integração real (anon key contra Supabase remoto). Upload de transparência coberto em `painel-transparencia-acesso.spec.ts`.
 
 ### T-040 - Limpeza de artefatos/untracked antes de commit
 - Prioridade: P2
