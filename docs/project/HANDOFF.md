@@ -5,7 +5,7 @@
 ## 1. Resumo executivo
 - Site de adoção de animais em Patos-PB, publicado em https://johnsalviano.github.io/adota-patos/ (GitHub Pages).
 - Página local de desenvolvimento: http://localhost:8080/.
-- Branch atual: `feat/pucp-e-correcoes-p0`. HEAD: ver `git log`.
+- Branch atual: `main`. HEAD: `4e02599` (merge do PR #110).
 - P0 resolvidos: "Lembrar-me" (sessão persistente + auto-preenchimento + auto-submit), `painel.js` fetch relativo → URL absoluta.
 - P1 resolvidos: migrations 0004/0005/0006 aplicadas; Edge Functions `confirmar-doacao-monetaria` e `receber-doacao-monetaria` deployadas (ACTIVE).
 - PUCP implementado (AGENTS.md + docs/project/).
