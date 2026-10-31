@@ -308,9 +308,21 @@
 - Prioridade: P3
 - Estado: ADIADO
 
-### T-045 — App mobile nativo
+### T-045 - App mobile nativo
 - Prioridade: P3
 - Estado: ADIADO
+
+### T-048 - Preparar deploy em VPS + domínio próprio
+- Prioridade: P2
+- Estado: CONCLUÍDO (preparação)
+- Critérios: guia passo-a-passo para iniciante, Caddyfile com HTTPS automático, script de deploy (rsync), CORS preparado com placeholder do novo domínio, .gitignore global da máquina.
+- Evidências:
+  - `deploy/vps/README.md` — guia completo (DNS, VPS, Caddy, deploy, CORS, checklist pós-deploy).
+  - `deploy/vps/Caddyfile` — config Caddy com HTTPS automático (Let's Encrypt), cache, cabeçalhos de segurança.
+  - `deploy/vps/deploy.sh` — script de deploy via rsync.
+  - CORS: placeholder `SEU-DOMINIO.com.br` adicionado (comentado) em todos os `cors.ts` (10 arquivos).
+  - Gitignore global: `~/.config/git/ignore` criado com regras universais; `core.excludesfile` configurado.
+- Observações: aguardando contratação do domínio e VPS pela ONG. Quando disponível, descomentar a linha do domínio no CORS, redeployar as Edge Functions, ajustar o Caddyfile e rodar `deploy.sh`.
 
 ---
 

@@ -60,8 +60,9 @@ Corrigir o layout do catálogo de animais (3 cards/linha desktop, 2 tablet, 1 mo
 - Preservar: não usar `git clean` nem `git reset --hard`.
 
 ## Próxima ação recomendada
-1. Revisar e aprovar o PR #110 (https://github.com/johnsalviano/adota-patos/pull/110) para merge em `main`.
-2. (Opcional) Expandir cobertura de testes (T-039): RLS, Edge Function, login, painel, upload.
+1. Revisar e aprovar o PR #112 (https://github.com/johnsalviano/adota-patos/pull/112) para merge em `main`.
+2. (Opcional) Expandir mais testes (upload de transparência edge cases adicionais).
+3. Quando a ONG contratar o domínio e a VPS: seguir `deploy/vps/README.md` (descomentar domínio no CORS, redeployar Edge Functions, ajustar Caddyfile, rodar `deploy.sh`).
 
 ## Tarefas concluídas nesta sessão
 - T-033 (Lembrar-me), T-034 (fetch relativo), T-035 (migrations), T-036 (Edge Functions), T-037 (layout catálogo), T-038 (revisão app.js), T-040 (limpeza artefatos), T-046 (removido "ver senha").
