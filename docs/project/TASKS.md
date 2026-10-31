@@ -266,12 +266,6 @@
 ### T-046 - "Ver senha" no campo de senha do login
 - Prioridade: P2
 - Estado: ADIADO
-
-### T-047 - Handoff para a ONG (capacitação)
-- Prioridade: P2
-- Estado: CONCLUÍDO
-- Critérios: documento acessível para a equipe da ONG explicando como usar e manter o sistema.
-- Evidências: `docs/HANDOFF-ONG.md` criado em 2026-10-30 (acesso, cadastro, edição, solicitações, doações, transparência, cuidados, manutenção técnica).
 - Critérios: (removido) botão toggle (👁/🙈) alterna o campo entre `password` e `text`.
 - Observações: funcionalidade removida em 2026-10-30 por decisão de segurança do responsável: como o "Lembrar-me" agora auto-preenche e auto-submete, o "ver senha" se torna desnecessário e poderia expor a senha em máquina compartilhada. Código removido de `login.html`, `login.css` e `login.js`.
 

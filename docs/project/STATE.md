@@ -61,10 +61,9 @@ Corrigir o layout do catálogo de animais (3 cards/linha desktop, 2 tablet, 1 mo
 ## Próxima ação recomendada
 1. Revisar e aprovar o PR #110 (https://github.com/johnsalviano/adota-patos/pull/110) para merge em `main`.
 2. (Opcional) Expandir cobertura de testes (T-039): RLS, Edge Function, login, painel, upload.
-3. (Opcional) Treinar a equipe da ONG com o `docs/HANDOFF-ONG.md`.
 
 ## Tarefas concluídas nesta sessão
-- T-033 (Lembrar-me), T-034 (fetch relativo), T-035 (migrations), T-036 (Edge Functions), T-037 (layout catálogo), T-038 (revisão app.js), T-040 (limpeza artefatos), T-046 (removido "ver senha"), T-047 (handoff ONG).
+- T-033 (Lembrar-me), T-034 (fetch relativo), T-035 (migrations), T-036 (Edge Functions), T-037 (layout catálogo), T-038 (revisão app.js), T-040 (limpeza artefatos), T-046 (removido "ver senha").
 
 ---
 *Ver detalhes em TASKS.md, HANDOFF.md, DECISIONS.md, DOCUMENTACAO.md.*
