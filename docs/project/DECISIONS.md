@@ -73,10 +73,15 @@
 - Decisão: proibido.
 - Motivo: integridade dos dados reais da ONG.
 
-## D-017 — Adoção do PUCP (2026-10-30)
+## D-017 - Adoção do PUCP (2026-10-30)
 - Decisão: projeto armazena sua memória operacional em `AGENTS.md` + `docs/project/`.
 - Motivo: continuidade entre agentes/sessões/computadores.
 - Impacto: estrutura `docs/project/` adicionada; handoffs anteriores preservados.
+
+## D-018 - Remoção da funcionalidade "ver senha" (2026-10-30)
+- Decisão: remover o botão toggle de mostrar/ocultar senha do campo de senha do login.
+- Motivo: com o "Lembrar-me" auto-preenchendo e auto-submetendo, o "ver senha" se torna desnecessário e pode expor a senha em máquina compartilhada (risco de colaborador mal-intencionado).
+- Impacto: código removido de `login.html`, `login.css` e `login.js`. T-046 marcado como ADIADO.
 
 ---
 *Novas decisões: adicionar aqui com D-XXX, data, motivo e impacto.*

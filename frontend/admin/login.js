@@ -61,18 +61,9 @@ if (credenciaisCarregadas && form) {
 // que quer com o "Lembrar-me". Ver sessao.js.
 let cliente = null;
 
-// "Ver senha": alterna o campo entre password e text.
-const toggleSenha = document.getElementById('toggle-senha');
-const campoSenha = document.getElementById('senha');
-if (toggleSenha && campoSenha) {
-    toggleSenha.addEventListener('click', function () {
-        var mostrando = campoSenha.type === 'text';
-        campoSenha.type = mostrando ? 'password' : 'text';
-        toggleSenha.setAttribute('aria-pressed', String(!mostrando));
-        toggleSenha.setAttribute('aria-label', mostrando ? 'Mostrar senha' : 'Ocultar senha');
-        toggleSenha.textContent = mostrando ? '👁' : '🙈';
-    });
-}
+// (Removido: botao "ver senha" — decisao de seguranca do responsavel.
+//  Auto-preenchimento de credenciais pelo "Lembrar-me" dispensa a conferencia
+//  manual da senha, e o botao poderia expor a senha em maquina compartilhada.)
 
 // Se ja existe sessao persistida (Lembrar-me anterior), entra direto no
 // painel sem pedir login de novo. Isso faz o "Lembrar-me" funcionar como

@@ -257,10 +257,9 @@
 
 ### T-046 - "Ver senha" no campo de senha do login
 - Prioridade: P2
-- Estado: CONCLUÍDO
-- Critérios: botão toggle (👁/🙈) alterna o campo entre `password` e `text`, preservando o valor digitado; acessível (aria-pressed, aria-label).
-- Evidências: validado via CDP (2026-10-30): type alterna password→text→password, valor preservado, aria-pressed atualizado.
-- Arquivos: `frontend/admin/login.html`, `frontend/admin/login.css`, `frontend/admin/login.js`.
+- Estado: ADIADO
+- Critérios: (removido) botão toggle (👁/🙈) alterna o campo entre `password` e `text`.
+- Observações: funcionalidade removida em 2026-10-30 por decisão de segurança do responsável: como o "Lembrar-me" agora auto-preenche e auto-submete, o "ver senha" se torna desnecessário e poderia expor a senha em máquina compartilhada. Código removido de `login.html`, `login.css` e `login.js`.
 
 ---
 

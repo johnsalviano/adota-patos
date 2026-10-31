@@ -5,10 +5,11 @@
 ## 1. Resumo executivo
 - Site de adoção de animais em Patos-PB, publicado em https://johnsalviano.github.io/adota-patos/ (GitHub Pages).
 - Página local de desenvolvimento: http://localhost:8080/.
-- Branch atual: `feat/fix-visual-layout-preserve`. HEAD: `4ebf4eb`.
-- Problema visual pendente: catálogo de animais não validado visualmente pelo responsável após correções.
-- P0 bloqueantes: "Lembrar-me" não mantém sessão; `painel.js` fetch relativo quebra no GitHub Pages.
-- P1: migrations 011-017 e Edge Functions de doação monetária não aplicadas/deployadas no remoto.
+- Branch atual: `feat/pucp-e-correcoes-p0`. HEAD: ver `git log`.
+- P0 resolvidos: "Lembrar-me" (sessão persistente + auto-preenchimento + auto-submit), `painel.js` fetch relativo → URL absoluta.
+- P1 resolvidos: migrations 0004/0005/0006 aplicadas; Edge Functions `confirmar-doacao-monetaria` e `receber-doacao-monetaria` deployadas (ACTIVE).
+- PUCP implementado (AGENTS.md + docs/project/).
+- Funcionalidade "ver senha" removida por decisão de segurança (T-046 ADIADO).
 
 ## 2. Estado real do repositório
 - Branch: `feat/fix-visual-layout-preserve`

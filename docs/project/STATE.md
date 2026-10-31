@@ -9,6 +9,7 @@
 ## Etapa atual
 - Projeto em manutenção/correção visual do catálogo (branch `feat/fix-visual-layout-preserve`).
 - Implementação do protocolo PUCP (continuidade/rastreabilidade/handoff) concluída nesta sessão.
+- Funcionalidade "ver senha" removida por decisão de segurança (T-046 ADIADO).
 
 ## Objetivo em andamento
 Corrigir o layout do catálogo de animais (3 cards/linha desktop, 2 tablet, 1 mobile) com validação visual real no navegador, além de resolver pendências P0/P1.
