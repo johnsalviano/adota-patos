@@ -1,38 +1,282 @@
-# Segredos — JAMAIS commitar
+# ============================================================
+# .gitignore — Adota Patos
+# Pesquisa avancada de boas praticas (GitHub gitignore templates,
+# OWASP, 12-factor). Objetivo: nunca subir segredos, dependencias,
+# builds, arquivos de sistema/editor, logs, temporarios nem
+# artefatos de scan.
+# ============================================================
+
+# ------------------------------------------------------------
+# SEGREDOS E CONFIGURACAO (NUNCA COMMITAR)
+# ------------------------------------------------------------
 .env
 .env.*
+!.env.example
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
 *.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.cer
+*.der
 credentials*.json
+secrets*.json
+secrets/
+.secrets/
+*.secret
+config.local.*
+.local-config
+.pypirc
+.streamlit/secrets.toml
+serviceAccount*.json
+firebase-adminsdk*.json
+*.keystore
+*.jks
 
-# Dependências
+# Supabase: chave publicavel pode viver no front, mas nunca
+# service_role / sb_secret / sbp_ / dumps locais.
+supabase/.temp/
+supabase/.branches/
+supabase/.logs/
+backend/supabase/.temp/
+backend/supabase/.branches/
+backend/supabase/.logs/
+*.dump
+*.sql.gz
+
+# ------------------------------------------------------------
+# DEPENDENCIAS
+# ------------------------------------------------------------
 node_modules/
+jspm_packages/
+web_modules/
 __pycache__/
-*.pyc
+*.py[codz]
+*$py.class
+.Python
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+.conda/
+conda-meta/
+poetry.lock
+Pipfile.lock
+uv.lock
+pdm.lock
+.pixi/
+__pypackages__/
 
-# Builds
+# ------------------------------------------------------------
+# BUILDS / DIST / PACKAGING
+# ------------------------------------------------------------
 dist/
 build/
 out/
+develop-eggs/
+.eggs/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.next/
+.nuxt/
+.output/
+.nitro/
+.svelte-kit/
+.astro/
+.turbo/
+.cache/
+.parcel-cache/
+.vite/
+.vitepress/dist
+.vitepress/cache
+.docusaurus/
+.serverless/
+.fusebox/
+.firebase/
+.dynamodb/
+*.tgz
+*.whl
+*.jar
+*.war
 
-# Sistema / editor
+# ------------------------------------------------------------
+# SISTEMA OPERACIONAL
+# ------------------------------------------------------------
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+Thumbs.db:encryptable
+ehthumbs_vista.db
 desktop.ini
+$RECYCLE.BIN/
+*.stackdump
+*.lnk
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+
+# ------------------------------------------------------------
+# EDITORES / IDE
+# ------------------------------------------------------------
 .vscode/
 .idea/
+.vs/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+.ropeproject
+.spyderproject
+.spyproject
 
-# Logs e temporários
+# ------------------------------------------------------------
+# LOGS E TEMPORARIOS
+# ------------------------------------------------------------
 *.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+pip-log.txt
+pip-delete-this-directory.txt
 tmp/
 temp/
+stdout/
+*.tmp
+*.temp
+*.bak
+*.orig
+*.rej
+*.pid
+*.pid.lock
+*.seed
+.node_repl_history
+.npm
+.eslintcache
+.stylelintcache
+*.lcov
+.nyc_output/
+coverage/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.pytype/
+.dmypy.json
+dmypy.json
+.ipynb_checkpoints
+__marimo__/
+marimo/_static/
+marimo/_lsp/
 
-# temporarios do Supabase CLI
-backend/supabase/.temp/
-
-# temporarios do Supabase CLI na raiz
-supabase/.temp/
-
-# Playwright
+# ------------------------------------------------------------
+# TESTES / COBERTURA / PLAYWRIGHT
+# ------------------------------------------------------------
 test-results/
 playwright-report/
 blob-report/
+coverage.xml
+*.cover
+*.py.cover
+nosetests.xml
+junit.xml
+.pybuilder/
+.pytest_cache/
+
+# ------------------------------------------------------------
+# BANCO DE DADOS LOCAL
+# ------------------------------------------------------------
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+db.sqlite3
+db.sqlite3-journal
+
+# ------------------------------------------------------------
+# CERTIFICADOS / CHAVES
+# ------------------------------------------------------------
+*.pem
+*.p12
+*.pfx
+*.key
+*.crt
+*.cer
+*.der
+*.csr
+*.jks
+*.keystore
+
+# ------------------------------------------------------------
+# ARTEFATOS DE SCAN DE SEGURANCA (ZAP)
+# ------------------------------------------------------------
+zap-artifacts*/
+zap-report*/
+zap-*.json
+zap-*.yaml
+zap.yaml
+zap-out-*.json
+
+# ------------------------------------------------------------
+# RELATORIOS / DEBUG / SCRATCH (nao versionar)
+# ------------------------------------------------------------
+RELATORIO-*.md
+ml_debug.html
+olx_*.html
+olx_*.json
+olx_*.txt
+resultados.json
+*.stackdump
+
+# Arquivos com nome corrompido (temporarios)
+*Ctmpparse_alerts.py
+*tmpparse_alerts.py
+
+# ------------------------------------------------------------
+# PROJETO: Adota Patos (especificos)
+# ------------------------------------------------------------
+# Handoffs antigos (preservados localmente; nao precisam subir)
+# docs/HANDOFF-*.md   # descomente se nao quiser versionar
+
+# Seeds de desenvolvimento (podem conter dados de teste)
+# supabase/seed-dev-john.sql   # descomente se nao quiser versionar
+
+# Deno lock (gerado; opcional versionar)
+# deno.lock   # descomente se nao quiser versionar

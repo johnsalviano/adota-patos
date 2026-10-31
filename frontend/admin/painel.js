@@ -976,7 +976,7 @@
             formData.append('ano', ano);
             formData.append('mes', mes);
 
-            var resp = await fetch('/functions/v1/transparencia/upload', {
+            var resp = await fetch('https://fnlqruzbgwffhrqmpfvi.supabase.co/functions/v1/transparencia/upload', {
                 method: 'POST',
                 headers: {
                     'Authorization': 'Bearer ' + (await cliente.auth.getSession()).data.session.access_token
@@ -1091,7 +1091,7 @@
         }
 
         try {
-            var resp = await fetch('/functions/v1/transparencia/delete?ano=' + ano + '&mes=' + mes, {
+            var resp = await fetch('https://fnlqruzbgwffhrqmpfvi.supabase.co/functions/v1/transparencia/delete?ano=' + ano + '&mes=' + mes, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': 'Bearer ' + (await cliente.auth.getSession()).data.session.access_token
