@@ -10,6 +10,8 @@
 - Projeto em manutenção/correção visual do catálogo (branch `feat/fix-visual-layout-preserve`).
 - Implementação do protocolo PUCP (continuidade/rastreabilidade/handoff) concluída nesta sessão.
 - Funcionalidade "ver senha" removida por decisão de segurança (T-046 ADIADO).
+- Revisão de `app.js` concluída (T-038): restaurado para versão limpa de `origin/main`, corrigido emoji mojibake. Suite E2E: 190 passed, 150 skipped, 0 failed.
+- Limpeza de artefatos concluída (T-040): removidos ZAP, stdout, test-results, .temp, arquivo corrompido; .gitignore complementado.
 
 ## Objetivo em andamento
 Corrigir o layout do catálogo de animais (3 cards/linha desktop, 2 tablet, 1 mobile) com validação visual real no navegador, além de resolver pendências P0/P1.

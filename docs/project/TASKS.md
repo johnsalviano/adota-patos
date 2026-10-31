@@ -230,21 +230,29 @@
   - 390px (mobile): 1 coluna (351px).
 - Observações: validado no working tree local com dados de teste (MOCK_ANIMALS). Estrutura de layout confirmada correta.
 
-### T-038 — Revisar diff não revisado de `frontend/js/app.js`
+### T-038 - Revisar diff não revisado de `frontend/js/app.js`
 - Prioridade: P2
-- Estado: PENDENTE
+- Estado: CONCLUÍDO
 - Critérios: diff do working tree revisado linha a linha; sem regressões.
+- Evidências: revisão em 2026-10-30:
+  - Diff analisado: working tree tinha remoções quebradas (TEST_COUNT undefined, braces soltas, `</div>` removido, emoji mojibake).
+  - Restaurado `app.js` para a versão limpa de `origin/main` (commit 5824a1d).
+  - Corrigido emoji mojibake na linha 198 (`­ƒÉÂ `/`⚠️ ` → `🐶 `/`⚠️ `) que causava 2 falhas nos testes E2E.
+  - `node --check` passou. Suite E2E: 190 passed, 150 skipped, 0 failed.
 
 ### T-039 — Cobertura de testes: RLS, Edge Function, login, painel, upload
 - Prioridade: P2
 - Estado: PENDENTE
 - Critérios: suite Playwright cobre fluxos de painel e segurança (além do site público com rede simulada).
 
-### T-040 — Limpeza de artefatos/untracked antes de commit
+### T-040 - Limpeza de artefatos/untracked antes de commit
 - Prioridade: P2
-- Estado: PENDENTE
+- Estado: CONCLUÍDO
 - Critérios: remover/organizar artefatos ZAP, `stdout/`, arquivo com nome corrompido, `deno.lock` duplicado; revisar o que deve ser commitado.
-- Observações: não usar `git clean` sem revisão.
+- Evidências: limpeza realizada em 2026-10-30:
+  - Removidos: `stdout/`, `zap-artifacts*/`, `zap-report*/`, `zap-*.json/yaml`, `zap.yaml`, `test-results/`, `backend/supabase/.temp/`, `supabase/.temp/`, arquivo com nome corrompido (`*tmpparse_alerts.py`).
+  - `.gitignore` complementado para cobrir artefatos de scan, certificados, banco local, cobertura, etc.
+  - Arquivos legítimos do projeto (migrations, Edge Functions, testes, docs, seeds) permanecem untracked para decisão do responsável.
 
 ### T-041 — Resolver arquivo com nome corrompido (`C�tmpparse_alerts.py`)
 - Prioridade: P3
