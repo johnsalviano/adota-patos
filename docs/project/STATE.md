@@ -12,6 +12,7 @@
 - Funcionalidade "ver senha" removida por decisão de segurança (T-046 ADIADO).
 - Revisão de `app.js` concluída (T-038): restaurado para versão limpa de `origin/main`, corrigido emoji mojibake. Suite E2E: 190 passed, 150 skipped, 0 failed.
 - Limpeza de artefatos concluída (T-040): removidos ZAP, stdout, test-results, .temp, arquivo corrompido; .gitignore complementado.
+- Handoff para a ONG concluído (T-047): `docs/HANDOFF-ONG.md` criado com instruções de uso e manutenção.
 
 ## Objetivo em andamento
 Corrigir o layout do catálogo de animais (3 cards/linha desktop, 2 tablet, 1 mobile) com validação visual real no navegador, além de resolver pendências P0/P1.
@@ -58,10 +59,12 @@ Corrigir o layout do catálogo de animais (3 cards/linha desktop, 2 tablet, 1 mo
 - Preservar: não usar `git clean` nem `git reset --hard`.
 
 ## Próxima ação recomendada
-1. Validar manualmente as correções P0: login com "Lembrar-me" marcado/desmarcado (fechar e reabrir navegador) e upload de transparência no GitHub Pages.
-2. Aplicar migrations pendentes no Supabase remoto (T-035) e deploy das Edge Functions de doação monetária (T-036) — requer autorização.
-3. Revisar diff de `frontend/js/app.js` (T-038) e limpar artefatos (T-040).
-4. Não commitar/publicar sem aprovação do responsável.
+1. Revisar e aprovar o PR #110 (https://github.com/johnsalviano/adota-patos/pull/110) para merge em `main`.
+2. (Opcional) Expandir cobertura de testes (T-039): RLS, Edge Function, login, painel, upload.
+3. (Opcional) Treinar a equipe da ONG com o `docs/HANDOFF-ONG.md`.
+
+## Tarefas concluídas nesta sessão
+- T-033 (Lembrar-me), T-034 (fetch relativo), T-035 (migrations), T-036 (Edge Functions), T-037 (layout catálogo), T-038 (revisão app.js), T-040 (limpeza artefatos), T-046 (removido "ver senha"), T-047 (handoff ONG).
 
 ---
 *Ver detalhes em TASKS.md, HANDOFF.md, DECISIONS.md, DOCUMENTACAO.md.*
